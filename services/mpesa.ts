@@ -1,5 +1,28 @@
 import { Platform } from 'react-native';
 
+// Base64 encoding function for React Native
+function base64Encode(str: string): string {
+  // For React Native, we'll use a simple base64 implementation
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  
+  while (i < str.length) {
+    const a = str.charCodeAt(i++);
+    const b = i < str.length ? str.charCodeAt(i++) : 0;
+    const c = i < str.length ? str.charCodeAt(i++) : 0;
+    
+    const bitmap = (a << 16) | (b << 8) | c;
+    
+    result += chars.charAt((bitmap >> 18) & 63);
+    result += chars.charAt((bitmap >> 12) & 63);
+    result += i - 2 < str.length ? chars.charAt((bitmap >> 6) & 63) : '=';
+    result += i - 1 < str.length ? chars.charAt(bitmap & 63) : '=';
+  }
+  
+  return result;
+}
+
 // M-Pesa API Configuration
 const MPESA_CONFIG = {
   clientId: 'c0ShysKAT4YHFg63LCC1ihKZrAUg-fWYOp3v_BF3_xc',
@@ -52,9 +75,9 @@ class MpesaService {
         return this.accessToken;
       }
 
-      const credentials = Buffer.from(
+      const credentials = base64Encode(
         `${MPESA_CONFIG.clientId}:${MPESA_CONFIG.clientSecret}`
-      ).toString('base64');
+      );
 
       const response = await fetch(
         `${MPESA_CONFIG.baseUrl}/oauth/v1/generate?grant_type=client_credentials`,
@@ -107,7 +130,7 @@ class MpesaService {
    */
   private generatePassword(timestamp: string): string {
     const data = `${MPESA_CONFIG.businessShortCode}${MPESA_CONFIG.passkey}${timestamp}`;
-    return Buffer.from(data).toString('base64');
+    return base64Encode(data);
   }
 
   /**
