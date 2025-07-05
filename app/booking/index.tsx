@@ -63,23 +63,26 @@ export default function BookingScreen() {
     {
       id: "mpesa" as PaymentMethod,
       name: "M-Pesa",
-      description: "Instant mobile money",
+      description: "Lipa na M-Pesa - Fast & Secure",
       icon: Smartphone,
       featured: true,
+      benefits: ["Instant payment", "No cash needed", "SMS confirmation"],
     },
     {
       id: "card" as PaymentMethod,
-      name: "Card",
-      description: "Credit/Debit card",
+      name: "Debit/Credit Card",
+      description: "Visa, Mastercard accepted",
       icon: CreditCard,
       featured: false,
+      benefits: ["International cards", "Secure payment", "Instant processing"],
     },
     {
       id: "cash" as PaymentMethod,
-      name: "Cash",
-      description: "Pay on delivery",
+      name: "Cash on Delivery",
+      description: "Pay when package arrives",
       icon: DollarSign,
       featured: false,
+      benefits: ["No upfront payment", "Pay on receipt", "Exact change preferred"],
     },
   ];
 
@@ -326,7 +329,7 @@ export default function BookingScreen() {
               >
                 {method.featured && (
                   <View style={styles.featuredBadge}>
-                    <Text style={styles.featuredText}>RECOMMENDED</Text>
+                    <Text style={styles.featuredText}>MOST POPULAR</Text>
                   </View>
                 )}
                 
@@ -362,6 +365,15 @@ export default function BookingScreen() {
                     <Text style={styles.paymentMethodDescription}>
                       {method.description}
                     </Text>
+                    {bookingData.paymentMethod === method.id && method.benefits && (
+                      <View style={styles.benefitsList}>
+                        {method.benefits.map((benefit, index) => (
+                          <Text key={index} style={styles.benefitText}>
+                            ✓ {benefit}
+                          </Text>
+                        ))}
+                      </View>
+                    )}
                   </View>
                 </View>
                 {bookingData.paymentMethod === method.id && (
@@ -757,6 +769,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.light.textMuted,
     fontWeight: "500",
+  },
+  benefitsList: {
+    marginTop: 8,
+    gap: 2,
+  },
+  benefitText: {
+    fontSize: 11,
+    color: Colors.light.primary,
+    fontWeight: "600",
   },
   paymentTerms: {
     gap: 12,

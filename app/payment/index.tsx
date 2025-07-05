@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -19,14 +20,19 @@ import {
   Shield,
   ArrowLeft,
   Package,
+  Clock,
+  AlertCircle,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
+import { usePaymentStore } from "@/stores/payment-store";
+import mpesaService, { MpesaPaymentRequest } from "@/services/mpesa";
 
 export default function PaymentScreen() {
   const { orderId } = useLocalSearchParams<{ orderId?: string }>();
   const { getOrderById, updatePaymentStatus } = useOrdersStore();
+  const { createTransaction, updateTransactionStatus, getTransactionByOrderId } = usePaymentStore();
   
   const [mpesaPhone, setMpesaPhone] = useState("");
   const [cardDetails, setCardDetails] = useState({
@@ -35,6 +41,11 @@ export default function PaymentScreen() {
     cvv: "",
     name: "",
   });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'waiting'>('form');
+  const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
+  const [phoneValidation, setPhoneValidation] = useState<{ valid: boolean; message?: string }>({ valid: true });
+  const [currentTransactionId, setCurrentTransactionId] = useState<string | null>(null);
 
   const order = orderId ? getOrderById(orderId) : null;
   const orderAmount = order?.price || 450;
@@ -47,63 +58,194 @@ export default function PaymentScreen() {
     }
   }, [order, orderId]);
 
-  const handlePayment = () => {
-    if (!order) {
+  // Validate phone number on change
+  const handlePhoneChange = (phone: string) => {
+    setMpesaPhone(phone);
+    if (phone.length > 0) {
+      const validation = mpesaService.validatePhoneNumber(phone);
+      setPhoneValidation(validation);
+    } else {
+      setPhoneValidation({ valid: true });
+    }
+  };
+
+  const handleMpesaPayment = async () => {
+    if (!order || !orderId) {
       Alert.alert("Error", "No order found to process payment");
       return;
     }
 
-    if (order.paymentMethod === "mpesa") {
-      if (!mpesaPhone) {
-        Alert.alert("Missing Information", "Please enter your M-Pesa phone number");
-        return;
-      }
+    if (!mpesaPhone) {
+      Alert.alert("Missing Information", "Please enter your M-Pesa phone number");
+      return;
+    }
+
+    const validation = mpesaService.validatePhoneNumber(mpesaPhone);
+    if (!validation.valid) {
+      Alert.alert("Invalid Phone Number", validation.message || "Please enter a valid phone number");
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentStep('processing');
+
+    try {
+      // Create payment transaction record
+      const transactionId = createTransaction({
+        orderId: orderId,
+        method: 'mpesa',
+        amount: orderAmount,
+        status: 'pending',
+        phoneNumber: mpesaPhone,
+      });
+      setCurrentTransactionId(transactionId);
       
-      // Simulate M-Pesa payment processing
-      Alert.alert(
-        "M-Pesa Payment Initiated",
-        `Please check your phone ${mpesaPhone} for the M-Pesa prompt to complete payment of KSh ${orderAmount}`,
-        [
-          {
-            text: "Payment Completed",
-            onPress: () => {
-              if (orderId) {
-                updatePaymentStatus(orderId, "paid");
-              }
-              Alert.alert(
-                "Payment Successful! 🎉",
-                "Your payment has been processed successfully. Your order is now confirmed.",
-                [
-                  {
-                    text: "Track Order",
-                    onPress: () => {
-                      router.dismiss();
-                      router.push(`/tracking?orderId=${orderId}`);
-                    },
-                  },
-                ]
-              );
+      const paymentRequest: MpesaPaymentRequest = {
+        phoneNumber: mpesaPhone,
+        amount: orderAmount,
+        orderId: orderId,
+        description: `Payment for delivery from ${order.from} to ${order.to}`,
+      };
+
+      // Update transaction to processing
+      updateTransactionStatus(transactionId, 'processing');
+      
+      const response = await mpesaService.initiateSTKPush(paymentRequest);
+
+      if (response.success && response.checkoutRequestId) {
+        setCheckoutRequestId(response.checkoutRequestId);
+        setPaymentStep('waiting');
+        
+        // Update transaction with checkout request ID
+        updateTransactionStatus(transactionId, 'processing', {
+          checkoutRequestId: response.checkoutRequestId,
+        });
+        
+        Alert.alert(
+          "Payment Request Sent! 📱",
+          response.customerMessage || `Please check your phone ${mpesaPhone} for the M-Pesa prompt and enter your PIN to complete the payment.`,
+          [
+            {
+              text: "I've Paid",
+              onPress: () => handlePaymentConfirmation(),
             },
-          },
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-        ]
-      );
-    } else if (order.paymentMethod === "card") {
-      if (!cardDetails.number || !cardDetails.expiry || !cardDetails.cvv) {
-        Alert.alert("Missing Information", "Please fill in all card details");
-        return;
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => {
+                updateTransactionStatus(transactionId, 'cancelled');
+                setPaymentStep('form');
+                setIsProcessing(false);
+              },
+            },
+          ]
+        );
+      } else {
+        updateTransactionStatus(transactionId, 'failed', {
+          errorMessage: response.error || 'Payment initiation failed',
+        });
+        throw new Error(response.error || 'Payment initiation failed');
       }
+    } catch (error) {
+      console.error('M-Pesa payment error:', error);
+      Alert.alert(
+        "Payment Failed",
+        error instanceof Error ? error.message : "Failed to initiate payment. Please try again."
+      );
+      setPaymentStep('form');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentConfirmation = async () => {
+    if (!orderId || !checkoutRequestId || !currentTransactionId) return;
+
+    setIsProcessing(true);
+    
+    try {
+      // Query payment status from M-Pesa
+      const statusResponse = await mpesaService.querySTKPushStatus(checkoutRequestId);
+      
+      if (statusResponse.success) {
+        // Payment successful
+        updateTransactionStatus(currentTransactionId, 'completed', {
+          mpesaReceiptNumber: statusResponse.mpesaReceiptNumber || `MP${Date.now()}`,
+        });
+        updatePaymentStatus(orderId, "paid");
+        
+        Alert.alert(
+          "Payment Successful! 🎉",
+          "Your M-Pesa payment has been confirmed. Your order is now being processed.",
+          [
+            {
+              text: "Track Order",
+              onPress: () => {
+                router.dismiss();
+                router.push(`/tracking?orderId=${orderId}`);
+              },
+            },
+          ]
+        );
+      } else {
+        // Payment failed or pending
+        updateTransactionStatus(currentTransactionId, 'failed', {
+          errorMessage: statusResponse.error || 'Payment verification failed',
+        });
+        
+        Alert.alert(
+          "Payment Verification Failed",
+          statusResponse.error || "We couldn't verify your payment. Please try again or contact support if you've already paid."
+        );
+      }
+    } catch (error) {
+      updateTransactionStatus(currentTransactionId, 'failed', {
+        errorMessage: error instanceof Error ? error.message : 'Payment verification failed',
+      });
+      
+      Alert.alert(
+        "Payment Verification Failed",
+        "We couldn't verify your payment. Please contact support if you've already paid."
+      );
+    } finally {
+      setIsProcessing(false);
+      setPaymentStep('form');
+    }
+  };
+
+  const handleCardPayment = async () => {
+    if (!order || !orderId) {
+      Alert.alert("Error", "No order found to process payment");
+      return;
+    }
+
+    if (!cardDetails.number || !cardDetails.expiry || !cardDetails.cvv || !cardDetails.name) {
+      Alert.alert("Missing Information", "Please fill in all card details");
+      return;
+    }
+
+    setIsProcessing(true);
+    
+    try {
+      // Create payment transaction record
+      const transactionId = createTransaction({
+        orderId: orderId,
+        method: 'card',
+        amount: orderAmount,
+        status: 'processing',
+      });
+      setCurrentTransactionId(transactionId);
       
       // Simulate card payment processing
-      if (orderId) {
-        updatePaymentStatus(orderId, "paid");
-      }
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Update transaction and order status
+      updateTransactionStatus(transactionId, 'completed');
+      updatePaymentStatus(orderId, "paid");
+      
       Alert.alert(
         "Payment Successful! 🎉",
-        `Your payment of KSh ${orderAmount} has been processed successfully.`,
+        `Your card payment of KSh ${orderAmount.toLocaleString()} has been processed successfully.`,
         [
           {
             text: "Track Order",
@@ -114,6 +256,27 @@ export default function PaymentScreen() {
           },
         ]
       );
+    } catch (error) {
+      if (currentTransactionId) {
+        updateTransactionStatus(currentTransactionId, 'failed', {
+          errorMessage: error instanceof Error ? error.message : 'Card payment failed',
+        });
+      }
+      
+      Alert.alert(
+        "Payment Failed",
+        "Card payment failed. Please check your details and try again."
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePayment = () => {
+    if (order?.paymentMethod === "mpesa") {
+      handleMpesaPayment();
+    } else if (order?.paymentMethod === "card") {
+      handleCardPayment();
     }
   };
 
@@ -135,17 +298,27 @@ export default function PaymentScreen() {
       <View style={styles.formContent}>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Phone Number</Text>
-          <View style={styles.phoneInputContainer}>
+          <View style={[
+            styles.phoneInputContainer,
+            !phoneValidation.valid && styles.phoneInputError
+          ]}>
             <Text style={styles.countryCode}>+254</Text>
             <TextInput
               style={styles.phoneInput}
               placeholder="712345678"
               value={mpesaPhone}
-              onChangeText={setMpesaPhone}
+              onChangeText={handlePhoneChange}
               keyboardType="phone-pad"
               placeholderTextColor={Colors.light.textMuted}
+              editable={!isProcessing}
             />
           </View>
+          {!phoneValidation.valid && phoneValidation.message && (
+            <View style={styles.validationError}>
+              <AlertCircle size={14} color={Colors.light.error} />
+              <Text style={styles.validationErrorText}>{phoneValidation.message}</Text>
+            </View>
+          )}
         </View>
         
         <View style={styles.mpesaSteps}>
@@ -308,16 +481,58 @@ export default function PaymentScreen() {
         {order.paymentMethod === "card" && renderCardForm()}
 
         {order.paymentMethod !== "cash" && (
-          <TouchableOpacity style={styles.payButton} onPress={handlePayment}>
+          <TouchableOpacity 
+            style={[
+              styles.payButton,
+              (isProcessing || !phoneValidation.valid) && styles.payButtonDisabled
+            ]} 
+            onPress={handlePayment}
+            disabled={isProcessing || (order.paymentMethod === "mpesa" && !phoneValidation.valid)}
+          >
             <LinearGradient
-              colors={[Colors.light.primary, Colors.light.primaryDark]}
+              colors={[
+                isProcessing ? Colors.light.textMuted : Colors.light.primary,
+                isProcessing ? Colors.light.textMuted : Colors.light.primaryDark
+              ]}
               style={styles.payButtonGradient}
             >
-              <Text style={styles.payButtonText}>
-                Pay KSh {orderAmount.toLocaleString()}
-              </Text>
+              {isProcessing ? (
+                <>
+                  <ActivityIndicator size="small" color={Colors.light.background} />
+                  <Text style={styles.payButtonText}>
+                    {paymentStep === 'processing' ? 'Initiating Payment...' : 
+                     paymentStep === 'waiting' ? 'Confirming Payment...' : 'Processing...'}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  {order.paymentMethod === "mpesa" && <Smartphone size={20} color={Colors.light.background} />}
+                  {order.paymentMethod === "card" && <CreditCard size={20} color={Colors.light.background} />}
+                  <Text style={styles.payButtonText}>
+                    {order.paymentMethod === "mpesa" ? 'Pay with M-Pesa' : 'Pay with Card'} - KSh {orderAmount.toLocaleString()}
+                  </Text>
+                </>
+              )}
             </LinearGradient>
           </TouchableOpacity>
+        )}
+        
+        {paymentStep === 'waiting' && (
+          <View style={styles.waitingCard}>
+            <LinearGradient
+              colors={[Colors.light.mpesa, "#00B85C"]}
+              style={styles.waitingGradient}
+            >
+              <View style={styles.waitingContent}>
+                <Clock size={32} color={Colors.light.background} />
+                <Text style={styles.waitingTitle}>Waiting for Payment</Text>
+                <Text style={styles.waitingSubtitle}>
+                  Please complete the payment on your phone using M-Pesa PIN
+                </Text>
+                <Text style={styles.waitingPhone}>📱 {mpesaPhone}</Text>
+              </View>
+            </LinearGradient>
+          </View>
         )}
 
         <View style={styles.securityNote}>
@@ -564,9 +779,17 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
+  payButtonDisabled: {
+    opacity: 0.6,
+    shadowOpacity: 0.1,
+  },
   payButtonGradient: {
     paddingVertical: 20,
+    paddingHorizontal: 24,
     alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 12,
     borderRadius: 20,
   },
   payButtonText: {
@@ -574,6 +797,58 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0.5,
+  },
+  phoneInputError: {
+    borderColor: Colors.light.error,
+    borderWidth: 2,
+  },
+  validationError: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 6,
+  },
+  validationErrorText: {
+    fontSize: 12,
+    color: Colors.light.error,
+    fontWeight: "500",
+  },
+  waitingCard: {
+    borderRadius: 20,
+    marginBottom: 16,
+    shadowColor: Colors.light.mpesa,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  waitingGradient: {
+    padding: 24,
+    borderRadius: 20,
+  },
+  waitingContent: {
+    alignItems: "center",
+    gap: 12,
+  },
+  waitingTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: Colors.light.background,
+    textAlign: "center",
+  },
+  waitingSubtitle: {
+    fontSize: 14,
+    color: Colors.light.background + "CC",
+    textAlign: "center",
+    fontWeight: "500",
+    lineHeight: 20,
+  },
+  waitingPhone: {
+    fontSize: 16,
+    color: Colors.light.background,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 8,
   },
   securityNote: {
     flexDirection: "row",

@@ -24,6 +24,7 @@ import {
   Star,
   Package,
   Shield,
+  Receipt,
 } from "lucide-react-native";
 import Colors from "@/constants/colors";
 
@@ -55,7 +56,15 @@ export default function ProfileScreen() {
       subtitle: "Cards, M-Pesa, and more",
       icon: CreditCard,
       color: Colors.light.accent,
-      onPress: () => router.push("/payment"),
+      onPress: () => console.log("Navigate to payment methods"),
+    },
+    {
+      id: "payment-history",
+      title: "Payment History",
+      subtitle: "View all your transactions",
+      icon: Receipt,
+      color: Colors.light.mpesa,
+      onPress: () => router.push("/payment/history"),
     },
     {
       id: "notifications",
