@@ -1,8 +1,13 @@
 import { Platform } from 'react-native';
 
-// Base64 encoding function for React Native
+// Improved base64 encoding for React Native
 function base64Encode(str: string): string {
-  // For React Native, we'll use a simple base64 implementation
+  if (Platform.OS === 'web') {
+    // Use browser's btoa for web
+    return btoa(str);
+  }
+  
+  // For React Native, use a more reliable base64 implementation
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   let result = '';
   let i = 0;
@@ -62,7 +67,7 @@ export interface MpesaCallbackData {
 }
 
 class MpesaService {
-  private accessToken: string | null = null;
+  private accessToken: string = '';
   private tokenExpiry: number = 0;
 
   /**
@@ -75,9 +80,13 @@ class MpesaService {
         return this.accessToken;
       }
 
+      console.log('Getting M-Pesa access token...');
+      
       const credentials = base64Encode(
         `${MPESA_CONFIG.clientId}:${MPESA_CONFIG.clientSecret}`
       );
+
+      console.log('Credentials encoded, making request to:', `${MPESA_CONFIG.baseUrl}/oauth/v1/generate?grant_type=client_credentials`);
 
       const response = await fetch(
         `${MPESA_CONFIG.baseUrl}/oauth/v1/generate?grant_type=client_credentials`,
@@ -90,23 +99,31 @@ class MpesaService {
         }
       );
 
+      console.log('Token response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`Failed to get access token: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Token request failed:', response.status, errorText);
+        throw new Error(`Failed to get access token: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      this.accessToken = data.access_token;
-      // Token expires in 1 hour, we'll refresh 5 minutes early
-      this.tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
-
-      if (!this.accessToken) {
-        throw new Error('Failed to get access token from M-Pesa API');
+      console.log('Token response data:', data);
+      
+      if (!data.access_token) {
+        console.error('No access token in response:', data);
+        throw new Error('No access token received from M-Pesa API');
       }
 
+      this.accessToken = data.access_token;
+      // Token expires in 1 hour, we'll refresh 5 minutes early
+      this.tokenExpiry = Date.now() + ((data.expires_in || 3600) - 300) * 1000;
+
+      console.log('Access token obtained successfully');
       return this.accessToken;
     } catch (error) {
       console.error('Error getting M-Pesa access token:', error);
-      throw new Error('Failed to authenticate with M-Pesa API');
+      throw new Error(`Failed to authenticate with M-Pesa API: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -165,10 +182,18 @@ class MpesaService {
         return this.mockSTKPush(request);
       }
 
+      console.log('Initiating STK Push for:', request);
+
       const accessToken = await this.getAccessToken();
       const timestamp = this.generateTimestamp();
       const password = this.generatePassword(timestamp);
       const phoneNumber = this.formatPhoneNumber(request.phoneNumber);
+
+      console.log('STK Push parameters:', {
+        timestamp,
+        phoneNumber,
+        amount: Math.round(request.amount),
+      });
 
       const stkPushData = {
         BusinessShortCode: MPESA_CONFIG.businessShortCode,
@@ -184,6 +209,8 @@ class MpesaService {
         TransactionDesc: request.description || `Payment for order ${request.orderId}`,
       };
 
+      console.log('Making STK Push request to:', `${MPESA_CONFIG.baseUrl}/mpesa/stkpush/v1/processrequest`);
+
       const response = await fetch(
         `${MPESA_CONFIG.baseUrl}/mpesa/stkpush/v1/processrequest`,
         {
@@ -196,11 +223,16 @@ class MpesaService {
         }
       );
 
+      console.log('STK Push response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`STK Push failed: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('STK Push request failed:', response.status, errorText);
+        throw new Error(`STK Push failed: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('STK Push response data:', data);
 
       if (data.ResponseCode === '0') {
         return {
@@ -215,7 +247,7 @@ class MpesaService {
           success: false,
           responseCode: data.ResponseCode,
           responseDescription: data.ResponseDescription,
-          error: data.errorMessage || 'STK Push failed',
+          error: data.errorMessage || data.ResponseDescription || 'STK Push failed',
         };
       }
     } catch (error) {
@@ -231,6 +263,8 @@ class MpesaService {
    * Mock STK Push for testing/web platform
    */
   private async mockSTKPush(request: MpesaPaymentRequest): Promise<MpesaPaymentResponse> {
+    console.log('Using mock STK Push for web/testing');
+    
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -251,12 +285,16 @@ class MpesaService {
     try {
       if (Platform.OS === 'web') {
         // Mock successful payment for web
+        console.log('Using mock query for web/testing');
+        await new Promise(resolve => setTimeout(resolve, 1000));
         return {
           success: true,
           resultCode: 0,
           resultDesc: 'The service request is processed successfully.',
         };
       }
+
+      console.log('Querying STK Push status for:', checkoutRequestId);
 
       const accessToken = await this.getAccessToken();
       const timestamp = this.generateTimestamp();
@@ -281,11 +319,17 @@ class MpesaService {
         }
       );
 
+      console.log('Query response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`Query failed: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Query request failed:', response.status, errorText);
+        throw new Error(`Query failed: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('Query response data:', data);
+      
       return {
         success: data.ResultCode === '0',
         resultCode: data.ResultCode,
@@ -366,6 +410,26 @@ class MpesaService {
     }
     
     return { valid: true };
+  }
+
+  /**
+   * Test M-Pesa connection
+   */
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('Testing M-Pesa connection...');
+      const token = await this.getAccessToken();
+      return {
+        success: true,
+        message: 'M-Pesa connection successful',
+      };
+    } catch (error) {
+      console.error('M-Pesa connection test failed:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Connection test failed',
+      };
+    }
   }
 }
 

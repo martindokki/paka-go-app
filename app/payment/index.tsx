@@ -22,6 +22,7 @@ import {
   Package,
   Clock,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
@@ -46,6 +47,7 @@ export default function PaymentScreen() {
   const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
   const [phoneValidation, setPhoneValidation] = useState<{ valid: boolean; message?: string }>({ valid: true });
   const [currentTransactionId, setCurrentTransactionId] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'testing' | 'success' | 'failed'>('unknown');
 
   const order = orderId ? getOrderById(orderId) : null;
   const orderAmount = order?.price || 450;
@@ -57,6 +59,27 @@ export default function PaymentScreen() {
       ]);
     }
   }, [order, orderId]);
+
+  // Test M-Pesa connection on component mount
+  useEffect(() => {
+    if (order?.paymentMethod === 'mpesa') {
+      testMpesaConnection();
+    }
+  }, [order?.paymentMethod]);
+
+  const testMpesaConnection = async () => {
+    setConnectionStatus('testing');
+    try {
+      const result = await mpesaService.testConnection();
+      setConnectionStatus(result.success ? 'success' : 'failed');
+      if (!result.success) {
+        console.warn('M-Pesa connection test failed:', result.message);
+      }
+    } catch (error) {
+      setConnectionStatus('failed');
+      console.error('M-Pesa connection test error:', error);
+    }
+  };
 
   // Validate phone number on change
   const handlePhoneChange = (phone: string) => {
@@ -86,6 +109,27 @@ export default function PaymentScreen() {
       return;
     }
 
+    // Test connection first if it failed
+    if (connectionStatus === 'failed') {
+      Alert.alert(
+        "Connection Issue",
+        "There seems to be an issue with M-Pesa connection. Would you like to retry?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { 
+            text: "Retry", 
+            onPress: async () => {
+              await testMpesaConnection();
+              if (connectionStatus === 'success') {
+                handleMpesaPayment();
+              }
+            }
+          },
+        ]
+      );
+      return;
+    }
+
     setIsProcessing(true);
     setPaymentStep('processing');
 
@@ -107,10 +151,14 @@ export default function PaymentScreen() {
         description: `Payment for delivery from ${order.from} to ${order.to}`,
       };
 
+      console.log('Initiating M-Pesa payment:', paymentRequest);
+
       // Update transaction to processing
       updateTransactionStatus(transactionId, 'processing');
       
       const response = await mpesaService.initiateSTKPush(paymentRequest);
+
+      console.log('M-Pesa payment response:', response);
 
       if (response.success && response.checkoutRequestId) {
         setCheckoutRequestId(response.checkoutRequestId);
@@ -150,7 +198,7 @@ export default function PaymentScreen() {
       console.error('M-Pesa payment error:', error);
       Alert.alert(
         "Payment Failed",
-        error instanceof Error ? error.message : "Failed to initiate payment. Please try again."
+        `Failed to initiate payment: ${error instanceof Error ? error.message : "Unknown error"}. Please check your connection and try again.`
       );
       setPaymentStep('form');
     } finally {
@@ -164,8 +212,12 @@ export default function PaymentScreen() {
     setIsProcessing(true);
     
     try {
+      console.log('Confirming payment for checkout request:', checkoutRequestId);
+      
       // Query payment status from M-Pesa
       const statusResponse = await mpesaService.querySTKPushStatus(checkoutRequestId);
+      
+      console.log('Payment status response:', statusResponse);
       
       if (statusResponse.success) {
         // Payment successful
@@ -199,6 +251,7 @@ export default function PaymentScreen() {
         );
       }
     } catch (error) {
+      console.error('Payment confirmation error:', error);
       updateTransactionStatus(currentTransactionId, 'failed', {
         errorMessage: error instanceof Error ? error.message : 'Payment verification failed',
       });
@@ -280,6 +333,43 @@ export default function PaymentScreen() {
     }
   };
 
+  const renderConnectionStatus = () => {
+    if (order?.paymentMethod !== 'mpesa') return null;
+
+    return (
+      <View style={styles.connectionStatus}>
+        <View style={styles.connectionStatusContent}>
+          {connectionStatus === 'testing' && (
+            <>
+              <ActivityIndicator size="small" color={Colors.light.primary} />
+              <Text style={styles.connectionStatusText}>Testing M-Pesa connection...</Text>
+            </>
+          )}
+          {connectionStatus === 'success' && (
+            <>
+              <CheckCircle size={16} color={Colors.light.success} />
+              <Text style={[styles.connectionStatusText, { color: Colors.light.success }]}>
+                M-Pesa connection ready
+              </Text>
+            </>
+          )}
+          {connectionStatus === 'failed' && (
+            <>
+              <AlertCircle size={16} color={Colors.light.error} />
+              <Text style={[styles.connectionStatusText, { color: Colors.light.error }]}>
+                M-Pesa connection failed
+              </Text>
+              <TouchableOpacity onPress={testMpesaConnection} style={styles.retryButton}>
+                <RefreshCw size={14} color={Colors.light.primary} />
+                <Text style={styles.retryButtonText}>Retry</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  };
+
   const renderMpesaForm = () => (
     <View style={styles.paymentForm}>
       <LinearGradient
@@ -296,6 +386,8 @@ export default function PaymentScreen() {
       </LinearGradient>
       
       <View style={styles.formContent}>
+        {renderConnectionStatus()}
+        
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Phone Number</Text>
           <View style={[
@@ -484,15 +576,15 @@ export default function PaymentScreen() {
           <TouchableOpacity 
             style={[
               styles.payButton,
-              (isProcessing || !phoneValidation.valid) && styles.payButtonDisabled
+              (isProcessing || !phoneValidation.valid || connectionStatus === 'failed') && styles.payButtonDisabled
             ]} 
             onPress={handlePayment}
-            disabled={isProcessing || (order.paymentMethod === "mpesa" && !phoneValidation.valid)}
+            disabled={isProcessing || (order.paymentMethod === "mpesa" && (!phoneValidation.valid || connectionStatus === 'failed'))}
           >
             <LinearGradient
               colors={[
-                isProcessing ? Colors.light.textMuted : Colors.light.primary,
-                isProcessing ? Colors.light.textMuted : Colors.light.primaryDark
+                isProcessing || connectionStatus === 'failed' ? Colors.light.textMuted : Colors.light.primary,
+                isProcessing || connectionStatus === 'failed' ? Colors.light.textMuted : Colors.light.primaryDark
               ]}
               style={styles.payButtonGradient}
             >
@@ -688,6 +780,35 @@ const styles = StyleSheet.create({
   },
   formContent: {
     padding: 20,
+  },
+  connectionStatus: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: Colors.light.backgroundSecondary,
+    borderRadius: 12,
+  },
+  connectionStatusContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  connectionStatusText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: Colors.light.text,
+    flex: 1,
+  },
+  retryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  retryButtonText: {
+    fontSize: 12,
+    color: Colors.light.primary,
+    fontWeight: "600",
   },
   inputContainer: {
     marginBottom: 16,
