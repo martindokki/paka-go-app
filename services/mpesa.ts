@@ -76,6 +76,10 @@ class MpesaService {
       // Token expires in 1 hour, we'll refresh 5 minutes early
       this.tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
 
+      if (!this.accessToken) {
+        throw new Error('Failed to get access token from M-Pesa API');
+      }
+
       return this.accessToken;
     } catch (error) {
       console.error('Error getting M-Pesa access token:', error);
