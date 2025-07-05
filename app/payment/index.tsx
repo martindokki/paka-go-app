@@ -120,9 +120,7 @@ export default function PaymentScreen() {
             text: "Retry", 
             onPress: async () => {
               await testMpesaConnection();
-              if (connectionStatus === 'success') {
-                handleMpesaPayment();
-              }
+              // The connection status will be updated, and user can try again manually
             }
           },
         ]
