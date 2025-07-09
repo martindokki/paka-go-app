@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, router } from "expo-router";
 import { View, ActivityIndicator } from "react-native";
 import { Home, Package, DollarSign, User } from "lucide-react-native";
@@ -11,16 +11,26 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 
 export default function DriverTabLayout() {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!isInitialized) return;
-    
-    if (!isAuthenticated || !user || user.userType !== 'driver') {
-      router.replace('/auth');
-    }
-  }, [isAuthenticated, user, isInitialized]);
+    setIsMounted(true);
+  }, []);
 
-  if (!isInitialized) {
+  useEffect(() => {
+    if (!isInitialized || !isMounted) return;
+    
+    // Use setTimeout to ensure navigation happens after component is fully mounted
+    const timeoutId = setTimeout(() => {
+      if (!isAuthenticated || !user || user.userType !== 'driver') {
+        router.replace('/auth');
+      }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [isAuthenticated, user, isInitialized, isMounted]);
+
+  if (!isInitialized || !isMounted) {
     return (
       <View style={{ 
         flex: 1, 
@@ -34,7 +44,16 @@ export default function DriverTabLayout() {
   }
 
   if (!isAuthenticated || !user || user.userType !== 'driver') {
-    return null;
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background 
+      }}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
   }
 
   return (

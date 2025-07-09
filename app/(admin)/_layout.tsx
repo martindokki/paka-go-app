@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs } from "expo-router";
 import { Platform, Alert, View, ActivityIndicator } from "react-native";
 import { BarChart3, Package, Users, Settings } from "lucide-react-native";
@@ -12,31 +12,41 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 
 export default function AdminTabLayout() {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Check authentication and platform
   React.useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitialized || !isMounted) return;
     
-    if (!isAuthenticated || !user || user.userType !== 'admin') {
-      router.replace('/auth');
-      return;
-    }
+    // Use setTimeout to ensure navigation happens after component is fully mounted
+    const timeoutId = setTimeout(() => {
+      if (!isAuthenticated || !user || user.userType !== 'admin') {
+        router.replace('/auth');
+        return;
+      }
 
-    if (Platform.OS !== 'web') {
-      Alert.alert(
-        "Access Restricted",
-        "Admin dashboard is only available on web platform. Please use a web browser to access admin features.",
-        [
-          {
-            text: "OK",
-            onPress: () => router.replace("/auth"),
-          },
-        ]
-      );
-    }
-  }, [isAuthenticated, user, isInitialized]);
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          "Access Restricted",
+          "Admin dashboard is only available on web platform. Please use a web browser to access admin features.",
+          [
+            {
+              text: "OK",
+              onPress: () => router.replace("/auth"),
+            },
+          ]
+        );
+      }
+    }, 100);
 
-  if (!isInitialized) {
+    return () => clearTimeout(timeoutId);
+  }, [isAuthenticated, user, isInitialized, isMounted]);
+
+  if (!isInitialized || !isMounted) {
     return (
       <View style={{ 
         flex: 1, 
@@ -51,7 +61,16 @@ export default function AdminTabLayout() {
 
   // Don't render tabs if not authenticated or not on web
   if (!isAuthenticated || !user || user.userType !== 'admin' || Platform.OS !== 'web') {
-    return null;
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background 
+      }}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
   }
 
   return (
