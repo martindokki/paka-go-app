@@ -24,6 +24,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isInitialized: boolean;
+  _hasHydrated?: boolean;
   
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
@@ -38,11 +39,14 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setInitialized: (initialized: boolean) => void;
+  _setHasHydrated?: (hasHydrated: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
+      // Initialize the store
+      _hasHydrated: false,
       user: null,
       token: null,
       isAuthenticated: false,
@@ -259,6 +263,11 @@ export const useAuthStore = create<AuthState>()(
       setInitialized: (initialized: boolean) => {
         set({ isInitialized: initialized });
       },
+      
+      // Internal method to handle hydration
+      _setHasHydrated: (hasHydrated: boolean) => {
+        set({ _hasHydrated: hasHydrated, isInitialized: true });
+      },
     }),
     {
       name: 'auth-storage',
@@ -269,7 +278,12 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
         isInitialized: state.isInitialized,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error('Failed to rehydrate auth state:', error);
+        }
+        
+        // Always mark as initialized after rehydration attempt
         if (state) {
           // Validate stored data
           if (state.user && state.token && state.isAuthenticated) {
@@ -284,16 +298,8 @@ export const useAuthStore = create<AuthState>()(
             state.token = null;
             state.isAuthenticated = false;
             state.isInitialized = true;
-            errorLogger.warn('Invalid auth state cleared on rehydration').catch(() => {});
+            errorLogger.warning('Invalid auth state cleared on rehydration').catch(() => {});
           }
-        } else {
-          // No stored state, mark as initialized
-          return {
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isInitialized: true,
-          };
         }
       },
     }

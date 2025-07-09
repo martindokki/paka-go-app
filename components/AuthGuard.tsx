@@ -30,7 +30,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
 
         // Check user type requirements
         if (requiredUserType && user.userType !== requiredUserType) {
-          await errorLogger.warn('User type mismatch', { 
+          await errorLogger.warning('User type mismatch', { 
             required: requiredUserType, 
             actual: user.userType 
           });
@@ -60,7 +60,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     };
 
     checkAuth();
-  }, [isAuthenticated, user?.userType, requiredUserType, hasChecked]);
+  }, [isAuthenticated, user?.id, requiredUserType, hasChecked]);
 
   if (isLoading || !hasChecked) {
     return (

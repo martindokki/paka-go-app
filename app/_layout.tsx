@@ -44,8 +44,20 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, user, isLoading, isInitialized } = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized, setInitialized } = useAuthStore();
   const [hasNavigated, setHasNavigated] = useState(false);
+
+  // Fallback initialization timeout
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!isInitialized) {
+        console.log('Force initializing auth store after timeout');
+        setInitialized(true);
+      }
+    }, 2000); // 2 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [isInitialized, setInitialized]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -75,7 +87,7 @@ function RootLayoutNav() {
               if (Platform.OS === 'web') {
                 router.replace('/(admin)');
               } else {
-                await errorLogger.warn('Admin access attempted on mobile');
+                await errorLogger.warning('Admin access attempted on mobile');
                 router.replace('/auth');
               }
               break;
@@ -96,7 +108,7 @@ function RootLayoutNav() {
     };
 
     initializeApp();
-  }, [isInitialized, isAuthenticated, user?.userType, hasNavigated]);
+  }, [isInitialized, isAuthenticated, user?.id, hasNavigated, setInitialized]);
 
   // Show loading screen while initializing
   if (!isInitialized || isLoading || !hasNavigated) {

@@ -84,7 +84,7 @@ class ApiService {
       
       // Handle 401 Unauthorized - token might be expired
       if (response.status === 401 && token && retryCount === 0) {
-        await errorLogger.warn('Token expired, attempting refresh');
+        await errorLogger.warning('Token expired, attempting refresh');
         
         const refreshResult = await this.refreshToken();
         if (refreshResult.success) {
@@ -162,7 +162,7 @@ class ApiService {
       throw new Error('API login failed');
     } catch (error) {
       // Fallback to mock authentication for development
-      await errorLogger.warn('Using mock authentication', { error: (error as Error).message });
+      await errorLogger.warning('Using mock authentication', { error: (error as Error).message });
       
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -223,7 +223,7 @@ class ApiService {
       throw new Error('API registration failed');
     } catch (error) {
       // Fallback to mock registration for development
-      await errorLogger.warn('Using mock registration', { error: (error as Error).message });
+      await errorLogger.warning('Using mock registration', { error: (error as Error).message });
       
       await new Promise(resolve => setTimeout(resolve, 1200));
       
@@ -366,7 +366,7 @@ class ApiService {
       throw new Error('API profile update failed');
     } catch (error) {
       // Mock profile update for development
-      await errorLogger.warn('Using mock profile update', { error: (error as Error).message });
+      await errorLogger.warning('Using mock profile update', { error: (error as Error).message });
       
       await new Promise(resolve => setTimeout(resolve, 800));
       
@@ -392,7 +392,7 @@ class ApiService {
       throw new Error('API account deletion failed');
     } catch (error) {
       // Mock account deletion for development
-      await errorLogger.warn('Using mock account deletion', { error: (error as Error).message });
+      await errorLogger.warning('Using mock account deletion', { error: (error as Error).message });
       
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -464,7 +464,7 @@ class ApiService {
         success: false,
         data: { status: 'offline' },
         message: 'Service temporarily unavailable',
-      };
+      } as ApiResponse<{ status: string }>;
     }
   }
   
