@@ -109,6 +109,10 @@ class ErrorLogger {
     return this.logError(message, context, 'error');
   }
 
+  warn(message: string | Error, context?: any) {
+    return this.logError(message, context, 'warning');
+  }
+
   warning(message: string | Error, context?: any) {
     return this.logError(message, context, 'warning');
   }

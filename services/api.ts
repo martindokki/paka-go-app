@@ -457,7 +457,7 @@ class ApiService {
   // Health check
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {
     try {
-      const response = await this.makeRequest('/health');
+      const response = await this.makeRequest<{ status: string }>('/health');
       return response;
     } catch (error) {
       return {
