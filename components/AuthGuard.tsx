@@ -17,6 +17,8 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
 }) => {
   const { isAuthenticated, user, token, setLoading } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -49,17 +51,21 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       } finally {
         setLoading(false);
         setIsInitializing(false);
+        setHasCheckedAuth(true);
       }
     };
 
-    initializeAuth();
-  }, []);
+    if (!hasCheckedAuth) {
+      initializeAuth();
+    }
+  }, [hasCheckedAuth]);
 
   useEffect(() => {
-    if (!isInitializing) {
+    if (!isInitializing && hasCheckedAuth && !hasNavigated) {
       if (!isAuthenticated || !user) {
         // Redirect to auth screen
         router.replace('/auth');
+        setHasNavigated(true);
         return;
       }
 
@@ -84,10 +90,11 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
           default:
             router.replace('/auth');
         }
+        setHasNavigated(true);
         return;
       }
     }
-  }, [isAuthenticated, user, requiredUserType, isInitializing]);
+  }, [isAuthenticated, user, requiredUserType, isInitializing, hasCheckedAuth, hasNavigated]);
 
   if (isInitializing) {
     return (

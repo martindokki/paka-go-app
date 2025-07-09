@@ -44,12 +44,16 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, user, isLoading } = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized, setInitialized } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
+  const [navigationComplete, setNavigationComplete] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        // Prevent multiple navigation attempts
+        if (navigationComplete) return;
+        
         // Check authentication state
         if (isAuthenticated && user) {
           await errorLogger.info('User session restored', { 
@@ -80,19 +84,23 @@ function RootLayoutNav() {
           // No valid session, go to auth
           router.replace('/auth');
         }
+        
+        setNavigationComplete(true);
       } catch (error) {
         await errorLogger.error(error as Error, { action: 'initializeApp' });
         router.replace('/auth');
+        setNavigationComplete(true);
       } finally {
         setIsInitializing(false);
+        setHasInitialized(true);
       }
     };
 
-    // Only initialize once fonts are loaded
-    if (!isLoading) {
+    // Only initialize once when store is ready and not loading
+    if (isInitialized && !isLoading && !navigationComplete) {
       initializeApp();
     }
-  }, [isAuthenticated, user, isLoading]);
+  }, [isInitialized, isLoading, navigationComplete]);
 
   // Show loading screen while initializing
   if (isInitializing || isLoading) {

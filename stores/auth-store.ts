@@ -23,6 +23,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean;
   
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
@@ -36,6 +37,7 @@ interface AuthState {
   setUser: (userData: User) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setInitialized: (initialized: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -46,6 +48,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isInitialized: false,
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
@@ -252,6 +255,10 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => {
         set({ error: null });
       },
+      
+      setInitialized: (initialized: boolean) => {
+        set({ isInitialized: initialized });
+      },
     }),
     {
       name: 'auth-storage',
@@ -260,21 +267,24 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        isInitialized: state.isInitialized,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Validate stored data
           if (state.user && state.token && state.isAuthenticated) {
+            state.isInitialized = true;
             errorLogger.info('Auth state rehydrated', { 
               userType: state.user.userType,
               userId: state.user.id 
-            });
+            }).catch(() => {});
           } else {
             // Clear invalid state
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;
-            errorLogger.warn('Invalid auth state cleared on rehydration');
+            state.isInitialized = true;
+            errorLogger.warn('Invalid auth state cleared on rehydration').catch(() => {});
           }
         }
       },
