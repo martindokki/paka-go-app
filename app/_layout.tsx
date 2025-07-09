@@ -44,15 +44,17 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, user, isLoading, isInitialized, setInitialized } = useAuthStore();
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [navigationComplete, setNavigationComplete] = useState(false);
+  const { isAuthenticated, user, isLoading, isInitialized } = useAuthStore();
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
         // Prevent multiple navigation attempts
-        if (navigationComplete) return;
+        if (hasNavigated) return;
+        
+        // Wait for store to be initialized
+        if (!isInitialized) return;
         
         // Check authentication state
         if (isAuthenticated && user) {
@@ -85,25 +87,19 @@ function RootLayoutNav() {
           router.replace('/auth');
         }
         
-        setNavigationComplete(true);
+        setHasNavigated(true);
       } catch (error) {
         await errorLogger.error(error as Error, { action: 'initializeApp' });
         router.replace('/auth');
-        setNavigationComplete(true);
-      } finally {
-        setIsInitializing(false);
-        setHasInitialized(true);
+        setHasNavigated(true);
       }
     };
 
-    // Only initialize once when store is ready and not loading
-    if (isInitialized && !isLoading && !navigationComplete) {
-      initializeApp();
-    }
-  }, [isInitialized, isLoading, navigationComplete]);
+    initializeApp();
+  }, [isInitialized, isAuthenticated, user?.userType, hasNavigated]);
 
   // Show loading screen while initializing
-  if (isInitializing || isLoading) {
+  if (!isInitialized || isLoading || !hasNavigated) {
     return (
       <View style={{ 
         flex: 1, 

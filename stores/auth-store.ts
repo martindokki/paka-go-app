@@ -286,6 +286,14 @@ export const useAuthStore = create<AuthState>()(
             state.isInitialized = true;
             errorLogger.warn('Invalid auth state cleared on rehydration').catch(() => {});
           }
+        } else {
+          // No stored state, mark as initialized
+          return {
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isInitialized: true,
+          };
         }
       },
     }

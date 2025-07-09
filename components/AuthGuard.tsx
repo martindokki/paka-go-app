@@ -15,88 +15,54 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children, 
   requiredUserType 
 }) => {
-  const { isAuthenticated, user, token, setLoading } = useAuthStore();
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
-  const [hasNavigated, setHasNavigated] = useState(false);
+  const { isAuthenticated, user, isLoading } = useAuthStore();
+  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    const initializeAuth = async () => {
+    const checkAuth = async () => {
+      if (hasChecked) return;
+      
       try {
-        setLoading(true);
-        
-        // Check if we have a stored token and user
-        if (token && user) {
-          // Verify token is still valid
-          const healthCheck = await apiService.healthCheck();
-          
-          if (!healthCheck.success) {
-            await errorLogger.warn('Health check failed, but continuing with stored auth');
-          }
-          
-          await errorLogger.info('Auth initialized from storage', { 
-            userType: user.userType,
-            userId: user.id 
-          });
-        } else if (isAuthenticated) {
-          // Clear invalid auth state
-          await useAuthStore.getState().logout();
-          await errorLogger.warn('Cleared invalid auth state');
+        if (!isAuthenticated || !user) {
+          router.replace('/auth');
+          return;
         }
-      } catch (error) {
-        await errorLogger.error(error as Error, { action: 'initializeAuth' });
+
+        // Check user type requirements
+        if (requiredUserType && user.userType !== requiredUserType) {
+          await errorLogger.warn('User type mismatch', { 
+            required: requiredUserType, 
+            actual: user.userType 
+          });
+          
+          // Redirect to appropriate dashboard
+          switch (user.userType) {
+            case 'client':
+              router.replace('/(client)');
+              break;
+            case 'driver':
+              router.replace('/(driver)');
+              break;
+            case 'admin':
+              router.replace('/(admin)');
+              break;
+            default:
+              router.replace('/auth');
+          }
+          return;
+        }
         
-        // Clear auth on error
-        await useAuthStore.getState().logout();
-      } finally {
-        setLoading(false);
-        setIsInitializing(false);
-        setHasCheckedAuth(true);
+        setHasChecked(true);
+      } catch (error) {
+        await errorLogger.error(error as Error, { action: 'checkAuth' });
+        router.replace('/auth');
       }
     };
 
-    if (!hasCheckedAuth) {
-      initializeAuth();
-    }
-  }, [hasCheckedAuth]);
+    checkAuth();
+  }, [isAuthenticated, user?.userType, requiredUserType, hasChecked]);
 
-  useEffect(() => {
-    if (!isInitializing && hasCheckedAuth && !hasNavigated) {
-      if (!isAuthenticated || !user) {
-        // Redirect to auth screen
-        router.replace('/auth');
-        setHasNavigated(true);
-        return;
-      }
-
-      // Check user type requirements
-      if (requiredUserType && user.userType !== requiredUserType) {
-        errorLogger.warn('User type mismatch', { 
-          required: requiredUserType, 
-          actual: user.userType 
-        });
-        
-        // Redirect to appropriate dashboard
-        switch (user.userType) {
-          case 'client':
-            router.replace('/(client)');
-            break;
-          case 'driver':
-            router.replace('/(driver)');
-            break;
-          case 'admin':
-            router.replace('/(admin)');
-            break;
-          default:
-            router.replace('/auth');
-        }
-        setHasNavigated(true);
-        return;
-      }
-    }
-  }, [isAuthenticated, user, requiredUserType, isInitializing, hasCheckedAuth, hasNavigated]);
-
-  if (isInitializing) {
+  if (isLoading || !hasChecked) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />
