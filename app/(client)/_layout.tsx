@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Tabs, router } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
 import { Home, Package, Clock, User } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
@@ -9,13 +10,28 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 }
 
 export default function ClientTabLayout() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isInitialized } = useAuthStore();
 
   useEffect(() => {
+    if (!isInitialized) return;
+    
     if (!isAuthenticated || !user || user.userType !== 'client') {
       router.replace('/auth');
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isInitialized]);
+
+  if (!isInitialized) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background 
+      }}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
+  }
 
   if (!isAuthenticated || !user || user.userType !== 'client') {
     return null;

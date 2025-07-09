@@ -2,12 +2,33 @@ import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
 import Colors from '@/constants/colors';
+import { useAuthStore } from '@/stores/auth-store';
 
 export default function Index() {
+  const { isAuthenticated, user, isInitialized } = useAuthStore();
+
   useEffect(() => {
-    // Redirect to auth screen
-    router.replace('/auth');
-  }, []);
+    if (!isInitialized) return;
+    
+    if (isAuthenticated && user) {
+      // Navigate based on user type
+      switch (user.userType) {
+        case 'client':
+          router.replace('/(client)');
+          break;
+        case 'driver':
+          router.replace('/(driver)');
+          break;
+        case 'admin':
+          router.replace('/(admin)');
+          break;
+        default:
+          router.replace('/auth');
+      }
+    } else {
+      router.replace('/auth');
+    }
+  }, [isAuthenticated, user, isInitialized]);
 
   return (
     <View style={{ 

@@ -23,6 +23,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean;
   
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
@@ -36,6 +37,7 @@ interface AuthState {
   setUser: (userData: User) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setInitialized: (initialized: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -47,6 +49,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isInitialized: false,
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
@@ -253,6 +256,10 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => {
         set({ error: null });
       },
+      
+      setInitialized: (initialized: boolean) => {
+        set({ isInitialized: initialized });
+      },
     }),
     {
       name: 'auth-storage',
@@ -262,6 +269,22 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setInitialized(true);
+        }
+      },
+    }
+  )
+);
+
+// Fallback initialization after a timeout
+setTimeout(() => {
+  const state = useAuthStore.getState();
+  if (!state.isInitialized) {
+    state.setInitialized(true);
+  }
+}, 1000);
     }
   )
 );

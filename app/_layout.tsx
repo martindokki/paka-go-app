@@ -8,7 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Colors from "@/constants/colors";
 
 export const unstable_settings = {
-  initialRouteName: "auth",
+  initialRouteName: "index",
 };
 
 SplashScreen.preventAutoHideAsync();

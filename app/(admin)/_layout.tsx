@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Platform, Alert } from "react-native";
+import { Platform, Alert, View, ActivityIndicator } from "react-native";
 import { BarChart3, Package, Users, Settings } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { router } from "expo-router";
@@ -11,10 +11,12 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 }
 
 export default function AdminTabLayout() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isInitialized } = useAuthStore();
 
   // Check authentication and platform
   React.useEffect(() => {
+    if (!isInitialized) return;
+    
     if (!isAuthenticated || !user || user.userType !== 'admin') {
       router.replace('/auth');
       return;
@@ -32,7 +34,20 @@ export default function AdminTabLayout() {
         ]
       );
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isInitialized]);
+
+  if (!isInitialized) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background 
+      }}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
+  }
 
   // Don't render tabs if not authenticated or not on web
   if (!isAuthenticated || !user || user.userType !== 'admin' || Platform.OS !== 'web') {
