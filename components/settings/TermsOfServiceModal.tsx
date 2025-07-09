@@ -53,9 +53,9 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Service Description</Text>
             <Text style={styles.sectionText}>
-              PAKA Go is a delivery platform that connects customers with independent drivers 
-              to facilitate package delivery services. We act as an intermediary and do not 
-              directly provide delivery services.
+              PAKA Go is a delivery platform that connects users who need to send packages 
+              with drivers who can deliver them. We facilitate the connection but are not 
+              responsible for the actual delivery service.
             </Text>
           </View>
 
@@ -63,72 +63,63 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
             <Text style={styles.sectionTitle}>User Responsibilities</Text>
             <Text style={styles.sectionText}>
               Users are responsible for providing accurate information, ensuring packages 
-              comply with legal requirements, and treating all parties with respect. 
-              Prohibited items include illegal substances, dangerous materials, and items 
-              that violate local laws.
+              comply with legal requirements, and treating drivers with respect. Prohibited 
+              items include illegal substances, dangerous materials, and items that violate 
+              local laws.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Driver Requirements</Text>
+            <Text style={styles.sectionTitle}>Driver Responsibilities</Text>
             <Text style={styles.sectionText}>
-              Drivers must have valid licenses, insurance, and meet our verification requirements. 
-              Drivers are independent contractors and are responsible for their own taxes, 
-              insurance, and compliance with local regulations.
+              Drivers must have valid licenses, maintain their vehicles properly, handle 
+              packages with care, and provide professional service. Drivers are independent 
+              contractors and not employees of PAKA Go.
             </Text>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Payment Terms</Text>
             <Text style={styles.sectionText}>
-              Payment is processed through our secure payment system. Customers are charged 
-              upon booking confirmation. Drivers receive payment after successful delivery 
-              completion, minus our service fee.
-            </Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Cancellation Policy</Text>
-            <Text style={styles.sectionText}>
-              Orders can be cancelled within 5 minutes of booking without charge. After this 
-              period, cancellation fees may apply. Drivers who cancel after accepting an 
-              order may face account penalties.
+              Payment is processed through our secure payment system. Fees are clearly 
+              displayed before booking. Refunds are available according to our refund 
+              policy. We reserve the right to change pricing with notice.
             </Text>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Liability and Insurance</Text>
             <Text style={styles.sectionText}>
-              PAKA Go's liability is limited to the platform service. We are not responsible 
-              for loss, damage, or theft of packages during delivery. Users are encouraged 
-              to obtain appropriate insurance for valuable items.
+              PAKA Go provides limited liability coverage for packages during delivery. 
+              Users should declare valuable items and consider additional insurance. 
+              We are not liable for delays, damages, or losses beyond our coverage limits.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Dispute Resolution</Text>
+            <Text style={styles.sectionTitle}>Privacy and Data</Text>
             <Text style={styles.sectionText}>
-              Disputes should first be reported through our in-app support system. We will 
-              mediate between parties to reach a fair resolution. Unresolved disputes may 
-              be subject to arbitration under Kenyan law.
+              Your privacy is important to us. Please review our Privacy Policy to 
+              understand how we collect, use, and protect your information. By using 
+              our service, you consent to our data practices.
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Account Termination</Text>
+            <Text style={styles.sectionTitle}>Termination</Text>
             <Text style={styles.sectionText}>
-              We reserve the right to suspend or terminate accounts that violate these terms, 
-              engage in fraudulent activity, or pose a risk to other users. Users may delete 
-              their accounts at any time through the app settings.
+              We may terminate or suspend your account for violations of these terms, 
+              illegal activity, or other reasons at our discretion. You may also 
+              terminate your account at any time through the app settings.
             </Text>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Changes to Terms</Text>
             <Text style={styles.sectionText}>
-              We may update these terms from time to time. Users will be notified of 
-              significant changes and continued use of the service constitutes acceptance 
-              of the updated terms.
+              We reserve the right to modify these terms at any time. Changes will be 
+              effective immediately upon posting. Continued use of the service constitutes 
+              acceptance of modified terms.
             </Text>
           </View>
 
@@ -156,15 +147,14 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: Colors.light.background,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.border,
   },
@@ -174,12 +164,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8,
   },
   content: {
     flex: 1,
@@ -187,9 +172,6 @@ const styles = StyleSheet.create({
   },
   section: {
     marginVertical: 16,
-    backgroundColor: Colors.light.background,
-    borderRadius: 12,
-    padding: 20,
   },
   sectionTitle: {
     fontSize: 18,
@@ -198,17 +180,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionText: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 24,
     color: Colors.light.textMuted,
   },
   footer: {
+    marginTop: 32,
+    marginBottom: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: Colors.light.border,
     alignItems: 'center',
-    paddingVertical: 32,
   },
   footerText: {
     fontSize: 14,
     color: Colors.light.textMuted,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });

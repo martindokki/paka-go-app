@@ -1,11 +1,13 @@
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Platform } from "react-native";
+import { Platform, View, ActivityIndicator } from "react-native";
 import { useAuthStore } from "@/stores/auth-store";
 import { errorLogger } from "@/utils/error-logger";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import Colors from "@/constants/colors";
 
 export const unstable_settings = {
   initialRouteName: "auth",
@@ -42,19 +44,72 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isLoading } = useAuthStore();
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      errorLogger.info('User session restored', { 
-        userType: user.userType,
-        userId: user.id 
-      });
+    const initializeApp = async () => {
+      try {
+        // Check authentication state
+        if (isAuthenticated && user) {
+          await errorLogger.info('User session restored', { 
+            userType: user.userType,
+            userId: user.id 
+          });
+          
+          // Navigate to appropriate dashboard based on user type
+          switch (user.userType) {
+            case 'client':
+              router.replace('/(client)');
+              break;
+            case 'driver':
+              router.replace('/(driver)');
+              break;
+            case 'admin':
+              if (Platform.OS === 'web') {
+                router.replace('/(admin)');
+              } else {
+                await errorLogger.warn('Admin access attempted on mobile');
+                router.replace('/auth');
+              }
+              break;
+            default:
+              router.replace('/auth');
+          }
+        } else {
+          // No valid session, go to auth
+          router.replace('/auth');
+        }
+      } catch (error) {
+        await errorLogger.error(error as Error, { action: 'initializeApp' });
+        router.replace('/auth');
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    // Only initialize once fonts are loaded
+    if (!isLoading) {
+      initializeApp();
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isLoading]);
+
+  // Show loading screen while initializing
+  if (isInitializing || isLoading) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: Colors.light.background 
+      }}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+      </View>
+    );
+  }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -62,19 +117,47 @@ function RootLayoutNav() {
           animation: "slide_from_right",
         }}
       >
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-        <Stack.Screen name="(client)" options={{ headerShown: false }} />
-        <Stack.Screen name="(driver)" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="auth" 
+          options={{ 
+            headerShown: false,
+            gestureEnabled: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="(client)" 
+          options={{ 
+            headerShown: false,
+            gestureEnabled: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="(driver)" 
+          options={{ 
+            headerShown: false,
+            gestureEnabled: false,
+          }} 
+        />
         {/* Admin routes only available on web */}
         {Platform.OS === 'web' && (
-          <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="(admin)" 
+            options={{ 
+              headerShown: false,
+              gestureEnabled: false,
+            }} 
+          />
         )}
         <Stack.Screen 
           name="booking" 
           options={{ 
             headerShown: true,
             title: "Book Delivery",
-            presentation: "modal"
+            presentation: "modal",
+            headerStyle: {
+              backgroundColor: Colors.light.background,
+            },
+            headerTintColor: Colors.light.text,
           }} 
         />
         <Stack.Screen 
@@ -82,7 +165,11 @@ function RootLayoutNav() {
           options={{ 
             headerShown: true,
             title: "Track Order",
-            presentation: "modal"
+            presentation: "modal",
+            headerStyle: {
+              backgroundColor: Colors.light.background,
+            },
+            headerTintColor: Colors.light.text,
           }} 
         />
         <Stack.Screen 
@@ -90,7 +177,11 @@ function RootLayoutNav() {
           options={{ 
             headerShown: true,
             title: "Payment",
-            presentation: "modal"
+            presentation: "modal",
+            headerStyle: {
+              backgroundColor: Colors.light.background,
+            },
+            headerTintColor: Colors.light.text,
           }} 
         />
         <Stack.Screen 
@@ -98,10 +189,14 @@ function RootLayoutNav() {
           options={{ 
             headerShown: true,
             title: "Chat",
-            presentation: "modal"
+            presentation: "modal",
+            headerStyle: {
+              backgroundColor: Colors.light.background,
+            },
+            headerTintColor: Colors.light.text,
           }} 
         />
       </Stack>
-    </>
+    </ErrorBoundary>
   );
 }

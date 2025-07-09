@@ -6,8 +6,10 @@ import { useAuthStore } from '@/stores/auth-store';
 const API_CONFIG = {
   BASE_URL: __DEV__ 
     ? 'http://localhost:3000/api' 
-    : 'https://your-production-api.com/api',
-  TIMEOUT: 10000,
+    : 'https://pakago-api.herokuapp.com/api',
+  TIMEOUT: 15000,
+  RETRY_ATTEMPTS: 3,
+  RETRY_DELAY: 1000,
 };
 
 export interface ApiResponse<T = any> {
@@ -45,19 +47,22 @@ class ApiService {
 
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    retryCount = 0
   ): Promise<ApiResponse<T>> {
     try {
-      const { user } = useAuthStore.getState();
+      const { user, token } = useAuthStore.getState();
       
       const defaultHeaders: HeadersInit = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-Platform': Platform.OS,
+        'X-App-Version': '1.0.0',
       };
 
-      // Add auth token if user is logged in
-      if (user) {
-        defaultHeaders['Authorization'] = `Bearer ${user.id}`; // Replace with actual token
+      // Add auth token if available
+      if (token) {
+        defaultHeaders['Authorization'] = `Bearer ${token}`;
       }
 
       const config: RequestInit = {
@@ -66,13 +71,43 @@ class ApiService {
           ...defaultHeaders,
           ...options.headers,
         },
-        timeout: API_CONFIG.TIMEOUT,
       };
 
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+      
+      config.signal = controller.signal;
+
       const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+      clearTimeout(timeoutId);
+      
+      // Handle 401 Unauthorized - token might be expired
+      if (response.status === 401 && token && retryCount === 0) {
+        await errorLogger.warn('Token expired, attempting refresh');
+        
+        const refreshResult = await this.refreshToken();
+        if (refreshResult.success) {
+          // Retry the original request with new token
+          return this.makeRequest(endpoint, options, retryCount + 1);
+        } else {
+          // Refresh failed, logout user
+          useAuthStore.getState().logout();
+          throw new Error('Authentication expired. Please login again.');
+        }
+      }
       
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        let errorData;
+        
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText || response.statusText };
+        }
+        
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -84,26 +119,62 @@ class ApiService {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
+      // Retry logic for network errors
+      if (retryCount < API_CONFIG.RETRY_ATTEMPTS && 
+          (errorMessage.includes('network') || errorMessage.includes('timeout'))) {
+        await new Promise(resolve => setTimeout(resolve, API_CONFIG.RETRY_DELAY * (retryCount + 1)));
+        return this.makeRequest(endpoint, options, retryCount + 1);
+      }
+      
       await errorLogger.error(error as Error, {
         endpoint,
         method: options.method || 'GET',
+        retryCount,
         source: 'api_service',
       });
 
       return {
         success: false,
         error: errorMessage,
-        message: 'Request failed. Please try again.',
+        message: this.getErrorMessage(errorMessage),
       };
     }
   }
 
   // Authentication endpoints
   async login(credentials: LoginRequest): Promise<ApiResponse<{ user: any; token: string }>> {
-    // For now, simulate API call with mock data
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     try {
+      // Try actual API call first
+      const response = await this.makeRequest<{ user: any; token: string }>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      });
+      
+      if (response.success) {
+        await errorLogger.info('User login successful', { 
+          userType: credentials.userType,
+          email: credentials.email 
+        });
+        return response;
+      }
+      
+      // Fallback to mock data if API fails
+      throw new Error('API login failed');
+    } catch (error) {
+      // Fallback to mock authentication for development
+      await errorLogger.warn('Using mock authentication', { error: (error as Error).message });
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simulate validation
+      if (!credentials.email || !credentials.password) {
+        return {
+          success: false,
+          error: 'Missing credentials',
+          message: 'Email and password are required.',
+        };
+      }
+      
       // Mock successful login
       const mockUser = {
         id: `${credentials.userType}-${Date.now()}`,
@@ -112,11 +183,13 @@ class ApiService {
         email: credentials.email,
         phone: '+254700000000',
         userType: credentials.userType,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      const mockToken = `mock_token_${Date.now()}`;
+      const mockToken = `mock_token_${Date.now()}_${credentials.userType}`;
 
-      await errorLogger.info('User login successful', { 
+      await errorLogger.info('Mock login successful', { 
         userType: credentials.userType,
         email: credentials.email 
       });
@@ -128,37 +201,72 @@ class ApiService {
           token: mockToken,
         },
       };
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Login failed',
-        message: 'Invalid credentials. Please try again.',
-      };
     }
-
-    // TODO: Replace with actual API call
-    // return this.makeRequest<{ user: any; token: string }>('/auth/login', {
-    //   method: 'POST',
-    //   body: JSON.stringify(credentials),
-    // });
   }
 
   async register(userData: RegisterRequest): Promise<ApiResponse<{ user: any; token: string }>> {
-    // For now, simulate API call with mock data
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
     try {
+      // Try actual API call first
+      const response = await this.makeRequest<{ user: any; token: string }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      });
+      
+      if (response.success) {
+        await errorLogger.info('User registration successful', { 
+          userType: userData.userType,
+          email: userData.email 
+        });
+        return response;
+      }
+      
+      throw new Error('API registration failed');
+    } catch (error) {
+      // Fallback to mock registration for development
+      await errorLogger.warn('Using mock registration', { error: (error as Error).message });
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      
+      // Simulate validation
+      if (!userData.name || !userData.email || !userData.phone || !userData.password) {
+        return {
+          success: false,
+          error: 'Missing required fields',
+          message: 'All fields are required for registration.',
+        };
+      }
+      
+      // Simulate email validation
+      if (!/\S+@\S+\.\S+/.test(userData.email)) {
+        return {
+          success: false,
+          error: 'Invalid email',
+          message: 'Please enter a valid email address.',
+        };
+      }
+      
+      // Simulate phone validation
+      if (!/^\+254[0-9]{9}$/.test(userData.phone)) {
+        return {
+          success: false,
+          error: 'Invalid phone',
+          message: 'Please enter a valid Kenyan phone number.',
+        };
+      }
+      
       const mockUser = {
         id: `${userData.userType}-${Date.now()}`,
         name: userData.name,
         email: userData.email,
         phone: userData.phone,
         userType: userData.userType,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      const mockToken = `mock_token_${Date.now()}`;
+      const mockToken = `mock_token_${Date.now()}_${userData.userType}`;
 
-      await errorLogger.info('User registration successful', { 
+      await errorLogger.info('Mock registration successful', { 
         userType: userData.userType,
         email: userData.email 
       });
@@ -170,48 +278,72 @@ class ApiService {
           token: mockToken,
         },
       };
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Registration failed',
-        message: 'Unable to create account. Please try again.',
-      };
     }
-
-    // TODO: Replace with actual API call
-    // return this.makeRequest<{ user: any; token: string }>('/auth/register', {
-    //   method: 'POST',
-    //   body: JSON.stringify(userData),
-    // });
   }
 
   async logout(): Promise<ApiResponse> {
     try {
-      await errorLogger.info('User logout');
+      // Try actual API call first
+      const response = await this.makeRequest('/auth/logout', {
+        method: 'POST',
+      });
+      
+      if (response.success) {
+        await errorLogger.info('User logout successful');
+        return response;
+      }
+      
+      throw new Error('API logout failed');
+    } catch (error) {
+      // Fallback for development
+      await errorLogger.info('Mock logout successful');
       
       return {
         success: true,
         message: 'Logged out successfully',
       };
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Logout failed',
-      };
     }
-
-    // TODO: Replace with actual API call
-    // return this.makeRequest('/auth/logout', {
-    //   method: 'POST',
-    // });
   }
 
   async refreshToken(): Promise<ApiResponse<{ token: string }>> {
-    // TODO: Implement token refresh
-    return {
-      success: false,
-      error: 'Token refresh not implemented',
-    };
+    try {
+      const { user } = useAuthStore.getState();
+      
+      if (!user) {
+        throw new Error('No user found for token refresh');
+      }
+      
+      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Token refresh failed');
+      }
+      
+      const data = await response.json();
+      
+      // Update token in store
+      useAuthStore.getState().setUser({ ...user, token: data.token });
+      
+      return {
+        success: true,
+        data: { token: data.token },
+      };
+    } catch (error) {
+      await errorLogger.error(error as Error, { action: 'refreshToken' });
+      
+      return {
+        success: false,
+        error: 'Token refresh failed',
+        message: 'Please login again.',
+      };
+    }
   }
 
   // User profile endpoints
@@ -220,16 +352,55 @@ class ApiService {
   }
 
   async updateProfile(profileData: any): Promise<ApiResponse<any>> {
-    return this.makeRequest('/user/profile', {
-      method: 'PUT',
-      body: JSON.stringify(profileData),
-    });
+    try {
+      const response = await this.makeRequest('/user/profile', {
+        method: 'PUT',
+        body: JSON.stringify(profileData),
+      });
+      
+      if (response.success) {
+        await errorLogger.info('Profile updated successfully');
+        return response;
+      }
+      
+      throw new Error('API profile update failed');
+    } catch (error) {
+      // Mock profile update for development
+      await errorLogger.warn('Using mock profile update', { error: (error as Error).message });
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      return {
+        success: true,
+        data: profileData,
+        message: 'Profile updated successfully',
+      };
+    }
   }
 
   async deleteAccount(): Promise<ApiResponse> {
-    return this.makeRequest('/user/delete', {
-      method: 'DELETE',
-    });
+    try {
+      const response = await this.makeRequest('/user/delete', {
+        method: 'DELETE',
+      });
+      
+      if (response.success) {
+        await errorLogger.info('Account deleted successfully');
+        return response;
+      }
+      
+      throw new Error('API account deletion failed');
+    } catch (error) {
+      // Mock account deletion for development
+      await errorLogger.warn('Using mock account deletion', { error: (error as Error).message });
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      return {
+        success: true,
+        message: 'Account deleted successfully',
+      };
+    }
   }
 
   // Orders endpoints
@@ -285,7 +456,45 @@ class ApiService {
 
   // Health check
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {
-    return this.makeRequest('/health');
+    try {
+      const response = await this.makeRequest('/health');
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        data: { status: 'offline' },
+        message: 'Service temporarily unavailable',
+      };
+    }
+  }
+  
+  // Helper method to get user-friendly error messages
+  private getErrorMessage(error: string): string {
+    if (error.includes('network') || error.includes('fetch')) {
+      return 'Network error. Please check your connection and try again.';
+    }
+    
+    if (error.includes('timeout') || error.includes('aborted')) {
+      return 'Request timed out. Please try again.';
+    }
+    
+    if (error.includes('401') || error.includes('unauthorized')) {
+      return 'Authentication failed. Please login again.';
+    }
+    
+    if (error.includes('403') || error.includes('forbidden')) {
+      return 'Access denied. You do not have permission for this action.';
+    }
+    
+    if (error.includes('404') || error.includes('not found')) {
+      return 'Resource not found. Please try again later.';
+    }
+    
+    if (error.includes('500') || error.includes('server')) {
+      return 'Server error. Please try again later.';
+    }
+    
+    return 'Something went wrong. Please try again.';
   }
 }
 

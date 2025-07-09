@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Home, Package, DollarSign, User } from "lucide-react-native";
 import Colors from "@/constants/colors";
+import { AuthGuard } from "@/components/AuthGuard";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
   return <Icon size={24} color={color} />;
@@ -9,7 +10,8 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 
 export default function DriverTabLayout() {
   return (
-    <Tabs
+    <AuthGuard requiredUserType="driver">
+      <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.light.primary,
         tabBarInactiveTintColor: Colors.light.tabIconDefault,
@@ -56,6 +58,7 @@ export default function DriverTabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon icon={User} color={color} />,
         }}
       />
-    </Tabs>
+      </Tabs>
+    </AuthGuard>
   );
 }

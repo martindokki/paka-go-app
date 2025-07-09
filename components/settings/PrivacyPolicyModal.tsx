@@ -127,15 +127,14 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: Colors.light.background,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.border,
   },
@@ -145,12 +144,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   closeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8,
   },
   content: {
     flex: 1,
@@ -158,9 +152,6 @@ const styles = StyleSheet.create({
   },
   section: {
     marginVertical: 16,
-    backgroundColor: Colors.light.background,
-    borderRadius: 12,
-    padding: 20,
   },
   sectionTitle: {
     fontSize: 18,
@@ -169,17 +160,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionText: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 24,
     color: Colors.light.textMuted,
   },
   footer: {
+    marginTop: 32,
+    marginBottom: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: Colors.light.border,
     alignItems: 'center',
-    paddingVertical: 32,
   },
   footerText: {
     fontSize: 14,
     color: Colors.light.textMuted,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });

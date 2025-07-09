@@ -54,7 +54,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
               if (success) {
                 Alert.alert(
                   'Account Deleted',
-                  'Your account has been permanently deleted. We\'re sorry to see you go!',
+                  'Your account has been permanently deleted. We are sorry to see you go!',
                   [
                     {
                       text: 'OK',
@@ -66,16 +66,10 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
                   ]
                 );
               } else {
-                Alert.alert(
-                  'Deletion Failed',
-                  'We couldn\'t delete your account at this time. Please try again later or contact support.'
-                );
+                Alert.alert('Error', 'Failed to delete account. Please try again.');
               }
             } catch (error) {
-              Alert.alert(
-                'Error',
-                'An unexpected error occurred. Please try again later.'
-              );
+              Alert.alert('Error', 'An unexpected error occurred. Please try again.');
             } finally {
               setIsDeleting(false);
             }
@@ -85,113 +79,84 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
     );
   };
 
-  const resetModal = () => {
-    setConfirmText('');
-    setIsDeleting(false);
-  };
-
-  const handleClose = () => {
-    resetModal();
-    onClose();
-  };
-
   return (
     <Modal
       visible={visible}
-      animationType="fade"
       transparent
-      onRequestClose={handleClose}
+      animationType="fade"
+      onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.warningIcon}>
-              <AlertTriangle size={32} color={Colors.light.error} />
+          <LinearGradient
+            colors={[Colors.light.background, '#FFFFFF']}
+            style={styles.gradient}
+          >
+            <View style={styles.header}>
+              <View style={styles.iconContainer}>
+                <AlertTriangle size={32} color={Colors.light.error} />
+              </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color={Colors.light.textMuted} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={handleClose}
-              disabled={isDeleting}
-            >
-              <X size={24} color={Colors.light.text} />
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.content}>
-            <Text style={styles.title}>Delete Account</Text>
-            <Text style={styles.subtitle}>
-              This action is permanent and cannot be undone.
-            </Text>
-
-            <View style={styles.warningBox}>
-              <Text style={styles.warningTitle}>What will happen:</Text>
-              <Text style={styles.warningText}>
-                • Your account and profile will be permanently deleted{"\n"}
-                • All your order history will be removed{"\n"}
-                • You won't be able to recover any data{"\n"}
-                • Active orders will be cancelled{"\n"}
-                • You'll need to create a new account to use PAKA Go again
+            <View style={styles.content}>
+              <Text style={styles.title}>Delete Account</Text>
+              <Text style={styles.subtitle}>
+                This action is permanent and cannot be undone. All your data will be permanently deleted.
               </Text>
+
+              <View style={styles.warningBox}>
+                <Text style={styles.warningText}>
+                  ⚠️ This will permanently delete:
+                </Text>
+                <Text style={styles.warningItem}>• Your profile and account information</Text>
+                <Text style={styles.warningItem}>• All your order history</Text>
+                <Text style={styles.warningItem}>• Payment methods and transaction history</Text>
+                <Text style={styles.warningItem}>• Chat messages and support tickets</Text>
+              </View>
+
+              <View style={styles.confirmationSection}>
+                <Text style={styles.confirmationLabel}>
+                  Type "DELETE" to confirm:
+                </Text>
+                <TextInput
+                  style={styles.confirmationInput}
+                  value={confirmText}
+                  onChangeText={setConfirmText}
+                  placeholder="Type DELETE here"
+                  placeholderTextColor={Colors.light.textMuted}
+                  autoCapitalize="characters"
+                />
+              </View>
             </View>
 
-            <View style={styles.inputSection}>
-              <Text style={styles.inputLabel}>
-                Type <Text style={styles.deleteText}>DELETE</Text> to confirm:
-              </Text>
-              <TextInput
-                style={styles.input}
-                value={confirmText}
-                onChangeText={setConfirmText}
-                placeholder="Type DELETE here"
-                placeholderTextColor={Colors.light.textMuted}
-                autoCapitalize="characters"
-                editable={!isDeleting}
-              />
-            </View>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={onClose}
+                disabled={isDeleting}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
 
-            <View style={styles.userInfo}>
-              <Text style={styles.userInfoText}>
-                Account: {user?.email}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleClose}
-              disabled={isDeleting}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.deleteButton,
-                (confirmText.toLowerCase() !== 'delete' || isDeleting) && styles.deleteButtonDisabled,
-              ]}
-              onPress={handleDeleteAccount}
-              disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}
-            >
-              <LinearGradient
-                colors={[
-                  confirmText.toLowerCase() === 'delete' && !isDeleting
-                    ? Colors.light.error
-                    : Colors.light.textMuted,
-                  confirmText.toLowerCase() === 'delete' && !isDeleting
-                    ? '#d32f2f'
-                    : Colors.light.textMuted,
+              <TouchableOpacity
+                style={[
+                  styles.deleteButton,
+                  (confirmText.toLowerCase() !== 'delete' || isDeleting) && styles.deleteButtonDisabled
                 ]}
-                style={styles.deleteButtonGradient}
+                onPress={handleDeleteAccount}
+                disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}
               >
                 {isDeleting ? (
-                  <ActivityIndicator size="small" color="white" />
+                  <ActivityIndicator size="small" color={Colors.light.background} />
                 ) : (
                   <Text style={styles.deleteButtonText}>Delete Forever</Text>
                 )}
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
         </View>
       </View>
     </Modal>
@@ -204,112 +169,94 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
   },
   container: {
-    backgroundColor: Colors.light.background,
-    borderRadius: 20,
     width: '100%',
     maxWidth: 400,
-    maxHeight: '80%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  gradient: {
+    padding: 24,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 16,
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  warningIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#ffebee',
+  iconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.light.error + '20',
     justifyContent: 'center',
     alignItems: 'center',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.light.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8,
   },
   content: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.light.text,
-    textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: Colors.light.textMuted,
-    textAlign: 'center',
-    marginBottom: 24,
+    lineHeight: 24,
+    marginBottom: 20,
   },
   warningBox: {
-    backgroundColor: '#fff3e0',
+    backgroundColor: Colors.light.error + '10',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#ff9800',
-  },
-  warningTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#e65100',
-    marginBottom: 8,
+    borderLeftColor: Colors.light.error,
+    marginBottom: 20,
   },
   warningText: {
     fontSize: 14,
-    lineHeight: 20,
-    color: '#bf360c',
-  },
-  inputSection: {
-    marginBottom: 24,
-  },
-  inputLabel: {
-    fontSize: 16,
-    color: Colors.light.text,
-    marginBottom: 8,
-  },
-  deleteText: {
     fontWeight: '700',
     color: Colors.light.error,
+    marginBottom: 8,
   },
-  input: {
+  warningItem: {
+    fontSize: 14,
+    color: Colors.light.error,
+    marginBottom: 4,
+    paddingLeft: 8,
+  },
+  confirmationSection: {
+    marginBottom: 8,
+  },
+  confirmationLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.text,
+    marginBottom: 12,
+  },
+  confirmationInput: {
     borderWidth: 2,
     borderColor: Colors.light.border,
     borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    padding: 16,
     fontSize: 16,
     color: Colors.light.text,
     backgroundColor: Colors.light.backgroundSecondary,
   },
-  userInfo: {
-    backgroundColor: Colors.light.backgroundSecondary,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 24,
-  },
-  userInfoText: {
-    fontSize: 14,
-    color: Colors.light.textMuted,
-    textAlign: 'center',
-  },
   actions: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
-    paddingBottom: 24,
     gap: 12,
   },
   cancelButton: {
@@ -326,19 +273,17 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     flex: 1,
+    paddingVertical: 16,
     borderRadius: 12,
-    overflow: 'hidden',
+    backgroundColor: Colors.light.error,
+    alignItems: 'center',
   },
   deleteButtonDisabled: {
     opacity: 0.5,
   },
-  deleteButtonGradient: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
   deleteButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
+    fontWeight: '700',
+    color: Colors.light.background,
   },
 });

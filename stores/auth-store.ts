@@ -261,6 +261,23 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Validate stored data
+          if (state.user && state.token && state.isAuthenticated) {
+            errorLogger.info('Auth state rehydrated', { 
+              userType: state.user.userType,
+              userId: state.user.id 
+            });
+          } else {
+            // Clear invalid state
+            state.user = null;
+            state.token = null;
+            state.isAuthenticated = false;
+            errorLogger.warn('Invalid auth state cleared on rehydration');
+          }
+        }
+      },
     }
   )
 );
