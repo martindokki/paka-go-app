@@ -19,14 +19,12 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
+    if (hasChecked) return;
     
     const checkAuth = async () => {
-      if (hasChecked || !isMounted) return;
-      
       try {
         if (!isAuthenticated || !user) {
-          if (isMounted) router.replace('/auth');
+          router.replace('/auth');
           return;
         }
 
@@ -40,35 +38,29 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
           // Redirect to appropriate dashboard
           switch (user.userType) {
             case 'client':
-              if (isMounted) router.replace('/(client)');
+              router.replace('/(client)');
               break;
             case 'driver':
-              if (isMounted) router.replace('/(driver)');
+              router.replace('/(driver)');
               break;
             case 'admin':
-              if (isMounted) router.replace('/(admin)');
+              router.replace('/(admin)');
               break;
             default:
-              if (isMounted) router.replace('/auth');
+              router.replace('/auth');
           }
           return;
         }
         
-        if (isMounted) setHasChecked(true);
+        setHasChecked(true);
       } catch (error) {
         await errorLogger.error(error as Error, { action: 'checkAuth' });
-        if (isMounted) router.replace('/auth');
+        router.replace('/auth');
       }
     };
 
-    if (!hasChecked) {
-      checkAuth();
-    }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [isAuthenticated, requiredUserType, hasChecked]);
+    checkAuth();
+  }, [isAuthenticated, user, requiredUserType, hasChecked]);
 
   if (isLoading || !hasChecked) {
     return (

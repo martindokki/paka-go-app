@@ -1,17 +1,28 @@
-import React from "react";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { Tabs, router } from "expo-router";
 import { Home, Package, DollarSign, User } from "lucide-react-native";
 import Colors from "@/constants/colors";
-import { AuthGuard } from "@/components/AuthGuard";
+import { useAuthStore } from "@/stores/auth-store";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
   return <Icon size={24} color={color} />;
 }
 
 export default function DriverTabLayout() {
+  const { isAuthenticated, user } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated || !user || user.userType !== 'driver') {
+      router.replace('/auth');
+    }
+  }, [isAuthenticated, user]);
+
+  if (!isAuthenticated || !user || user.userType !== 'driver') {
+    return null;
+  }
+
   return (
-    <AuthGuard requiredUserType="driver">
-      <Tabs
+    <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.light.primary,
         tabBarInactiveTintColor: Colors.light.tabIconDefault,
@@ -58,7 +69,6 @@ export default function DriverTabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon icon={User} color={color} />,
         }}
       />
-      </Tabs>
-    </AuthGuard>
+    </Tabs>
   );
 }

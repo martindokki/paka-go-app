@@ -288,19 +288,14 @@ export const useAuthStore = create<AuthState>()(
           // Validate stored data
           if (state.user && state.token && state.isAuthenticated) {
             state.isInitialized = true;
-            // Don't await this to prevent blocking
-            errorLogger.info('Auth state rehydrated', { 
-              userType: state.user.userType,
-              userId: state.user.id 
-            }).catch(() => {});
+            console.log('Auth state rehydrated for user:', state.user.userType);
           } else {
             // Clear invalid state
             state.user = null;
             state.token = null;
             state.isAuthenticated = false;
             state.isInitialized = true;
-            // Don't await this to prevent blocking
-            errorLogger.warning('Invalid auth state cleared on rehydration').catch(() => {});
+            console.log('Invalid auth state cleared on rehydration');
           }
           state._hasHydrated = true;
         }

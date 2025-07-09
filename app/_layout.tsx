@@ -44,10 +44,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const authStore = useAuthStore();
-  const { isAuthenticated, user, isLoading } = authStore;
-  const [hasNavigated, setHasNavigated] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Wait for Zustand to hydrate
   useEffect(() => {
@@ -64,7 +62,7 @@ function RootLayoutNav() {
       if (isMounted) {
         setIsHydrated(true);
       }
-    }, 1000);
+    }, 2000);
 
     return () => {
       isMounted = false;
@@ -73,69 +71,17 @@ function RootLayoutNav() {
     };
   }, []);
 
+  // Initialize navigation once hydrated
   useEffect(() => {
-    let isMounted = true;
-    
-    const initializeApp = async () => {
-      try {
-        // Prevent multiple navigation attempts
-        if (hasNavigated || !isMounted) return;
-        
-        // Wait for hydration to complete
-        if (!isHydrated) return;
-        
-        // Check authentication state
-        if (isAuthenticated && user) {
-          await errorLogger.info('User session restored', { 
-            userType: user.userType,
-            userId: user.id 
-          });
-          
-          // Navigate to appropriate dashboard based on user type
-          switch (user.userType) {
-            case 'client':
-              if (isMounted) router.replace('/(client)');
-              break;
-            case 'driver':
-              if (isMounted) router.replace('/(driver)');
-              break;
-            case 'admin':
-              if (Platform.OS === 'web') {
-                if (isMounted) router.replace('/(admin)');
-              } else {
-                await errorLogger.warning('Admin access attempted on mobile');
-                if (isMounted) router.replace('/auth');
-              }
-              break;
-            default:
-              if (isMounted) router.replace('/auth');
-          }
-        } else {
-          // No valid session, go to auth
-          if (isMounted) router.replace('/auth');
-        }
-        
-        if (isMounted) setHasNavigated(true);
-      } catch (error) {
-        await errorLogger.error(error as Error, { action: 'initializeApp' });
-        if (isMounted) {
-          router.replace('/auth');
-          setHasNavigated(true);
-        }
-      }
-    };
-
-    if (isHydrated && !hasNavigated) {
-      initializeApp();
+    if (isHydrated && !hasInitialized) {
+      setHasInitialized(true);
+      // Let the router handle initial navigation
+      router.replace('/auth');
     }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [isHydrated, isAuthenticated, hasNavigated]);
+  }, [isHydrated, hasInitialized]);
 
   // Show loading screen while initializing
-  if (!isHydrated || isLoading || !hasNavigated) {
+  if (!isHydrated || !hasInitialized) {
     return (
       <View style={{ 
         flex: 1, 

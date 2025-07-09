@@ -4,14 +4,22 @@ import { Platform, Alert } from "react-native";
 import { BarChart3, Package, Users, Settings } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { router } from "expo-router";
+import { useAuthStore } from "@/stores/auth-store";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
   return <Icon size={24} color={color} />;
 }
 
 export default function AdminTabLayout() {
-  // Redirect to auth if not on web
+  const { isAuthenticated, user } = useAuthStore();
+
+  // Check authentication and platform
   React.useEffect(() => {
+    if (!isAuthenticated || !user || user.userType !== 'admin') {
+      router.replace('/auth');
+      return;
+    }
+
     if (Platform.OS !== 'web') {
       Alert.alert(
         "Access Restricted",
@@ -24,10 +32,10 @@ export default function AdminTabLayout() {
         ]
       );
     }
-  }, []);
+  }, [isAuthenticated, user]);
 
-  // Don't render tabs if not on web
-  if (Platform.OS !== 'web') {
+  // Don't render tabs if not authenticated or not on web
+  if (!isAuthenticated || !user || user.userType !== 'admin' || Platform.OS !== 'web') {
     return null;
   }
 

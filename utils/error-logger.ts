@@ -105,19 +105,19 @@ class ErrorLogger {
   }
 
   // Convenience methods
-  error(message: string | Error, context?: any) {
+  async error(message: string | Error, context?: any) {
     return this.logError(message, context, 'error');
   }
 
-  warn(message: string | Error, context?: any) {
+  async warn(message: string | Error, context?: any) {
     return this.logError(message, context, 'warning');
   }
 
-  warning(message: string | Error, context?: any) {
+  async warning(message: string | Error, context?: any) {
     return this.logError(message, context, 'warning');
   }
 
-  info(message: string | Error, context?: any) {
+  async info(message: string | Error, context?: any) {
     return this.logError(message, context, 'info');
   }
 }
