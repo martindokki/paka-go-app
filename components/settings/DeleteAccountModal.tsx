@@ -30,7 +30,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 
   const handleDeleteAccount = async () => {
     if (confirmText.toLowerCase() !== 'delete') {
-      Alert.alert('Invalid Confirmation', 'Please type \"DELETE\" to confirm account deletion.');
+      Alert.alert('Invalid Confirmation', 'Please type "DELETE" to confirm account deletion.');
       return;
     }
 
@@ -54,7 +54,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
               if (success) {
                 Alert.alert(
                   'Account Deleted',
-                  'Your account has been permanently deleted. We\\'re sorry to see you go!',
+                  'Your account has been permanently deleted. We\'re sorry to see you go!',
                   [
                     {
                       text: 'OK',
@@ -68,7 +68,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
               } else {
                 Alert.alert(
                   'Deletion Failed',
-                  'We couldn\\'t delete your account at this time. Please try again later or contact support.'
+                  'We couldn\'t delete your account at this time. Please try again later or contact support.'
                 );
               }
             } catch (error) {
@@ -126,4 +126,219 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
             <View style={styles.warningBox}>
               <Text style={styles.warningTitle}>What will happen:</Text>
               <Text style={styles.warningText}>
-                • Your account and profile will be permanently deleted{\"\\n\"}\n                • All your order history will be removed{\"\\n\"}\n                • You won't be able to recover any data{\"\\n\"}\n                • Active orders will be cancelled{\"\\n\"}\n                • You'll need to create a new account to use PAKA Go again\n              </Text>\n            </View>\n\n            <View style={styles.inputSection}>\n              <Text style={styles.inputLabel}>\n                Type <Text style={styles.deleteText}>DELETE</Text> to confirm:\n              </Text>\n              <TextInput\n                style={styles.input}\n                value={confirmText}\n                onChangeText={setConfirmText}\n                placeholder=\"Type DELETE here\"\n                placeholderTextColor={Colors.light.textMuted}\n                autoCapitalize=\"characters\"\n                editable={!isDeleting}\n              />\n            </View>\n\n            <View style={styles.userInfo}>\n              <Text style={styles.userInfoText}>\n                Account: {user?.email}\n              </Text>\n            </View>\n          </View>\n\n          <View style={styles.actions}>\n            <TouchableOpacity\n              style={styles.cancelButton}\n              onPress={handleClose}\n              disabled={isDeleting}\n            >\n              <Text style={styles.cancelButtonText}>Cancel</Text>\n            </TouchableOpacity>\n\n            <TouchableOpacity\n              style={[\n                styles.deleteButton,\n                (confirmText.toLowerCase() !== 'delete' || isDeleting) && styles.deleteButtonDisabled,\n              ]}\n              onPress={handleDeleteAccount}\n              disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}\n            >\n              <LinearGradient\n                colors={[\n                  confirmText.toLowerCase() === 'delete' && !isDeleting\n                    ? Colors.light.error\n                    : Colors.light.textMuted,\n                  confirmText.toLowerCase() === 'delete' && !isDeleting\n                    ? '#C53030'\n                    : Colors.light.textMuted,\n                ]}\n                style={styles.deleteButtonGradient}\n              >\n                {isDeleting ? (\n                  <View style={styles.loadingContainer}>\n                    <ActivityIndicator size=\"small\" color={Colors.light.background} />\n                    <Text style={styles.deleteButtonText}>Deleting...</Text>\n                  </View>\n                ) : (\n                  <Text style={styles.deleteButtonText}>Delete Forever</Text>\n                )}\n              </LinearGradient>\n            </TouchableOpacity>\n          </View>\n        </View>\n      </View>\n    </Modal>\n  );\n};\n\nconst styles = StyleSheet.create({\n  overlay: {\n    flex: 1,\n    backgroundColor: 'rgba(0, 0, 0, 0.5)',\n    justifyContent: 'center',\n    alignItems: 'center',\n    paddingHorizontal: 20,\n  },\n  container: {\n    backgroundColor: Colors.light.background,\n    borderRadius: 20,\n    width: '100%',\n    maxWidth: 400,\n    maxHeight: '80%',\n  },\n  header: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    justifyContent: 'space-between',\n    paddingHorizontal: 20,\n    paddingTop: 20,\n    paddingBottom: 10,\n  },\n  warningIcon: {\n    width: 60,\n    height: 60,\n    borderRadius: 30,\n    backgroundColor: Colors.light.error + '20',\n    justifyContent: 'center',\n    alignItems: 'center',\n  },\n  closeButton: {\n    width: 40,\n    height: 40,\n    borderRadius: 20,\n    backgroundColor: Colors.light.backgroundSecondary,\n    justifyContent: 'center',\n    alignItems: 'center',\n  },\n  content: {\n    paddingHorizontal: 20,\n    paddingBottom: 20,\n  },\n  title: {\n    fontSize: 24,\n    fontWeight: '800',\n    color: Colors.light.text,\n    textAlign: 'center',\n    marginBottom: 8,\n  },\n  subtitle: {\n    fontSize: 16,\n    color: Colors.light.textMuted,\n    textAlign: 'center',\n    marginBottom: 20,\n  },\n  warningBox: {\n    backgroundColor: Colors.light.error + '10',\n    borderRadius: 12,\n    padding: 16,\n    borderLeftWidth: 4,\n    borderLeftColor: Colors.light.error,\n    marginBottom: 20,\n  },\n  warningTitle: {\n    fontSize: 16,\n    fontWeight: '700',\n    color: Colors.light.error,\n    marginBottom: 8,\n  },\n  warningText: {\n    fontSize: 14,\n    color: Colors.light.text,\n    lineHeight: 20,\n  },\n  inputSection: {\n    marginBottom: 20,\n  },\n  inputLabel: {\n    fontSize: 16,\n    color: Colors.light.text,\n    marginBottom: 8,\n    fontWeight: '600',\n  },\n  deleteText: {\n    color: Colors.light.error,\n    fontWeight: '800',\n  },\n  input: {\n    borderWidth: 2,\n    borderColor: Colors.light.border,\n    borderRadius: 12,\n    paddingHorizontal: 16,\n    paddingVertical: 12,\n    fontSize: 16,\n    color: Colors.light.text,\n    backgroundColor: Colors.light.backgroundSecondary,\n  },\n  userInfo: {\n    backgroundColor: Colors.light.backgroundSecondary,\n    borderRadius: 8,\n    padding: 12,\n    marginBottom: 20,\n  },\n  userInfoText: {\n    fontSize: 14,\n    color: Colors.light.textMuted,\n    textAlign: 'center',\n  },\n  actions: {\n    flexDirection: 'row',\n    paddingHorizontal: 20,\n    paddingBottom: 20,\n    gap: 12,\n  },\n  cancelButton: {\n    flex: 1,\n    paddingVertical: 16,\n    borderRadius: 12,\n    backgroundColor: Colors.light.backgroundSecondary,\n    alignItems: 'center',\n  },\n  cancelButtonText: {\n    fontSize: 16,\n    fontWeight: '600',\n    color: Colors.light.text,\n  },\n  deleteButton: {\n    flex: 1,\n    borderRadius: 12,\n    overflow: 'hidden',\n  },\n  deleteButtonDisabled: {\n    opacity: 0.5,\n  },\n  deleteButtonGradient: {\n    paddingVertical: 16,\n    alignItems: 'center',\n  },\n  deleteButtonText: {\n    fontSize: 16,\n    fontWeight: '700',\n    color: Colors.light.background,\n  },\n  loadingContainer: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    gap: 8,\n  },\n});"
+                • Your account and profile will be permanently deleted{"\n"}
+                • All your order history will be removed{"\n"}
+                • You won't be able to recover any data{"\n"}
+                • Active orders will be cancelled{"\n"}
+                • You'll need to create a new account to use PAKA Go again
+              </Text>
+            </View>
+
+            <View style={styles.inputSection}>
+              <Text style={styles.inputLabel}>
+                Type <Text style={styles.deleteText}>DELETE</Text> to confirm:
+              </Text>
+              <TextInput
+                style={styles.input}
+                value={confirmText}
+                onChangeText={setConfirmText}
+                placeholder="Type DELETE here"
+                placeholderTextColor={Colors.light.textMuted}
+                autoCapitalize="characters"
+                editable={!isDeleting}
+              />
+            </View>
+
+            <View style={styles.userInfo}>
+              <Text style={styles.userInfoText}>
+                Account: {user?.email}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleClose}
+              disabled={isDeleting}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.deleteButton,
+                (confirmText.toLowerCase() !== 'delete' || isDeleting) && styles.deleteButtonDisabled,
+              ]}
+              onPress={handleDeleteAccount}
+              disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}
+            >
+              <LinearGradient
+                colors={[
+                  confirmText.toLowerCase() === 'delete' && !isDeleting
+                    ? Colors.light.error
+                    : Colors.light.textMuted,
+                  confirmText.toLowerCase() === 'delete' && !isDeleting
+                    ? '#d32f2f'
+                    : Colors.light.textMuted,
+                ]}
+                style={styles.deleteButtonGradient}
+              >
+                {isDeleting ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text style={styles.deleteButtonText}>Delete Forever</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  container: {
+    backgroundColor: Colors.light.background,
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: '80%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  warningIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#ffebee',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.light.backgroundSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.light.text,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: Colors.light.textMuted,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  warningBox: {
+    backgroundColor: '#fff3e0',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff9800',
+  },
+  warningTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#e65100',
+    marginBottom: 8,
+  },
+  warningText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#bf360c',
+  },
+  inputSection: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 16,
+    color: Colors.light.text,
+    marginBottom: 8,
+  },
+  deleteText: {
+    fontWeight: '700',
+    color: Colors.light.error,
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: Colors.light.text,
+    backgroundColor: Colors.light.backgroundSecondary,
+  },
+  userInfo: {
+    backgroundColor: Colors.light.backgroundSecondary,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 24,
+  },
+  userInfoText: {
+    fontSize: 14,
+    color: Colors.light.textMuted,
+    textAlign: 'center',
+  },
+  actions: {
+    flexDirection: 'row',
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 16,
+    borderRadius: 12,
+    backgroundColor: Colors.light.backgroundSecondary,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.text,
+  },
+  deleteButton: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  deleteButtonDisabled: {
+    opacity: 0.5,
+  },
+  deleteButtonGradient: {
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+  },
+});

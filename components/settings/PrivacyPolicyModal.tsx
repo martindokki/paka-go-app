@@ -99,7 +99,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
             <Text style={styles.sectionTitle}>Changes to This Policy</Text>
             <Text style={styles.sectionText}>
               We may update this privacy policy from time to time. We will notify you of any 
-              changes by posting the new policy on this page and updating the \"Last Updated\" date.
+              changes by posting the new policy on this page and updating the "Last Updated" date.
             </Text>
           </View>
 
@@ -107,9 +107,9 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
             <Text style={styles.sectionTitle}>Contact Us</Text>
             <Text style={styles.sectionText}>
               If you have any questions about this privacy policy, please contact us at:
-              {\"\\n\\n\"}Email: support@pakago.com
-              {\"\\n\"}Phone: +254 700 000 000
-              {\"\\n\"}Address: Nairobi, Kenya
+              {"\n\n"}Email: support@pakago.com
+              {"\n"}Phone: +254 700 000 000
+              {"\n"}Address: Nairobi, Kenya
             </Text>
           </View>
 

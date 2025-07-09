@@ -136,9 +136,9 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
             <Text style={styles.sectionTitle}>Contact Information</Text>
             <Text style={styles.sectionText}>
               For questions about these terms, please contact us at:
-              {\"\\n\\n\"}Email: legal@pakago.com
-              {\"\\n\"}Phone: +254 700 000 000
-              {\"\\n\"}Address: Nairobi, Kenya
+              {"\n\n"}Email: legal@pakago.com
+              {"\n"}Phone: +254 700 000 000
+              {"\n"}Address: Nairobi, Kenya
             </Text>
           </View>
 
