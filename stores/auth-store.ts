@@ -285,6 +285,3 @@ setTimeout(() => {
     state.setInitialized(true);
   }
 }, 1000);
-    }
-  )
-);
