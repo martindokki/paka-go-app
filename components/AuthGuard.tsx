@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/stores/auth-store';
-import { apiService } from '@/services/api';
-import { errorLogger } from '@/utils/error-logger';
 import Colors from '@/constants/colors';
 
 interface AuthGuardProps {
@@ -16,53 +14,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   requiredUserType 
 }) => {
   const { isAuthenticated, user, isLoading } = useAuthStore();
-  const [hasChecked, setHasChecked] = useState(false);
 
-  useEffect(() => {
-    if (hasChecked) return;
-    
-    const checkAuth = async () => {
-      try {
-        if (!isAuthenticated || !user) {
-          router.replace('/auth');
-          return;
-        }
-
-        // Check user type requirements
-        if (requiredUserType && user.userType !== requiredUserType) {
-          await errorLogger.warning('User type mismatch', { 
-            required: requiredUserType, 
-            actual: user.userType 
-          });
-          
-          // Redirect to appropriate dashboard
-          switch (user.userType) {
-            case 'client':
-              router.replace('/(client)');
-              break;
-            case 'driver':
-              router.replace('/(driver)');
-              break;
-            case 'admin':
-              router.replace('/(admin)');
-              break;
-            default:
-              router.replace('/auth');
-          }
-          return;
-        }
-        
-        setHasChecked(true);
-      } catch (error) {
-        await errorLogger.error(error as Error, { action: 'checkAuth' });
-        router.replace('/auth');
-      }
-    };
-
-    checkAuth();
-  }, [isAuthenticated, user, requiredUserType, hasChecked]);
-
-  if (isLoading || !hasChecked) {
+  // Show loading while auth is being checked
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />
@@ -70,7 +24,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     );
   }
 
+  // Redirect to auth if not authenticated
   if (!isAuthenticated || !user) {
+    router.replace('/auth');
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />
@@ -78,7 +34,22 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     );
   }
 
+  // Check user type requirements
   if (requiredUserType && user.userType !== requiredUserType) {
+    // Redirect to appropriate dashboard
+    switch (user.userType) {
+      case 'client':
+        router.replace('/(client)');
+        break;
+      case 'driver':
+        router.replace('/(driver)');
+        break;
+      case 'admin':
+        router.replace('/(admin)');
+        break;
+      default:
+        router.replace('/auth');
+    }
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />

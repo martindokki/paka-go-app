@@ -23,8 +23,6 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  isInitialized: boolean;
-  _hasHydrated?: boolean;
   
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
@@ -38,21 +36,17 @@ interface AuthState {
   setUser: (userData: User) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setInitialized: (initialized: boolean) => void;
-  _setHasHydrated?: (hasHydrated: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       // Initialize the store
-      _hasHydrated: false,
       user: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      isInitialized: false,
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
@@ -259,15 +253,6 @@ export const useAuthStore = create<AuthState>()(
       clearError: () => {
         set({ error: null });
       },
-      
-      setInitialized: (initialized: boolean) => {
-        set({ isInitialized: initialized });
-      },
-      
-      // Internal method to handle hydration
-      _setHasHydrated: (hasHydrated: boolean) => {
-        set({ _hasHydrated: hasHydrated, isInitialized: hasHydrated });
-      },
     }),
     {
       name: 'auth-storage',
@@ -276,30 +261,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
-        isInitialized: state.isInitialized,
       }),
-      onRehydrateStorage: () => (state, error) => {
-        if (error) {
-          console.error('Failed to rehydrate auth state:', error);
-          return;
-        }
-        
-        if (state) {
-          // Validate stored data
-          if (state.user && state.token && state.isAuthenticated) {
-            state.isInitialized = true;
-            console.log('Auth state rehydrated for user:', state.user.userType);
-          } else {
-            // Clear invalid state
-            state.user = null;
-            state.token = null;
-            state.isAuthenticated = false;
-            state.isInitialized = true;
-            console.log('Invalid auth state cleared on rehydration');
-          }
-          state._hasHydrated = true;
-        }
-      },
     }
   )
 );

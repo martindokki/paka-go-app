@@ -26,7 +26,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 }) => {
   const [confirmText, setConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const { user, deleteAccount } = useAuthStore();
+  const { deleteAccount } = useAuthStore();
 
   const handleDeleteAccount = async () => {
     if (confirmText.toLowerCase() !== 'delete') {

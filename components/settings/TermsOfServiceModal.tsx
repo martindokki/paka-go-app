@@ -160,6 +160,53 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    fontWeight: '800',
+    color: Colors.light.text,
+  },
+  closeButton: {
+    padding: 8,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  section: {
+    marginVertical: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: 8,
+  },
+  sectionText: {
+    fontSize: 16,
+    color: Colors.light.textSecondary,
+    lineHeight: 24,
+  },
+  footer: {
+    marginTop: 32,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: Colors.light.textMuted,
+    fontWeight: '500',
+  },
+});
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  title: {
+    fontSize: 20,
     fontWeight: '700',
     color: Colors.light.text,
   },
