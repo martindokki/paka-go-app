@@ -104,12 +104,21 @@ class ApiService {
     await this.simulateNetworkDelay();
     
     try {
-      // Check if user already exists
-      const existingUser = MOCK_USERS.find(u => u.email === userData.email);
-      if (existingUser) {
+      // Check if user already exists with same email and user type
+      const existingUserSameType = MOCK_USERS.find(u => u.email === userData.email && u.userType === userData.userType);
+      if (existingUserSameType) {
         return {
           success: false,
-          error: 'User with this email already exists',
+          error: `A ${userData.userType} account with this email already exists. Please use a different email or try logging in.`,
+        };
+      }
+      
+      // Check if user exists with same email but different user type
+      const existingUserDifferentType = MOCK_USERS.find(u => u.email === userData.email && u.userType !== userData.userType);
+      if (existingUserDifferentType) {
+        return {
+          success: false,
+          error: `This email is already registered as a ${existingUserDifferentType.userType}. Please use a different email or sign in with the correct account type.`,
         };
       }
 

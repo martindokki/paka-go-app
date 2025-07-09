@@ -348,7 +348,11 @@ export default function AuthScreen() {
                     styles.authModeButton,
                     authMode === "login" && styles.authModeButtonActive,
                   ]}
-                  onPress={() => setAuthMode("login")}
+                  onPress={() => {
+                    setAuthMode("login");
+                    clearError();
+                    setValidationErrors({});
+                  }}
                 >
                   <Text
                     style={[
@@ -364,7 +368,11 @@ export default function AuthScreen() {
                     styles.authModeButton,
                     authMode === "register" && styles.authModeButtonActive,
                   ]}
-                  onPress={() => setAuthMode("register")}
+                  onPress={() => {
+                    setAuthMode("register");
+                    clearError();
+                    setValidationErrors({});
+                  }}
                 >
                   <Text
                     style={[
@@ -503,6 +511,50 @@ export default function AuthScreen() {
                 {authError && (
                   <View style={styles.errorContainer}>
                     <Text style={styles.errorText}>{authError}</Text>
+                    {(authError.includes('already exists') || authError.includes('already registered')) && (
+                      <>
+                        <Text style={styles.errorHelpText}>
+                          💡 {authError.includes('already registered') 
+                            ? 'This email is registered with a different account type. Try switching the account type or use a different email.'
+                            : 'If you already have an account, try signing in instead. Otherwise, use a different email address.'}
+                        </Text>
+                        <View style={styles.errorActions}>
+                          <TouchableOpacity 
+                            style={styles.switchModeButton}
+                            onPress={() => {
+                              setAuthMode('login');
+                              clearError();
+                            }}
+                          >
+                            <Text style={styles.switchModeText}>Switch to Sign In →</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity 
+                            style={styles.clearEmailButton}
+                            onPress={() => {
+                              setFormData(prev => ({ ...prev, email: '' }));
+                              clearError();
+                            }}
+                          >
+                            <Text style={styles.clearEmailText}>Try Different Email</Text>
+                          </TouchableOpacity>
+                          {authError.includes('already registered as a') && (
+                            <TouchableOpacity 
+                              style={styles.switchUserTypeButton}
+                              onPress={() => {
+                                // Extract the user type from the error message
+                                const match = authError.match(/already registered as a (\w+)/);
+                                if (match && match[1]) {
+                                  setUserType(match[1] as UserType);
+                                  clearError();
+                                }
+                              }}
+                            >
+                              <Text style={styles.switchUserTypeText}>Switch Account Type</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </>
+                    )}
                   </View>
                 )}
 
@@ -547,6 +599,17 @@ export default function AuthScreen() {
             <View style={styles.footer}>
               <Text style={styles.footerText}>Made with ❤️ in Kenya 🇰🇪</Text>
               <Text style={styles.footerSubtext}>Connecting communities, one delivery at a time</Text>
+              
+              {__DEV__ && (
+                <View style={styles.testAccountsContainer}>
+                  <Text style={styles.testAccountsTitle}>🧪 Test Accounts (Dev Only)</Text>
+                  <View style={styles.testAccounts}>
+                    <Text style={styles.testAccount}>Client: client@test.com / password123</Text>
+                    <Text style={styles.testAccount}>Driver: driver@test.com / password123</Text>
+                    <Text style={styles.testAccount}>Admin: admin@test.com / password123</Text>
+                  </View>
+                </View>
+              )}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -889,5 +952,68 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     marginTop: 4,
+  },
+  errorHelpText: {
+    color: Colors.light.textMuted,
+    fontSize: 11,
+    fontWeight: "500",
+    marginTop: 8,
+    lineHeight: 16,
+    textAlign: "center",
+  },
+  errorActions: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
+    justifyContent: "center",
+  },
+  switchModeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.light.primary + "20",
+    borderRadius: 12,
+  },
+  switchModeText: {
+    color: Colors.light.primary,
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  clearEmailButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.light.warning + "20",
+    borderRadius: 12,
+  },
+  clearEmailText: {
+    color: Colors.light.warning,
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  testAccountsContainer: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  testAccountsTitle: {
+    fontSize: 12,
+    color: Colors.light.background,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  testAccounts: {
+    gap: 4,
+  },
+  testAccount: {
+    fontSize: 10,
+    color: Colors.light.background + "CC",
+    fontWeight: "500",
+    textAlign: "center",
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });
