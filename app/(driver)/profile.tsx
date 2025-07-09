@@ -31,17 +31,30 @@ import {
   Clock,
   Edit3,
   Zap,
+  FileText,
+  Trash2,
+  Eye,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
+import { useAuthStore } from "@/stores/auth-store";
+import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
+import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
+import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
+import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { errorLogger } from "@/utils/error-logger";
 
 export default function DriverProfileScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { user, logout } = useAuthStore();
   
   const driverInfo = {
-    name: "Peter Mwangi",
-    email: "peter.mwangi@example.com",
-    phone: "+254712345678",
+    name: user?.name || "Peter Mwangi",
+    email: user?.email || "peter.mwangi@example.com",
+    phone: user?.phone || "+254712345678",
     vehicleType: "Motorcycle",
     plateNumber: "KCA 123D",
     rating: 4.8,
@@ -175,7 +188,7 @@ export default function DriverProfileScreen() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert(
       "Logout 👋",
       "Are you sure you want to logout?",
@@ -184,10 +197,42 @@ export default function DriverProfileScreen() {
         {
           text: "Logout",
           style: "destructive",
-          onPress: () => router.replace("/auth"),
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace("/auth");
+            } catch (error) {
+              await errorLogger.error(error as Error, { action: 'logout' });
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
+          },
         },
       ]
     );
+  };
+
+  const handleViewErrorLogs = async () => {
+    try {
+      const logs = await errorLogger.getLogs();
+      Alert.alert(
+        "Error Logs",
+        `Found ${logs.length} error logs. Check console for details.`,
+        [
+          {
+            text: "Clear Logs",
+            style: "destructive",
+            onPress: async () => {
+              await errorLogger.clearLogs();
+              Alert.alert("Success", "Error logs cleared.");
+            },
+          },
+          { text: "OK", style: "default" },
+        ]
+      );
+      console.log("Error Logs:", logs);
+    } catch (error) {
+      Alert.alert("Error", "Failed to retrieve error logs.");
+    }
   };
 
   const renderStarRating = (rating: number) => {
@@ -356,27 +401,54 @@ export default function DriverProfileScreen() {
 
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}>Quick Actions ⚡</Text>
-          {menuItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.menuItem}
-              onPress={item.onPress}
-            >
-              <View style={styles.menuItemLeft}>
-                <LinearGradient
-                  colors={[item.color + "20", item.color + "10"]}
-                  style={styles.menuIcon}
-                >
-                  <item.icon size={20} color={item.color} />
-                </LinearGradient>
-                <View style={styles.menuContent}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-                </View>
-              </View>
-              <ChevronRight size={20} color={Colors.light.textMuted} />
-            </TouchableOpacity>
-          ))}
+          <View style={styles.settingsContainer}>
+            {menuItems.map((item) => (
+              <SettingsItem
+                key={item.id}
+                title={item.title}
+                subtitle={item.subtitle}
+                icon={<item.icon size={20} color={item.color} />}
+                onPress={item.onPress}
+              />
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle}>Privacy & Legal 📋</Text>
+          <View style={styles.settingsContainer}>
+            <SettingsItem
+              title="Privacy Policy"
+              subtitle="How we handle your data"
+              icon={<Shield size={20} color={Colors.light.info} />}
+              onPress={() => setShowPrivacyModal(true)}
+            />
+            <SettingsItem
+              title="Terms of Service"
+              subtitle="Terms and conditions"
+              icon={<FileText size={20} color={Colors.light.info} />}
+              onPress={() => setShowTermsModal(true)}
+            />
+            <SettingsItem
+              title="View Error Logs"
+              subtitle="Debug information"
+              icon={<Eye size={20} color={Colors.light.textMuted} />}
+              onPress={handleViewErrorLogs}
+            />
+          </View>
+        </View>
+
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle}>Danger Zone ⚠️</Text>
+          <View style={styles.settingsContainer}>
+            <SettingsItem
+              title="Delete Account"
+              subtitle="Permanently delete your account"
+              icon={<Trash2 size={20} color={Colors.light.error} />}
+              onPress={() => setShowDeleteModal(true)}
+              destructive
+            />
+          </View>
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -394,6 +466,21 @@ export default function DriverProfileScreen() {
           <Text style={styles.footerText}>Made with ❤️ in Kenya 🇰🇪</Text>
         </View>
       </ScrollView>
+
+      <PrivacyPolicyModal
+        visible={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
+      
+      <TermsOfServiceModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -728,5 +815,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.light.textMuted,
     fontWeight: "500",
+  },
+  settingsContainer: {
+    backgroundColor: Colors.light.background,
+    borderRadius: 16,
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    overflow: 'hidden',
   },
 });

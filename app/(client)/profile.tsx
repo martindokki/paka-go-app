@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -25,16 +25,30 @@ import {
   Package,
   Shield,
   Receipt,
+  FileText,
+  Trash2,
+  Eye,
 } from "lucide-react-native";
 import Colors from "@/constants/colors";
+import { useAuthStore } from "@/stores/auth-store";
+import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
+import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
+import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
+import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { errorLogger } from "@/utils/error-logger";
 
 const { width } = Dimensions.get("window");
 
 export default function ProfileScreen() {
+  const { user, logout } = useAuthStore();
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const userInfo = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+254712345678",
+    name: user?.name || "John Doe",
+    email: user?.email || "john.doe@example.com",
+    phone: user?.phone || "+254712345678",
     totalOrders: 24,
     memberSince: "Jan 2024",
     rating: 4.8,
@@ -100,7 +114,7 @@ export default function ProfileScreen() {
     },
   ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert(
       "Logout",
       "Are you sure you want to logout?",
@@ -109,10 +123,42 @@ export default function ProfileScreen() {
         {
           text: "Logout",
           style: "destructive",
-          onPress: () => router.replace("/auth"),
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace("/auth");
+            } catch (error) {
+              await errorLogger.error(error as Error, { action: 'logout' });
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
+          },
         },
       ]
     );
+  };
+
+  const handleViewErrorLogs = async () => {
+    try {
+      const logs = await errorLogger.getLogs();
+      Alert.alert(
+        "Error Logs",
+        `Found ${logs.length} error logs. Check console for details.`,
+        [
+          {
+            text: "Clear Logs",
+            style: "destructive",
+            onPress: async () => {
+              await errorLogger.clearLogs();
+              Alert.alert("Success", "Error logs cleared.");
+            },
+          },
+          { text: "OK", style: "default" },
+        ]
+      );
+      console.log("Error Logs:", logs);
+    } catch (error) {
+      Alert.alert("Error", "Failed to retrieve error logs.");
+    }
   };
 
   return (
@@ -172,29 +218,48 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <View style={styles.menuSection}>
-          {menuItems.map((item, index) => (
-            <TouchableOpacity
+        <SettingsSection title="Account Settings">
+          {menuItems.map((item) => (
+            <SettingsItem
               key={item.id}
-              style={[
-                styles.menuItem,
-                index === menuItems.length - 1 && styles.menuItemLast,
-              ]}
+              title={item.title}
+              subtitle={item.subtitle}
+              icon={<item.icon size={20} color={item.color} />}
               onPress={item.onPress}
-            >
-              <View style={styles.menuItemLeft}>
-                <View style={[styles.menuIcon, { backgroundColor: item.color + "20" }]}>
-                  <item.icon size={20} color={item.color} />
-                </View>
-                <View style={styles.menuContent}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-                </View>
-              </View>
-              <ChevronRight size={20} color={Colors.light.textMuted} />
-            </TouchableOpacity>
+            />
           ))}
-        </View>
+        </SettingsSection>
+
+        <SettingsSection title="Privacy & Legal">
+          <SettingsItem
+            title="Privacy Policy"
+            subtitle="How we handle your data"
+            icon={<Shield size={20} color={Colors.light.info} />}
+            onPress={() => setShowPrivacyModal(true)}
+          />
+          <SettingsItem
+            title="Terms of Service"
+            subtitle="Terms and conditions"
+            icon={<FileText size={20} color={Colors.light.info} />}
+            onPress={() => setShowTermsModal(true)}
+          />
+          <SettingsItem
+            title="View Error Logs"
+            subtitle="Debug information"
+            icon={<Eye size={20} color={Colors.light.textMuted} />}
+            onPress={handleViewErrorLogs}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Danger Zone">
+          <SettingsItem
+            title="Delete Account"
+            subtitle="Permanently delete your account"
+            icon={<Trash2 size={20} color={Colors.light.error} />}
+            onPress={() => setShowDeleteModal(true)}
+            destructive
+          />
+        </SettingsSection>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut size={20} color={Colors.light.error} />
@@ -207,6 +272,21 @@ export default function ProfileScreen() {
           <Text style={styles.memberSince}>Member since {userInfo.memberSince}</Text>
         </View>
       </ScrollView>
+
+      <PrivacyPolicyModal
+        visible={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
+      
+      <TermsOfServiceModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </SafeAreaView>
   );
 }

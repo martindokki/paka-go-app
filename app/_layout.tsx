@@ -4,10 +4,15 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Platform } from "react-native";
+import { useAuthStore } from "@/stores/auth-store";
+import { errorLogger } from "@/utils/error-logger";
 
 export const unstable_settings = {
   initialRouteName: "auth",
 };
+
+// Initialize error logging
+errorLogger.info('App started', { platform: Platform.OS });
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,6 +42,17 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const { isAuthenticated, user } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      errorLogger.info('User session restored', { 
+        userType: user.userType,
+        userId: user.id 
+      });
+    }
+  }, [isAuthenticated, user]);
+
   return (
     <>
       <StatusBar style="dark" />

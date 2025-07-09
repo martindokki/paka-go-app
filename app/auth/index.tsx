@@ -33,6 +33,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
 import { useAuthStore, UserType } from "@/stores/auth-store";
+import { errorLogger } from "@/utils/error-logger";
 
 const { width, height } = Dimensions.get("window");
 
@@ -42,7 +43,7 @@ export default function AuthScreen() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [userType, setUserType] = useState<UserType>("client");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -50,16 +51,46 @@ export default function AuthScreen() {
     password: "",
   });
 
-  const { login } = useAuthStore();
+  const { login, register, isLoading: authLoading, error: authError, clearError } = useAuthStore();
+
+  const validateForm = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Please enter a valid email";
+    }
+    
+    if (!formData.password.trim()) {
+      errors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    
+    if (authMode === "register") {
+      if (!formData.name.trim()) {
+        errors.name = "Name is required";
+      }
+      
+      if (!formData.phone.trim()) {
+        errors.phone = "Phone number is required";
+      } else if (!/^\+254[0-9]{9}$/.test(formData.phone)) {
+        errors.phone = "Please enter a valid Kenyan phone number (+254xxxxxxxxx)";
+      }
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleAuth = async () => {
-    if (!formData.email || !formData.password) {
-      Alert.alert("Missing Information", "Please fill in email and password");
-      return;
-    }
-
-    if (authMode === "register" && (!formData.name || !formData.phone)) {
-      Alert.alert("Missing Information", "Please fill in all required fields");
+    // Clear previous errors
+    clearError();
+    setValidationErrors({});
+    
+    // Validate form
+    if (!validateForm()) {
       return;
     }
 
@@ -71,42 +102,48 @@ export default function AuthScreen() {
       );
       return;
     }
-
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
     try {
-      // Login user with proper ID for sample data
-      const userId = userType === "client" ? "client-1" : userType === "driver" ? "driver-1" : "admin-1";
+      let success = false;
       
-      login({
-        id: userId,
-        name: formData.name || "User",
-        email: formData.email,
-        phone: formData.phone || "+254700000000",
-        userType,
-      });
-
-      console.log("Auth successful:", { authMode, userType, formData });
+      if (authMode === "login") {
+        success = await login({
+          email: formData.email.trim(),
+          password: formData.password,
+          userType,
+        });
+      } else {
+        success = await register({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          password: formData.password,
+          userType,
+        });
+      }
       
-      // Navigate based on user type
-      switch (userType) {
-        case "client":
-          router.replace("/(client)");
-          break;
-        case "driver":
-          router.replace("/(driver)");
-          break;
-        case "admin":
-          router.replace("/(admin)");
-          break;
+      if (success) {
+        await errorLogger.info(`${authMode} successful`, { userType, email: formData.email });
+        
+        // Navigate based on user type
+        switch (userType) {
+          case "client":
+            router.replace("/(client)");
+            break;
+          case "driver":
+            router.replace("/(driver)");
+            break;
+          case "admin":
+            router.replace("/(admin)");
+            break;
+        }
       }
     } catch (error) {
-      Alert.alert("Authentication Error", "Please try again");
-    } finally {
-      setIsLoading(false);
+      await errorLogger.error(error as Error, { action: 'handleAuth', authMode, userType });
+      Alert.alert(
+        "Authentication Error", 
+        "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -349,12 +386,23 @@ export default function AuthScreen() {
                       <User size={22} color={Colors.light.primary} />
                     </View>
                     <TextInput
-                      style={styles.input}
+                      style={[
+                        styles.input,
+                        validationErrors.name && styles.inputError
+                      ]}
                       placeholder="Full Name"
                       value={formData.name}
-                      onChangeText={(text) => setFormData({ ...formData, name: text })}
+                      onChangeText={(text) => {
+                        setFormData({ ...formData, name: text });
+                        if (validationErrors.name) {
+                          setValidationErrors(prev => ({ ...prev, name: '' }));
+                        }
+                      }}
                       placeholderTextColor={Colors.light.textMuted}
                     />
+                    {validationErrors.name && (
+                      <Text style={styles.errorText}>{validationErrors.name}</Text>
+                    )}
                   </View>
                 )}
 
@@ -363,14 +411,25 @@ export default function AuthScreen() {
                     <Mail size={22} color={Colors.light.primary} />
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      validationErrors.email && styles.inputError
+                    ]}
                     placeholder="Email Address"
                     value={formData.email}
-                    onChangeText={(text) => setFormData({ ...formData, email: text })}
+                    onChangeText={(text) => {
+                      setFormData({ ...formData, email: text });
+                      if (validationErrors.email) {
+                        setValidationErrors(prev => ({ ...prev, email: '' }));
+                      }
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     placeholderTextColor={Colors.light.textMuted}
                   />
+                  {validationErrors.email && (
+                    <Text style={styles.errorText}>{validationErrors.email}</Text>
+                  )}
                 </View>
 
                 {authMode === "register" && (
@@ -379,13 +438,24 @@ export default function AuthScreen() {
                       <Phone size={22} color={Colors.light.primary} />
                     </View>
                     <TextInput
-                      style={styles.input}
+                      style={[
+                        styles.input,
+                        validationErrors.phone && styles.inputError
+                      ]}
                       placeholder="Phone Number (+254...)"
                       value={formData.phone}
-                      onChangeText={(text) => setFormData({ ...formData, phone: text })}
+                      onChangeText={(text) => {
+                        setFormData({ ...formData, phone: text });
+                        if (validationErrors.phone) {
+                          setValidationErrors(prev => ({ ...prev, phone: '' }));
+                        }
+                      }}
                       keyboardType="phone-pad"
                       placeholderTextColor={Colors.light.textMuted}
                     />
+                    {validationErrors.phone && (
+                      <Text style={styles.errorText}>{validationErrors.phone}</Text>
+                    )}
                   </View>
                 )}
 
@@ -394,13 +464,24 @@ export default function AuthScreen() {
                     <Lock size={22} color={Colors.light.primary} />
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      validationErrors.password && styles.inputError
+                    ]}
                     placeholder="Password"
                     value={formData.password}
-                    onChangeText={(text) => setFormData({ ...formData, password: text })}
+                    onChangeText={(text) => {
+                      setFormData({ ...formData, password: text });
+                      if (validationErrors.password) {
+                        setValidationErrors(prev => ({ ...prev, password: '' }));
+                      }
+                    }}
                     secureTextEntry={!showPassword}
                     placeholderTextColor={Colors.light.textMuted}
                   />
+                  {validationErrors.password && (
+                    <Text style={styles.errorText}>{validationErrors.password}</Text>
+                  )}
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
@@ -419,18 +500,26 @@ export default function AuthScreen() {
                   </TouchableOpacity>
                 )}
 
+                {authError && (
+                  <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>{authError}</Text>
+                  </View>
+                )}
+
                 <TouchableOpacity 
-                  style={[styles.authButton, isLoading && styles.authButtonLoading]} 
+                  style={[styles.authButton, authLoading && styles.authButtonLoading]} 
                   onPress={handleAuth}
-                  disabled={isLoading}
+                  disabled={authLoading}
                 >
                   <LinearGradient
                     colors={[Colors.light.background, "#FFFFFF"]}
                     style={styles.authButtonGradient}
                   >
                     <View style={styles.authButtonContent}>
-                      {isLoading ? (
-                        <Text style={styles.authButtonText}>Creating Magic... ✨</Text>
+                      {authLoading ? (
+                        <Text style={styles.authButtonText}>
+                          {authMode === "login" ? "Signing In... ✨" : "Creating Account... 🎉"}
+                        </Text>
                       ) : (
                         <>
                           <Text style={styles.authButtonText}>
@@ -782,5 +871,23 @@ const styles = StyleSheet.create({
     color: Colors.light.background + "CC",
     textAlign: "center",
     fontWeight: "500",
+  },
+  inputError: {
+    borderColor: Colors.light.error,
+    borderWidth: 2,
+  },
+  errorContainer: {
+    backgroundColor: Colors.light.error + "20",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.light.error,
+  },
+  errorText: {
+    color: Colors.light.error,
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
   },
 });

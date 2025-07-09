@@ -8,6 +8,7 @@ import {
   ScrollView,
   Switch,
   TextInput,
+  Alert,
 } from "react-native";
 import {
   CreditCard,
@@ -17,10 +18,26 @@ import {
   DollarSign,
   Settings as SettingsIcon,
   ChevronRight,
+  FileText,
+  Trash2,
+  Eye,
+  LogOut,
 } from "lucide-react-native";
 import Colors from "@/constants/colors";
+import { useAuthStore } from "@/stores/auth-store";
+import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
+import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
+import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
+import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { errorLogger } from "@/utils/error-logger";
+import { router } from "expo-router";
 
 export default function AdminSettingsScreen() {
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { logout } = useAuthStore();
+  
   const [settings, setSettings] = useState({
     autoAssignOrders: true,
     enableNotifications: true,
@@ -69,6 +86,53 @@ export default function AdminSettingsScreen() {
 
   const updatePricing = (key: string, value: string) => {
     setPricing(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace("/auth");
+            } catch (error) {
+              await errorLogger.error(error as Error, { action: 'logout' });
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleViewErrorLogs = async () => {
+    try {
+      const logs = await errorLogger.getLogs();
+      Alert.alert(
+        "Error Logs",
+        `Found ${logs.length} error logs. Check console for details.`,
+        [
+          {
+            text: "Clear Logs",
+            style: "destructive",
+            onPress: async () => {
+              await errorLogger.clearLogs();
+              Alert.alert("Success", "Error logs cleared.");
+            },
+          },
+          { text: "OK", style: "default" },
+        ]
+      );
+      console.log("Error Logs:", logs);
+    } catch (error) {
+      Alert.alert("Error", "Failed to retrieve error logs.");
+    }
   };
 
   return (
@@ -256,7 +320,60 @@ export default function AdminSettingsScreen() {
         <TouchableOpacity style={styles.saveButton}>
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
+
+        <SettingsSection title="Privacy & Legal">
+          <SettingsItem
+            title="Privacy Policy"
+            subtitle="How we handle user data"
+            icon={<Shield size={20} color={Colors.light.info} />}
+            onPress={() => setShowPrivacyModal(true)}
+          />
+          <SettingsItem
+            title="Terms of Service"
+            subtitle="Platform terms and conditions"
+            icon={<FileText size={20} color={Colors.light.info} />}
+            onPress={() => setShowTermsModal(true)}
+          />
+          <SettingsItem
+            title="View Error Logs"
+            subtitle="System debug information"
+            icon={<Eye size={20} color={Colors.light.textMuted} />}
+            onPress={handleViewErrorLogs}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Account Actions">
+          <SettingsItem
+            title="Logout"
+            subtitle="Sign out of admin panel"
+            icon={<LogOut size={20} color={Colors.light.error} />}
+            onPress={handleLogout}
+            destructive
+          />
+          <SettingsItem
+            title="Delete Account"
+            subtitle="Permanently delete admin account"
+            icon={<Trash2 size={20} color={Colors.light.error} />}
+            onPress={() => setShowDeleteModal(true)}
+            destructive
+          />
+        </SettingsSection>
       </ScrollView>
+
+      <PrivacyPolicyModal
+        visible={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
+      
+      <TermsOfServiceModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+      
+      <DeleteAccountModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </SafeAreaView>
   );
 }

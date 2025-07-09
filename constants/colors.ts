@@ -36,5 +36,12 @@ export default {
     overlay: "rgba(0, 0, 0, 0.5)",
     mpesa: "#00A651", // M-Pesa green
     mpesaLight: "#E8F5E8",
+    // Status colors
+    pending: "#F59E0B",
+    assigned: "#3B82F6",
+    picked_up: "#8B5CF6",
+    in_transit: "#06B6D4",
+    delivered: "#10B981",
+    cancelled: "#EF4444",
   },
 };
