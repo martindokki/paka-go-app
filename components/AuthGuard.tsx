@@ -59,8 +59,10 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       }
     };
 
-    checkAuth();
-  }, [isAuthenticated, user?.id, requiredUserType, hasChecked]);
+    if (!hasChecked) {
+      checkAuth();
+    }
+  }, [isAuthenticated, user?.id, user?.userType, requiredUserType, hasChecked]);
 
   if (isLoading || !hasChecked) {
     return (

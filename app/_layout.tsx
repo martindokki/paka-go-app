@@ -44,20 +44,27 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isAuthenticated, user, isLoading, isInitialized, setInitialized } = useAuthStore();
+  const authStore = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized } = authStore;
   const [hasNavigated, setHasNavigated] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Fallback initialization timeout
+  // Wait for Zustand to hydrate
   useEffect(() => {
+    const unsubscribe = useAuthStore.persist.onFinishHydration(() => {
+      setIsHydrated(true);
+    });
+    
+    // Fallback timeout
     const timeout = setTimeout(() => {
-      if (!isInitialized) {
-        console.log('Force initializing auth store after timeout');
-        setInitialized(true);
-      }
-    }, 2000); // 2 second timeout
+      setIsHydrated(true);
+    }, 1000);
 
-    return () => clearTimeout(timeout);
-  }, [isInitialized, setInitialized]);
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, []);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -65,8 +72,8 @@ function RootLayoutNav() {
         // Prevent multiple navigation attempts
         if (hasNavigated) return;
         
-        // Wait for store to be initialized
-        if (!isInitialized) return;
+        // Wait for hydration to complete
+        if (!isHydrated) return;
         
         // Check authentication state
         if (isAuthenticated && user) {
@@ -107,11 +114,13 @@ function RootLayoutNav() {
       }
     };
 
-    initializeApp();
-  }, [isInitialized, isAuthenticated, user?.id, hasNavigated, setInitialized]);
+    if (isHydrated && !hasNavigated) {
+      initializeApp();
+    }
+  }, [isHydrated, isAuthenticated, user?.id, user?.userType, hasNavigated]);
 
   // Show loading screen while initializing
-  if (!isInitialized || isLoading || !hasNavigated) {
+  if (!isHydrated || isLoading || !hasNavigated) {
     return (
       <View style={{ 
         flex: 1, 

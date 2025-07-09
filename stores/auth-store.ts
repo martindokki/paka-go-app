@@ -266,7 +266,7 @@ export const useAuthStore = create<AuthState>()(
       
       // Internal method to handle hydration
       _setHasHydrated: (hasHydrated: boolean) => {
-        set({ _hasHydrated: hasHydrated, isInitialized: true });
+        set({ _hasHydrated: hasHydrated, isInitialized: hasHydrated });
       },
     }),
     {
@@ -283,7 +283,6 @@ export const useAuthStore = create<AuthState>()(
           console.error('Failed to rehydrate auth state:', error);
         }
         
-        // Always mark as initialized after rehydration attempt
         if (state) {
           // Validate stored data
           if (state.user && state.token && state.isAuthenticated) {
@@ -300,6 +299,7 @@ export const useAuthStore = create<AuthState>()(
             state.isInitialized = true;
             errorLogger.warning('Invalid auth state cleared on rehydration').catch(() => {});
           }
+          state._hasHydrated = true;
         }
       },
     }
