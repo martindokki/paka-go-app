@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { publicProcedure } from '../../create-context';
 
 const driverSchema = z.object({
   id: z.string(),
@@ -61,7 +61,7 @@ export const approveDriverProcedure = publicProcedure
   .input(z.object({
     driverId: z.string(),
   }))
-  .mutation(async ({ input }: { input: any }) => {
+  .mutation(async ({ input }) => {
     // Mock implementation - replace with actual database update
     console.log('Approving driver:', input.driverId);
     
@@ -75,7 +75,7 @@ export const suspendDriverProcedure = publicProcedure
   .input(z.object({
     driverId: z.string(),
   }))
-  .mutation(async ({ input }: { input: any }) => {
+  .mutation(async ({ input }) => {
     // Mock implementation - replace with actual database update
     console.log('Suspending driver:', input.driverId);
     
@@ -90,7 +90,7 @@ export const assignVehicleProcedure = publicProcedure
     driverId: z.string(),
     vehicleId: z.string(),
   }))
-  .mutation(async ({ input }: { input: any }) => {
+  .mutation(async ({ input }) => {
     // Mock implementation - replace with actual database update
     console.log('Assigning vehicle:', input.vehicleId, 'to driver:', input.driverId);
     

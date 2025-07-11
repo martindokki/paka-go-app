@@ -11,6 +11,9 @@ export interface Order {
   id: string;
   clientId: string;
   driverId?: string;
+  customerName?: string;
+  customerPhone?: string;
+  driverName?: string;
   from: string;
   to: string;
   fromCoords?: { lat: number; lng: number };
