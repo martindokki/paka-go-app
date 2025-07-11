@@ -10,7 +10,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Navigation, MapPin, Package } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { MapViewComponent } from '@/components/MapView';
 import { useMapStore } from '@/stores/map-store';
 import { useOrdersStore, Order } from '@/stores/orders-store';
