@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Switch,
 } from "react-native";
 import { router } from "expo-router";
 import { 
@@ -26,6 +27,9 @@ import {
   Phone,
   Timer,
   Wallet,
+  Shield,
+  Info,
+  Search,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
@@ -34,6 +38,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { MapViewComponent } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
+import { LocationSearchModal } from "@/components/LocationSearchModal";
+import { PriceBreakdownModal } from "@/components/PriceBreakdownModal";
+import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/constants/pricing";
 
 export default function BookingScreen() {
   const { user } = useAuthStore();
@@ -43,6 +50,8 @@ export default function BookingScreen() {
   const [bookingData, setBookingData] = useState({
     pickupLocation: "",
     dropoffLocation: "",
+    pickupCoords: null as Coordinates | null,
+    dropoffCoords: null as Coordinates | null,
     packageType: "documents" as PackageType,
     packageDescription: "",
     recipientName: "",
@@ -50,20 +59,25 @@ export default function BookingScreen() {
     specialInstructions: "",
     paymentMethod: "mpesa" as PaymentMethod,
     paymentTerm: "pay_now" as PaymentTerm,
+    isFragile: false,
+    hasInsurance: false,
   });
 
-  const [estimatedPrice, setEstimatedPrice] = useState(0);
+  const [priceBreakdown, setPriceBreakdown] = useState<PriceBreakdown | null>(null);
   const [estimatedTime, setEstimatedTime] = useState("");
   const [showMap, setShowMap] = useState(false);
   const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
+  const [showPickupSearch, setShowPickupSearch] = useState(false);
+  const [showDropoffSearch, setShowDropoffSearch] = useState(false);
+  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
 
   const packageTypes = [
-    { id: "documents", label: "Documents", price: 200, icon: "📄" },
-    { id: "small", label: "Small Package", price: 300, icon: "📦" },
-    { id: "medium", label: "Medium Package", price: 450, icon: "📫" },
-    { id: "electronics", label: "Electronics", price: 500, icon: "📱" },
-    { id: "clothing", label: "Clothing", price: 350, icon: "👕" },
-    { id: "food", label: "Food & Beverages", price: 400, icon: "🍕" },
+    { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },
+    { id: "small", label: "Small Package", icon: "📦", isFragileDefault: false },
+    { id: "medium", label: "Medium Package", icon: "📫", isFragileDefault: false },
+    { id: "electronics", label: "Electronics", icon: "📱", isFragileDefault: true },
+    { id: "clothing", label: "Clothing", icon: "👕", isFragileDefault: false },
+    { id: "food", label: "Food & Beverages", icon: "🍕", isFragileDefault: true },
   ];
 
   const paymentMethods = [
@@ -112,7 +126,7 @@ export default function BookingScreen() {
     },
   ];
 
-  const updateBookingData = (key: string, value: string) => {
+  const updateBookingData = (key: string, value: string | boolean) => {
     setBookingData(prev => {
       const newData = { ...prev, [key]: value };
       
@@ -125,41 +139,44 @@ export default function BookingScreen() {
         }
       }
       
+      // Auto-set fragile for certain package types
+      if (key === "packageType") {
+        const selectedType = packageTypes.find(type => type.id === value);
+        if (selectedType) {
+          newData.isFragile = selectedType.isFragileDefault;
+        }
+      }
+      
       return newData;
     });
     
-    if (key === "packageType") {
-      const selectedType = packageTypes.find(type => type.id === value);
-      if (selectedType) {
-        calculatePrice(selectedType.price);
-      }
+    // Recalculate price when relevant fields change
+    if (["packageType", "isFragile", "hasInsurance"].includes(key)) {
+      calculatePrice();
     }
   };
 
-  const calculatePrice = async (basePrice: number) => {
-    if (!userLocation || !destination) {
-      setEstimatedPrice(basePrice);
+  const calculatePrice = async () => {
+    if (!bookingData.pickupCoords || !bookingData.dropoffCoords) {
+      setPriceBreakdown(null);
       setEstimatedTime("25-35 mins");
       return;
     }
 
     setIsCalculatingPrice(true);
     try {
-      const distance = MapService.calculateDistance(userLocation, destination);
+      const distance = MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords);
       
-      // PAKA-Go pricing structure
-      const baseFare = 80;
-      const perKm = 11;
-      const minimumCharge = 150;
+      const options: PriceCalculationOptions = {
+        distance,
+        isFragile: bookingData.isFragile,
+        hasInsurance: bookingData.hasInsurance,
+        isAfterHours: PricingService.isAfterHours(),
+        isWeekend: PricingService.isWeekend(),
+      };
       
-      let calculatedPrice = baseFare + (distance * perKm);
-      calculatedPrice = Math.max(calculatedPrice, minimumCharge);
-      
-      // Add package type premium
-      const packagePremium = basePrice - 200; // Base documents price is 200
-      calculatedPrice += packagePremium;
-      
-      setEstimatedPrice(Math.round(calculatedPrice));
+      const breakdown = PricingService.calculatePrice(options);
+      setPriceBreakdown(breakdown);
       
       // Estimate time based on distance (assuming 30 km/h average speed)
       const estimatedMinutes = Math.round((distance / 30) * 60) + 15; // +15 for pickup/dropoff
@@ -167,23 +184,36 @@ export default function BookingScreen() {
       
     } catch (error) {
       console.error('Price calculation error:', error);
-      setEstimatedPrice(basePrice);
+      setPriceBreakdown(null);
       setEstimatedTime("25-35 mins");
     } finally {
       setIsCalculatingPrice(false);
     }
   };
 
+  const handlePickupLocationSelect = (address: string, coordinates: Coordinates) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      pickupLocation: address,
+      pickupCoords: coordinates 
+    }));
+    calculatePrice();
+  };
+
+  const handleDropoffLocationSelect = (address: string, coordinates: Coordinates) => {
+    setBookingData(prev => ({ 
+      ...prev, 
+      dropoffLocation: address,
+      dropoffCoords: coordinates 
+    }));
+    calculatePrice();
+  };
+
   const handleLocationSelect = async (location: Coordinates) => {
     try {
       const address = await MapService.reverseGeocode(location);
       if (address) {
-        setBookingData(prev => ({ ...prev, dropoffLocation: address }));
-        // Recalculate price with new destination
-        const selectedType = packageTypes.find(type => type.id === bookingData.packageType);
-        if (selectedType) {
-          calculatePrice(selectedType.price);
-        }
+        handleDropoffLocationSelect(address, location);
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error);
@@ -230,8 +260,10 @@ export default function BookingScreen() {
         status: "pending",
         paymentMethod: bookingData.paymentMethod,
         paymentTerm: bookingData.paymentTerm,
-        price: estimatedPrice,
-        distance: "12.5 km",
+        price: priceBreakdown?.total || 0,
+        distance: bookingData.pickupCoords && bookingData.dropoffCoords 
+          ? `${MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords).toFixed(1)} km`
+          : "0 km",
         estimatedTime: estimatedTime,
       });
 
@@ -320,18 +352,23 @@ export default function BookingScreen() {
           )}
           
           <View style={styles.locationContainer}>
-            <View style={styles.locationInput}>
+            <TouchableOpacity 
+              style={styles.locationInput}
+              onPress={() => setShowPickupSearch(true)}
+            >
               <View style={styles.locationIcon}>
                 <MapPin size={20} color={Colors.light.primary} />
               </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Where should we pick up?"
-                value={bookingData.pickupLocation}
-                onChangeText={(text) => updateBookingData("pickupLocation", text)}
-                placeholderTextColor={Colors.light.textMuted}
-              />
-            </View>
+              <View style={styles.locationTextContainer}>
+                <Text style={[
+                  styles.locationText,
+                  !bookingData.pickupLocation && styles.locationPlaceholder
+                ]}>
+                  {bookingData.pickupLocation || "Where should we pick up?"}
+                </Text>
+              </View>
+              <Search size={16} color={Colors.light.textSecondary} />
+            </TouchableOpacity>
             
             <View style={styles.locationConnector}>
               <View style={styles.connectorLine} />
@@ -340,18 +377,23 @@ export default function BookingScreen() {
               </View>
             </View>
             
-            <View style={styles.locationInput}>
+            <TouchableOpacity 
+              style={styles.locationInput}
+              onPress={() => setShowDropoffSearch(true)}
+            >
               <View style={styles.locationIcon}>
                 <MapPin size={20} color={Colors.light.accent} />
               </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Where should we deliver?"
-                value={bookingData.dropoffLocation}
-                onChangeText={(text) => updateBookingData("dropoffLocation", text)}
-                placeholderTextColor={Colors.light.textMuted}
-              />
-            </View>
+              <View style={styles.locationTextContainer}>
+                <Text style={[
+                  styles.locationText,
+                  !bookingData.dropoffLocation && styles.locationPlaceholder
+                ]}>
+                  {bookingData.dropoffLocation || "Where should we deliver?"}
+                </Text>
+              </View>
+              <Search size={16} color={Colors.light.textSecondary} />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -382,16 +424,53 @@ export default function BookingScreen() {
                 >
                   {type.label}
                 </Text>
-                <Text
-                  style={[
-                    styles.packageTypePrice,
-                    bookingData.packageType === type.id && styles.packageTypePriceActive,
-                  ]}
-                >
-                  KSh {type.price}
-                </Text>
+                {bookingData.packageType === type.id && type.isFragileDefault && (
+                  <View style={styles.fragileIndicator}>
+                    <Shield size={12} color={Colors.light.background} />
+                    <Text style={styles.fragileText}>Fragile</Text>
+                  </View>
+                )}
               </TouchableOpacity>
             ))}
+          </View>
+        </View>
+
+        {/* Add-ons Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🛡️ Add-ons & Protection</Text>
+          
+          <View style={styles.addOnContainer}>
+            <View style={styles.addOnItem}>
+              <View style={styles.addOnLeft}>
+                <Shield size={20} color={Colors.light.accent} />
+                <View style={styles.addOnInfo}>
+                  <Text style={styles.addOnTitle}>Fragile Handling</Text>
+                  <Text style={styles.addOnDescription}>+20% for delicate items</Text>
+                </View>
+              </View>
+              <Switch
+                value={bookingData.isFragile}
+                onValueChange={(value) => updateBookingData("isFragile", value)}
+                trackColor={{ false: Colors.light.borderLight, true: Colors.light.accent }}
+                thumbColor={bookingData.isFragile ? Colors.light.background : Colors.light.textMuted}
+              />
+            </View>
+            
+            <View style={styles.addOnItem}>
+              <View style={styles.addOnLeft}>
+                <Shield size={20} color={Colors.light.primary} />
+                <View style={styles.addOnInfo}>
+                  <Text style={styles.addOnTitle}>Insurance Cover</Text>
+                  <Text style={styles.addOnDescription}>+20% up to KSh 10,000</Text>
+                </View>
+              </View>
+              <Switch
+                value={bookingData.hasInsurance}
+                onValueChange={(value) => updateBookingData("hasInsurance", value)}
+                trackColor={{ false: Colors.light.borderLight, true: Colors.light.primary }}
+                thumbColor={bookingData.hasInsurance ? Colors.light.background : Colors.light.textMuted}
+              />
+            </View>
           </View>
         </View>
 
@@ -587,47 +666,73 @@ export default function BookingScreen() {
           </View>
         </View>
 
-        {estimatedPrice > 0 && (
-          <LinearGradient
-            colors={[Colors.light.accent, Colors.light.accentDark]}
-            style={styles.estimateCard}
+        {priceBreakdown && (
+          <TouchableOpacity 
+            onPress={() => setShowPriceBreakdown(true)}
+            activeOpacity={0.8}
           >
-            <View style={styles.estimateHeader}>
-              <Zap size={24} color={Colors.light.background} />
-              <Text style={styles.estimateTitle}>Delivery Estimate</Text>
-              {isCalculatingPrice && (
-                <ActivityIndicator size="small" color={Colors.light.background} />
-              )}
-            </View>
-            <View style={styles.estimateDetails}>
-              <View style={styles.estimateItem}>
-                <DollarSign size={20} color={Colors.light.background} />
-                <Text style={styles.estimateLabel}>Price</Text>
-                <Text style={styles.estimateValue}>KSh {estimatedPrice}</Text>
+            <LinearGradient
+              colors={[Colors.light.accent, Colors.light.accentDark]}
+              style={styles.estimateCard}
+            >
+              <View style={styles.estimateHeader}>
+                <View style={styles.estimateHeaderLeft}>
+                  <Zap size={24} color={Colors.light.background} />
+                  <Text style={styles.estimateTitle}>Delivery Estimate</Text>
+                </View>
+                <View style={styles.estimateHeaderRight}>
+                  {isCalculatingPrice && (
+                    <ActivityIndicator size="small" color={Colors.light.background} />
+                  )}
+                  <Info size={16} color={Colors.light.background} style={{ marginLeft: 8 }} />
+                </View>
               </View>
-              <View style={styles.estimateItem}>
-                <Clock size={20} color={Colors.light.background} />
-                <Text style={styles.estimateLabel}>Time</Text>
-                <Text style={styles.estimateValue}>{estimatedTime}</Text>
-              </View>
-              <View style={styles.estimateItem}>
-                <Wallet size={20} color={Colors.light.background} />
-                <Text style={styles.estimateLabel}>Payment</Text>
-                <Text style={styles.estimateValue}>
-                  {bookingData.paymentTerm === "pay_now" ? "Pay Now" : "On Delivery"}
-                </Text>
-              </View>
-              {userLocation && destination && (
+              <View style={styles.estimateDetails}>
                 <View style={styles.estimateItem}>
-                  <MapPin size={20} color={Colors.light.background} />
-                  <Text style={styles.estimateLabel}>Distance</Text>
+                  <DollarSign size={20} color={Colors.light.background} />
+                  <Text style={styles.estimateLabel}>Total Price</Text>
+                  <Text style={styles.estimateValue}>KSh {priceBreakdown.total}</Text>
+                </View>
+                <View style={styles.estimateItem}>
+                  <Clock size={20} color={Colors.light.background} />
+                  <Text style={styles.estimateLabel}>Time</Text>
+                  <Text style={styles.estimateValue}>{estimatedTime}</Text>
+                </View>
+                <View style={styles.estimateItem}>
+                  <Wallet size={20} color={Colors.light.background} />
+                  <Text style={styles.estimateLabel}>Payment</Text>
                   <Text style={styles.estimateValue}>
-                    {MapService.calculateDistance(userLocation, destination).toFixed(1)} km
+                    {bookingData.paymentTerm === "pay_now" ? "Pay Now" : "On Delivery"}
+                  </Text>
+                </View>
+                {bookingData.pickupCoords && bookingData.dropoffCoords && (
+                  <View style={styles.estimateItem}>
+                    <MapPin size={20} color={Colors.light.background} />
+                    <Text style={styles.estimateLabel}>Distance</Text>
+                    <Text style={styles.estimateValue}>
+                      {MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords).toFixed(1)} km
+                    </Text>
+                  </View>
+                )}
+              </View>
+              
+              {(priceBreakdown.fragileCharge > 0 || priceBreakdown.insuranceCharge > 0 || 
+                priceBreakdown.afterHoursCharge > 0 || priceBreakdown.weekendCharge > 0) && (
+                <View style={styles.addOnsIndicator}>
+                  <Text style={styles.addOnsText}>
+                    Includes: {[
+                      priceBreakdown.fragileCharge > 0 && 'Fragile handling',
+                      priceBreakdown.insuranceCharge > 0 && 'Insurance',
+                      priceBreakdown.afterHoursCharge > 0 && 'After-hours',
+                      priceBreakdown.weekendCharge > 0 && 'Weekend'
+                    ].filter(Boolean).join(', ')}
                   </Text>
                 </View>
               )}
-            </View>
-          </LinearGradient>
+              
+              <Text style={styles.tapForDetails}>Tap for price breakdown</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         )}
 
         <TouchableOpacity style={styles.bookButton} onPress={handleBookDelivery}>
@@ -639,12 +744,42 @@ export default function BookingScreen() {
             <Text style={styles.bookButtonText}>
               {bookingData.paymentTerm === "pay_now" ? "Book & Pay" : "Book Delivery"}
             </Text>
-            {estimatedPrice > 0 && (
-              <Text style={styles.bookButtonPrice}>KSh {estimatedPrice}</Text>
+            {priceBreakdown && (
+              <Text style={styles.bookButtonPrice}>KSh {priceBreakdown.total}</Text>
             )}
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
+      
+      {/* Location Search Modals */}
+      <LocationSearchModal
+        visible={showPickupSearch}
+        onClose={() => setShowPickupSearch(false)}
+        onLocationSelect={handlePickupLocationSelect}
+        title="Select Pickup Location"
+        placeholder="Search for pickup address..."
+      />
+      
+      <LocationSearchModal
+        visible={showDropoffSearch}
+        onClose={() => setShowDropoffSearch(false)}
+        onLocationSelect={handleDropoffLocationSelect}
+        title="Select Delivery Location"
+        placeholder="Search for delivery address..."
+      />
+      
+      {/* Price Breakdown Modal */}
+      {priceBreakdown && (
+        <PriceBreakdownModal
+          visible={showPriceBreakdown}
+          onClose={() => setShowPriceBreakdown(false)}
+          breakdown={priceBreakdown}
+          distance={bookingData.pickupCoords && bookingData.dropoffCoords 
+            ? MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords)
+            : 0
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -736,11 +871,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  input: {
+  locationTextContainer: {
     flex: 1,
+  },
+  locationText: {
     fontSize: 16,
     color: Colors.light.text,
     fontWeight: "500",
+  },
+  locationPlaceholder: {
+    color: Colors.light.textMuted,
   },
   locationConnector: {
     flexDirection: "row",
@@ -818,6 +958,20 @@ const styles = StyleSheet.create({
   packageTypePriceActive: {
     color: Colors.light.primary,
     fontWeight: "700",
+  },
+  fragileIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.accent,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    gap: 4,
+  },
+  fragileText: {
+    fontSize: 10,
+    color: Colors.light.background,
+    fontWeight: '600',
   },
   paymentMethods: {
     gap: 12,
@@ -1035,8 +1189,17 @@ const styles = StyleSheet.create({
   estimateHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    justifyContent: "space-between",
     marginBottom: 16,
+  },
+  estimateHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  estimateHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   estimateTitle: {
     fontSize: 18,
@@ -1091,5 +1254,59 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "900",
     marginLeft: 8,
+  },
+  addOnContainer: {
+    backgroundColor: Colors.light.background,
+    borderRadius: 16,
+    padding: 16,
+    gap: 16,
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addOnItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  addOnLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  addOnInfo: {
+    flex: 1,
+  },
+  addOnTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: 2,
+  },
+  addOnDescription: {
+    fontSize: 12,
+    color: Colors.light.textSecondary,
+    fontWeight: '500',
+  },
+  addOnsIndicator: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  addOnsText: {
+    fontSize: 12,
+    color: Colors.light.background + 'CC',
+    fontWeight: '500',
+  },
+  tapForDetails: {
+    fontSize: 11,
+    color: Colors.light.background + '99',
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 8,
   },
 });
