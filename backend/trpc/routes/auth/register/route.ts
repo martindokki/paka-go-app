@@ -37,7 +37,7 @@ export default publicProcedure
     password: z.string().min(6),
     userType: z.enum(['client', 'driver', 'admin'])
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { name: string; email: string; password: string; phone: string; userType: 'client' | 'driver' | 'admin' } }) => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
