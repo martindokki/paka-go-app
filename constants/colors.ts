@@ -130,3 +130,28 @@ const Colors = {
 
 export default colors;
 export { Colors };
+
+// Ensure colors are available for runtime
+if (typeof colors.backgroundSecondary === 'undefined') {
+  console.error('Colors not properly initialized');
+}
+if (typeof colors.text === 'undefined') {
+  console.error('Text color not properly initialized');
+}
+
+// Create a safe colors object that provides fallbacks
+export const safeColors = {
+  ...colors,
+  backgroundSecondary: colors.backgroundSecondary || '#F8F9FA',
+  text: colors.text || '#1A1A1A',
+  textSecondary: colors.textSecondary || '#2D2D2D',
+  textMuted: colors.textMuted || '#6B7280',
+  background: colors.background || '#FFFFFF',
+  primary: colors.primary || '#FF6A00',
+  accent: colors.accent || '#2563EB',
+  error: colors.error || '#EF4444',
+  success: colors.success || '#10B981',
+  warning: colors.warning || '#F59E0B',
+  border: colors.border || '#E5E7EB',
+  shadow: colors.shadow || 'rgba(0, 0, 0, 0.1)',
+};

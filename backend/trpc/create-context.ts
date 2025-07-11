@@ -1,6 +1,7 @@
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
+import type { TRPCRouterRecord } from "@trpc/server";
 
 // Context creation function
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
@@ -24,4 +25,4 @@ export const protectedProcedure = t.procedure; // For now, same as public
 
 // Re-export for easier imports
 export { t };
-export type { TRPCRouterRecord } from "@trpc/server";
+export type { TRPCRouterRecord };

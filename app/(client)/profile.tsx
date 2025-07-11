@@ -29,7 +29,7 @@ import {
   Trash2,
   Eye,
 } from "lucide-react-native";
-import colors from "@/constants/colors";
+import colors, { safeColors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
   },
   profileCard: {
     flexDirection: "row",
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 4,
   },
   userEmail: {
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 4,
   },
   statLabel: {
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 14,
-    color: colors.text,
+    color: safeColors.text,
     fontWeight: "500",
   },
   menuSection: {
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
