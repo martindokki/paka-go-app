@@ -13,14 +13,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/colors';
 import { MapViewComponent } from '@/components/MapView';
 import { useMapStore } from '@/stores/map-store';
-import { useOrdersStore } from '@/stores/orders-store';
-import { MapService } from '@/services/map-service';
+import { useOrdersStore, Order } from '@/stores/orders-store';
+import { MapService, Coordinates } from '@/services/map-service';
 
 export default function MapScreen() {
   const { orderId, mode } = useLocalSearchParams<{ orderId?: string; mode?: string }>();
   const { getOrderById } = useOrdersStore();
   const { userLocation, destination, routePoints } = useMapStore();
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     if (orderId) {
@@ -33,7 +33,7 @@ export default function MapScreen() {
     }
   }, [orderId]);
 
-  const geocodeOrderAddresses = async (orderData) => {
+  const geocodeOrderAddresses = async (orderData: Order) => {
     try {
       const [pickup, delivery] = await Promise.all([
         MapService.geocodeAddress(orderData.from),
@@ -50,7 +50,7 @@ export default function MapScreen() {
     }
   };
 
-  const handleLocationSelect = (location) => {
+  const handleLocationSelect = (location: Coordinates) => {
     // Handle location selection if in booking mode
     if (mode === 'booking') {
       // Navigate back with selected location
@@ -95,7 +95,7 @@ export default function MapScreen() {
           onLocationSelect={handleLocationSelect}
           showSearch={!order} // Only show search if not viewing an order
           showRoute={true}
-          height="100%"
+          height={400}
         />
       </View>
 

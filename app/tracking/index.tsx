@@ -30,14 +30,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { MapViewComponent } from "@/components/MapView";
-import { MapService } from "@/services/map-service";
+import { MapService, Coordinates } from "@/services/map-service";
 
 export default function TrackingScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const { getOrderById, updateOrderStatus } = useOrdersStore();
   const [refreshing, setRefreshing] = useState(false);
-  const [pickupCoords, setPickupCoords] = useState(null);
-  const [deliveryCoords, setDeliveryCoords] = useState(null);
+  const [pickupCoords, setPickupCoords] = useState<Coordinates | null>(null);
+  const [deliveryCoords, setDeliveryCoords] = useState<Coordinates | null>(null);
   
   const order = orderId ? getOrderById(orderId) : null;
 
@@ -376,7 +376,7 @@ export default function TrackingScreen() {
               showSearch={false}
               showRoute={true}
               height={300}
-              initialLocation={pickupCoords}
+              initialLocation={pickupCoords || undefined}
             />
           </View>
         </View>

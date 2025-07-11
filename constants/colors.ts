@@ -20,6 +20,7 @@ export default {
     primary: primaryOrange,
     primaryLight: lightOrange,
     primaryDark: darkOrange,
+    secondary: accentBlue, // Added secondary color
     accent: accentBlue,
     accentLight: lightBlue,
     accentDark: darkBlue,
