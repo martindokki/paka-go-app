@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure } from '../../create-context.js';
+import { protectedProcedure } from '../../create-context';
 
 export const sendNotificationProcedure = protectedProcedure
   .input(z.object({
