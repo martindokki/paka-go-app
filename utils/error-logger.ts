@@ -33,7 +33,7 @@ class ErrorLogger {
         message: typeof error === 'string' ? error : error.message,
         stack: typeof error === 'object' ? error.stack : undefined,
         context,
-        userAgent: Platform.OS === 'web' ? navigator.userAgent : undefined,
+        userAgent: Platform.OS === 'web' && typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
         platform: Platform.OS,
       };
 
@@ -129,7 +129,18 @@ if (Platform.OS !== 'web') {
   const originalConsoleError = console.error;
   console.error = (...args) => {
     originalConsoleError(...args);
-    errorLogger.error(args.join(' '), { source: 'console.error' });
+    try {
+      const message = args.map(arg => {
+        if (typeof arg === 'string') return arg;
+        if (typeof arg === 'object' && arg !== null) {
+          return JSON.stringify(arg);
+        }
+        return String(arg);
+      }).join(' ');
+      errorLogger.error(message, { source: 'console.error' });
+    } catch (e) {
+      // Silently fail if error logging fails
+    }
   };
 }
 

@@ -25,6 +25,7 @@ export const trpcClient = trpc.createClient({
       transformer: superjson,
       fetch: async (url, options) => {
         try {
+          console.log('tRPC request to:', url);
           const response = await fetch(url, options);
           
           // Check if response is HTML (likely an error page)
@@ -32,6 +33,11 @@ export const trpcClient = trpc.createClient({
           if (contentType && contentType.includes('text/html')) {
             console.warn('Server returned HTML instead of JSON. Backend may not be available.');
             throw new Error('Server returned HTML instead of JSON. Check if the API server is running.');
+          }
+          
+          if (!response.ok) {
+            console.error('tRPC response not ok:', response.status, response.statusText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
           
           return response;

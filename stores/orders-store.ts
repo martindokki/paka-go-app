@@ -131,8 +131,8 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
 const sampleOrders: Order[] = [
   {
     id: 'ORD-001',
-    clientId: 'client-1',
-    driverId: 'driver-1',
+    clientId: '1',
+    driverId: '2',
     from: 'Westlands Shopping Mall',
     to: 'Karen Shopping Centre',
     packageType: 'documents',
@@ -159,7 +159,7 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-002',
-    clientId: 'client-1',
+    clientId: '1',
     from: 'CBD - Kencom House',
     to: 'Kilimani - Yaya Centre',
     packageType: 'small',
@@ -185,7 +185,7 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-003',
-    clientId: 'client-1',
+    clientId: '1',
     from: 'Sarit Centre',
     to: 'Lavington Mall',
     packageType: 'electronics',
@@ -206,8 +206,8 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-004',
-    clientId: 'client-2',
-    driverId: 'driver-2',
+    clientId: '2',
+    driverId: '2',
     from: 'Nakumatt Junction',
     to: 'Gigiri - UN Offices',
     packageType: 'documents',

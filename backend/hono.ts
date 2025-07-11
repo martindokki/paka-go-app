@@ -33,4 +33,18 @@ app.get("/test", (c) => {
   return c.json({ message: "Test endpoint working", data: { hello: "world" } });
 });
 
+// Add a debug endpoint to check tRPC setup
+app.get("/debug", (c) => {
+  return c.json({ 
+    message: "Debug endpoint", 
+    trpcMounted: true,
+    timestamp: new Date().toISOString(),
+    routes: {
+      health: "/api/",
+      test: "/api/test",
+      trpc: "/api/trpc/*"
+    }
+  });
+});
+
 export default app;

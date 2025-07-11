@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure } from '../../create-context.js';
+import { protectedProcedure } from '../../create-context';
 
 const driverSchema = z.object({
   id: z.string(),
