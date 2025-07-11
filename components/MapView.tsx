@@ -282,7 +282,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
             coordinate={destination}
             title="Destination"
             description="Delivery destination"
-            pinColor={Colors.light.secondary}
+            pinColor={Colors.light.accent}
           >
             <View style={styles.destinationMarker}>
               <MapPin size={24} color="white" />
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.secondary,
+    backgroundColor: Colors.light.accent,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
