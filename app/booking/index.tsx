@@ -335,7 +335,7 @@ export default function BookingScreen() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>📍 Pickup & Delivery</Text>
             <TouchableOpacity style={styles.mapToggle} onPress={toggleMap}>
-              <MapPin size={16} color={Colors.light.primary} />
+              <MapPin size={16} color={colors.light.primary} />
               <Text style={styles.mapToggleText}>{showMap ? 'Hide Map' : 'Show Map'}</Text>
             </TouchableOpacity>
           </View>
@@ -357,7 +357,7 @@ export default function BookingScreen() {
               onPress={() => setShowPickupSearch(true)}
             >
               <View style={styles.locationIcon}>
-                <MapPin size={20} color={Colors.light.primary} />
+                <MapPin size={20} color={colors.light.primary} />
               </View>
               <View style={styles.locationTextContainer}>
                 <Text style={[
@@ -367,13 +367,13 @@ export default function BookingScreen() {
                   {bookingData.pickupLocation || "Where should we pick up?"}
                 </Text>
               </View>
-              <Search size={16} color={Colors.light.textSecondary} />
+              <Search size={16} color={colors.light.textSecondary} />
             </TouchableOpacity>
             
             <View style={styles.locationConnector}>
               <View style={styles.connectorLine} />
               <View style={styles.connectorDot}>
-                <ArrowRight size={16} color={Colors.light.background} />
+                <ArrowRight size={16} color={colors.light.background} />
               </View>
             </View>
             
@@ -382,7 +382,7 @@ export default function BookingScreen() {
               onPress={() => setShowDropoffSearch(true)}
             >
               <View style={styles.locationIcon}>
-                <MapPin size={20} color={Colors.light.accent} />
+                <MapPin size={20} color={colors.light.accent} />
               </View>
               <View style={styles.locationTextContainer}>
                 <Text style={[
@@ -392,7 +392,7 @@ export default function BookingScreen() {
                   {bookingData.dropoffLocation || "Where should we deliver?"}
                 </Text>
               </View>
-              <Search size={16} color={Colors.light.textSecondary} />
+              <Search size={16} color={colors.light.textSecondary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -411,7 +411,7 @@ export default function BookingScreen() {
               >
                 {bookingData.packageType === type.id && (
                   <LinearGradient
-                    colors={[Colors.light.primary, Colors.light.primaryDark]}
+                    colors={[colors.light.primary, colors.light.primaryDark]}
                     style={styles.packageTypeGradient}
                   />
                 )}
@@ -426,7 +426,7 @@ export default function BookingScreen() {
                 </Text>
                 {bookingData.packageType === type.id && type.isFragileDefault && (
                   <View style={styles.fragileIndicator}>
-                    <Shield size={12} color={Colors.light.background} />
+                    <Shield size={12} color={colors.light.background} />
                     <Text style={styles.fragileText}>Fragile</Text>
                   </View>
                 )}
@@ -442,7 +442,7 @@ export default function BookingScreen() {
           <View style={styles.addOnContainer}>
             <View style={styles.addOnItem}>
               <View style={styles.addOnLeft}>
-                <Shield size={20} color={Colors.light.accent} />
+                <Shield size={20} color={colors.light.accent} />
                 <View style={styles.addOnInfo}>
                   <Text style={styles.addOnTitle}>Fragile Handling</Text>
                   <Text style={styles.addOnDescription}>+20% for delicate items</Text>
@@ -451,14 +451,14 @@ export default function BookingScreen() {
               <Switch
                 value={bookingData.isFragile}
                 onValueChange={(value) => updateBookingData("isFragile", value)}
-                trackColor={{ false: Colors.light.borderLight, true: Colors.light.accent }}
-                thumbColor={bookingData.isFragile ? Colors.light.background : Colors.light.textMuted}
+                trackColor={{ false: colors.light.borderLight, true: colors.light.accent }}
+                thumbColor={bookingData.isFragile ? colors.light.background : colors.light.textMuted}
               />
             </View>
             
             <View style={styles.addOnItem}>
               <View style={styles.addOnLeft}>
-                <Shield size={20} color={Colors.light.primary} />
+                <Shield size={20} color={colors.light.primary} />
                 <View style={styles.addOnInfo}>
                   <Text style={styles.addOnTitle}>Insurance Cover</Text>
                   <Text style={styles.addOnDescription}>+20% up to KSh 10,000</Text>
@@ -467,8 +467,8 @@ export default function BookingScreen() {
               <Switch
                 value={bookingData.hasInsurance}
                 onValueChange={(value) => updateBookingData("hasInsurance", value)}
-                trackColor={{ false: Colors.light.borderLight, true: Colors.light.primary }}
-                thumbColor={bookingData.hasInsurance ? Colors.light.background : Colors.light.textMuted}
+                trackColor={{ false: colors.light.borderLight, true: colors.light.primary }}
+                thumbColor={bookingData.hasInsurance ? colors.light.background : colors.light.textMuted}
               />
             </View>
           </View>
@@ -497,10 +497,10 @@ export default function BookingScreen() {
                   <LinearGradient
                     colors={
                       method.id === "mpesa" 
-                        ? [Colors.light.mpesa, "#00B85C"]
+                        ? [colors.light.mpesa, "#00B85C"]
                         : bookingData.paymentMethod === method.id
-                        ? [Colors.light.primary, Colors.light.primaryDark]
-                        : [Colors.light.backgroundSecondary, Colors.light.backgroundSecondary]
+                        ? [colors.light.primary, colors.light.primaryDark]
+                        : [colors.light.backgroundSecondary, colors.light.backgroundSecondary]
                     }
                     style={styles.paymentMethodIcon}
                   >
@@ -508,8 +508,8 @@ export default function BookingScreen() {
                       size={20}
                       color={
                         method.id === "mpesa" || bookingData.paymentMethod === method.id
-                          ? Colors.light.background
-                          : Colors.light.textMuted
+                          ? colors.light.background
+                          : colors.light.textMuted
                       }
                     />
                   </LinearGradient>
@@ -537,7 +537,7 @@ export default function BookingScreen() {
                   </View>
                 </View>
                 {bookingData.paymentMethod === method.id && (
-                  <CheckCircle size={20} color={Colors.light.primary} />
+                  <CheckCircle size={20} color={colors.light.primary} />
                 )}
               </TouchableOpacity>
             ))}
@@ -567,8 +567,8 @@ export default function BookingScreen() {
                   <LinearGradient
                     colors={
                       bookingData.paymentTerm === term.id
-                        ? [Colors.light.accent, Colors.light.accentDark]
-                        : [Colors.light.backgroundSecondary, Colors.light.backgroundSecondary]
+                        ? [colors.light.accent, colors.light.accentDark]
+                        : [colors.light.backgroundSecondary, colors.light.backgroundSecondary]
                     }
                     style={styles.paymentTermIcon}
                   >
@@ -576,8 +576,8 @@ export default function BookingScreen() {
                       size={20}
                       color={
                         bookingData.paymentTerm === term.id
-                          ? Colors.light.background
-                          : Colors.light.textMuted
+                          ? colors.light.background
+                          : colors.light.textMuted
                       }
                     />
                   </LinearGradient>
@@ -596,7 +596,7 @@ export default function BookingScreen() {
                   </View>
                 </View>
                 {bookingData.paymentTerm === term.id && (
-                  <ActivityIndicator size="small" color={Colors.light.accent} />
+                  <ActivityIndicator size="small" color={colors.light.accent} />
                 )}
               </TouchableOpacity>
             ))}
@@ -615,7 +615,7 @@ export default function BookingScreen() {
               onChangeText={(text) => updateBookingData("packageDescription", text)}
               multiline
               numberOfLines={3}
-              placeholderTextColor={Colors.light.textMuted}
+              placeholderTextColor={colors.light.textMuted}
             />
           </View>
         </View>
@@ -626,13 +626,13 @@ export default function BookingScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Recipient Name</Text>
             <View style={styles.inputWithIcon}>
-              <User size={18} color={Colors.light.textMuted} />
+              <User size={18} color={colors.light.textMuted} />
               <TextInput
                 style={styles.textInputWithIcon}
                 placeholder="Who will receive the package?"
                 value={bookingData.recipientName}
                 onChangeText={(text) => updateBookingData("recipientName", text)}
-                placeholderTextColor={Colors.light.textMuted}
+                placeholderTextColor={colors.light.textMuted}
               />
             </View>
           </View>
@@ -640,14 +640,14 @@ export default function BookingScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Recipient Phone</Text>
             <View style={styles.inputWithIcon}>
-              <Phone size={18} color={Colors.light.textMuted} />
+              <Phone size={18} color={colors.light.textMuted} />
               <TextInput
                 style={styles.textInputWithIcon}
                 placeholder="+254712345678"
                 value={bookingData.recipientPhone}
                 onChangeText={(text) => updateBookingData("recipientPhone", text)}
                 keyboardType="phone-pad"
-                placeholderTextColor={Colors.light.textMuted}
+                placeholderTextColor={colors.light.textMuted}
               />
             </View>
           </View>
@@ -661,7 +661,7 @@ export default function BookingScreen() {
               onChangeText={(text) => updateBookingData("specialInstructions", text)}
               multiline
               numberOfLines={3}
-              placeholderTextColor={Colors.light.textMuted}
+              placeholderTextColor={colors.light.textMuted}
             />
           </View>
         </View>
@@ -672,34 +672,34 @@ export default function BookingScreen() {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={[Colors.light.accent, Colors.light.accentDark]}
+              colors={[colors.light.accent, colors.light.accentDark]}
               style={styles.estimateCard}
             >
               <View style={styles.estimateHeader}>
                 <View style={styles.estimateHeaderLeft}>
-                  <Zap size={24} color={Colors.light.background} />
+                  <Zap size={24} color={colors.light.background} />
                   <Text style={styles.estimateTitle}>Delivery Estimate</Text>
                 </View>
                 <View style={styles.estimateHeaderRight}>
                   {isCalculatingPrice && (
-                    <ActivityIndicator size="small" color={Colors.light.background} />
+                    <ActivityIndicator size="small" color={colors.light.background} />
                   )}
-                  <Info size={16} color={Colors.light.background} style={{ marginLeft: 8 }} />
+                  <Info size={16} color={colors.light.background} style={{ marginLeft: 8 }} />
                 </View>
               </View>
               <View style={styles.estimateDetails}>
                 <View style={styles.estimateItem}>
-                  <DollarSign size={20} color={Colors.light.background} />
+                  <DollarSign size={20} color={colors.light.background} />
                   <Text style={styles.estimateLabel}>Total Price</Text>
                   <Text style={styles.estimateValue}>KSh {priceBreakdown.total}</Text>
                 </View>
                 <View style={styles.estimateItem}>
-                  <Clock size={20} color={Colors.light.background} />
+                  <Clock size={20} color={colors.light.background} />
                   <Text style={styles.estimateLabel}>Time</Text>
                   <Text style={styles.estimateValue}>{estimatedTime}</Text>
                 </View>
                 <View style={styles.estimateItem}>
-                  <Wallet size={20} color={Colors.light.background} />
+                  <Wallet size={20} color={colors.light.background} />
                   <Text style={styles.estimateLabel}>Payment</Text>
                   <Text style={styles.estimateValue}>
                     {bookingData.paymentTerm === "pay_now" ? "Pay Now" : "On Delivery"}
@@ -707,7 +707,7 @@ export default function BookingScreen() {
                 </View>
                 {bookingData.pickupCoords && bookingData.dropoffCoords && (
                   <View style={styles.estimateItem}>
-                    <MapPin size={20} color={Colors.light.background} />
+                    <MapPin size={20} color={colors.light.background} />
                     <Text style={styles.estimateLabel}>Distance</Text>
                     <Text style={styles.estimateValue}>
                       {MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords).toFixed(1)} km
@@ -737,10 +737,10 @@ export default function BookingScreen() {
 
         <TouchableOpacity style={styles.bookButton} onPress={handleBookDelivery}>
           <LinearGradient
-            colors={[Colors.light.primary, Colors.light.primaryDark]}
+            colors={[colors.light.primary, colors.light.primaryDark]}
             style={styles.bookButtonGradient}
           >
-            <Send size={24} color={Colors.light.background} />
+            <Send size={24} color={colors.light.background} />
             <Text style={styles.bookButtonText}>
               {bookingData.paymentTerm === "pay_now" ? "Book & Pay" : "Book Delivery"}
             </Text>
@@ -787,7 +787,7 @@ export default function BookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.light.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -799,13 +799,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.light.text,
     marginBottom: 8,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.textSecondary,
+    color: colors.light.textSecondary,
     fontWeight: "500",
   },
   section: {
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.light.text,
   },
   mapToggle: {
     flexDirection: 'row',
@@ -828,19 +828,19 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.light.primaryLight,
     borderRadius: 12,
   },
   mapToggleText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.light.primary,
+    color: colors.light.primary,
   },
   mapContainer: {
     borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -852,12 +852,12 @@ const styles = StyleSheet.create({
   locationInput: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     gap: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -867,7 +867,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.light.primaryLight,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -876,11 +876,11 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.light.text,
     fontWeight: "500",
   },
   locationPlaceholder: {
-    color: Colors.light.textMuted,
+    color: colors.light.textMuted,
   },
   locationConnector: {
     flexDirection: "row",
@@ -891,13 +891,13 @@ const styles = StyleSheet.create({
   connectorLine: {
     width: 2,
     height: 24,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.light.border,
   },
   connectorDot: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.light.primary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -909,7 +909,7 @@ const styles = StyleSheet.create({
   packageTypeCard: {
     flex: 1,
     minWidth: "47%",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     padding: 20,
     alignItems: "center",
@@ -918,15 +918,15 @@ const styles = StyleSheet.create({
     gap: 12,
     position: "relative",
     overflow: "hidden",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
   packageTypeCardActive: {
-    borderColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    borderColor: colors.light.primary,
+    shadowColor: colors.light.primary,
     shadowOpacity: 0.2,
   },
   packageTypeGradient: {
@@ -943,26 +943,26 @@ const styles = StyleSheet.create({
   packageTypeText: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.light.text,
     textAlign: "center",
   },
   packageTypeTextActive: {
-    color: Colors.light.primary,
+    color: colors.light.primary,
     fontWeight: "700",
   },
   packageTypePrice: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.light.textMuted,
     fontWeight: "600",
   },
   packageTypePriceActive: {
-    color: Colors.light.primary,
+    color: colors.light.primary,
     fontWeight: "700",
   },
   fragileIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.light.accent,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
@@ -970,7 +970,7 @@ const styles = StyleSheet.create({
   },
   fragileText: {
     fontSize: 10,
-    color: Colors.light.background,
+    color: colors.light.background,
     fontWeight: '600',
   },
   paymentMethods: {
@@ -980,12 +980,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 2,
     borderColor: "transparent",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -993,18 +993,18 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   paymentMethodCardActive: {
-    borderColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    borderColor: colors.light.primary,
+    shadowColor: colors.light.primary,
     shadowOpacity: 0.2,
   },
   paymentMethodCardFeatured: {
-    borderColor: Colors.light.mpesa,
+    borderColor: colors.light.mpesa,
   },
   featuredBadge: {
     position: "absolute",
     top: -8,
     right: 12,
-    backgroundColor: Colors.light.mpesa,
+    backgroundColor: colors.light.mpesa,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
   },
   featuredText: {
     fontSize: 10,
-    color: Colors.light.background,
+    color: colors.light.background,
     fontWeight: "800",
     letterSpacing: 0.5,
   },
@@ -1035,15 +1035,15 @@ const styles = StyleSheet.create({
   paymentMethodName: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: colors.light.text,
     marginBottom: 2,
   },
   paymentMethodNameActive: {
-    color: Colors.light.primary,
+    color: colors.light.primary,
   },
   paymentMethodDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.light.textMuted,
     fontWeight: "500",
   },
   benefitsList: {
@@ -1052,7 +1052,7 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     fontSize: 11,
-    color: Colors.light.primary,
+    color: colors.light.primary,
     fontWeight: "600",
   },
   paymentTerms: {
@@ -1062,12 +1062,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 2,
     borderColor: "transparent",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1075,18 +1075,18 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   paymentTermCardActive: {
-    borderColor: Colors.light.accent,
-    shadowColor: Colors.light.accent,
+    borderColor: colors.light.accent,
+    shadowColor: colors.light.accent,
     shadowOpacity: 0.2,
   },
   paymentTermCardRecommended: {
-    borderColor: Colors.light.accent,
+    borderColor: colors.light.accent,
   },
   recommendedBadge: {
     position: "absolute",
     top: -8,
     right: 12,
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.light.accent,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1094,7 +1094,7 @@ const styles = StyleSheet.create({
   },
   recommendedText: {
     fontSize: 10,
-    color: Colors.light.background,
+    color: colors.light.background,
     fontWeight: "800",
     letterSpacing: 0.5,
   },
@@ -1117,15 +1117,15 @@ const styles = StyleSheet.create({
   paymentTermName: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: colors.light.text,
     marginBottom: 2,
   },
   paymentTermNameActive: {
-    color: Colors.light.accent,
+    color: colors.light.accent,
   },
   paymentTermDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.light.textMuted,
     fontWeight: "500",
   },
   inputContainer: {
@@ -1134,20 +1134,20 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.light.text,
     marginBottom: 8,
   },
   inputWithIcon: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     borderWidth: 2,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.light.borderLight,
     gap: 12,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -1156,21 +1156,21 @@ const styles = StyleSheet.create({
   textInputWithIcon: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.light.text,
     fontWeight: "500",
   },
   textArea: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.light.text,
     borderWidth: 2,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.light.borderLight,
     textAlignVertical: "top",
     fontWeight: "500",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -1180,7 +1180,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     marginBottom: 24,
-    shadowColor: Colors.light.accent,
+    shadowColor: colors.light.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -1204,7 +1204,7 @@ const styles = StyleSheet.create({
   estimateTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.light.background,
   },
   estimateDetails: {
     gap: 12,
@@ -1216,19 +1216,19 @@ const styles = StyleSheet.create({
   },
   estimateLabel: {
     fontSize: 16,
-    color: Colors.light.background + "CC",
+    color: colors.light.background + "CC",
     flex: 1,
     fontWeight: "600",
   },
   estimateValue: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.light.background,
   },
   bookButton: {
     borderRadius: 20,
     marginBottom: 32,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.light.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -1244,23 +1244,23 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   bookButtonText: {
-    color: Colors.light.background,
+    color: colors.light.background,
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0.5,
   },
   bookButtonPrice: {
-    color: Colors.light.background,
+    color: colors.light.background,
     fontSize: 18,
     fontWeight: "900",
     marginLeft: 8,
   },
   addOnContainer: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.light.background,
     borderRadius: 16,
     padding: 16,
     gap: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1283,12 +1283,12 @@ const styles = StyleSheet.create({
   addOnTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.light.text,
     marginBottom: 2,
   },
   addOnDescription: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.light.textSecondary,
     fontWeight: '500',
   },
   addOnsIndicator: {
@@ -1299,12 +1299,12 @@ const styles = StyleSheet.create({
   },
   addOnsText: {
     fontSize: 12,
-    color: Colors.light.background + 'CC',
+    color: colors.light.background + 'CC',
     fontWeight: '500',
   },
   tapForDetails: {
     fontSize: 11,
-    color: Colors.light.background + '99',
+    color: colors.light.background + '99',
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 8,
