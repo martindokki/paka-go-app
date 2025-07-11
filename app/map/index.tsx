@@ -10,7 +10,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Navigation, MapPin, Package } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { MapViewComponent } from '@/components/MapView';
 import { useMapStore } from '@/stores/map-store';
 import { useOrdersStore, Order } from '@/stores/orders-store';
@@ -33,7 +33,7 @@ export default function MapScreen() {
     }
   }, [orderId]);
 
-  const geocodeOrderAddresses = async (orderData: Order) => {
+  const geocodeOrderAddresses = async (orderData: any) => {
     try {
       const [pickup, delivery] = await Promise.all([
         MapService.geocodeAddress(orderData.from),
@@ -50,7 +50,7 @@ export default function MapScreen() {
     }
   };
 
-  const handleLocationSelect = (location: Coordinates) => {
+  const handleLocationSelect = (location: any) => {
     // Handle location selection if in booking mode
     if (mode === 'booking') {
       // Navigate back with selected location
@@ -70,7 +70,7 @@ export default function MapScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={Colors.light.text} />
+          <ArrowLeft size={24} color={colors.light.text} />
         </TouchableOpacity>
         
         <View style={styles.headerInfo}>
@@ -85,7 +85,7 @@ export default function MapScreen() {
         </View>
 
         <TouchableOpacity style={styles.centerButton}>
-          <Navigation size={20} color={Colors.light.primary} />
+          <Navigation size={20} color={colors.light.primary} />
         </TouchableOpacity>
       </View>
 
@@ -95,7 +95,7 @@ export default function MapScreen() {
           onLocationSelect={handleLocationSelect}
           showSearch={!order} // Only show search if not viewing an order
           showRoute={true}
-          height={400}
+          height="400"
         />
       </View>
 
@@ -103,20 +103,20 @@ export default function MapScreen() {
       {(userLocation && destination) && (
         <View style={styles.bottomPanel}>
           <LinearGradient
-            colors={[Colors.light.background, Colors.light.backgroundSecondary]}
+            colors={[colors.light.background, colors.light.backgroundSecondary]}
             style={styles.panelGradient}
           >
             <View style={styles.routeInfo}>
               <View style={styles.routeStats}>
                 <View style={styles.statItem}>
-                  <MapPin size={16} color={Colors.light.primary} />
+                  <MapPin size={16} color={colors.light.primary} />
                   <Text style={styles.statLabel}>Distance</Text>
                   <Text style={styles.statValue}>{getDistance()} km</Text>
                 </View>
                 
                 {routePoints.length > 0 && (
                   <View style={styles.statItem}>
-                    <Package size={16} color={Colors.light.accent} />
+                    <Package size={16} color={colors.light.accent} />
                     <Text style={styles.statLabel}>Route</Text>
                     <Text style={styles.statValue}>Calculated</Text>
                   </View>

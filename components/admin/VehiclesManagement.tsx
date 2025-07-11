@@ -213,7 +213,7 @@ function VehicleForm({ visible, vehicle, onClose, onSave }: VehicleFormProps) {
                     key={vehicleType.value}
                     style={styles.typeOption}
                     onPress={() => {
-                      setType(vehicleType.value);
+                      setType(vehicleType.value as 'motorcycle' | 'bicycle' | 'car' | 'van');
                       setShowTypeSelector(false);
                     }}
                   >

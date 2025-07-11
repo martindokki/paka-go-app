@@ -49,6 +49,8 @@ interface OrdersState {
   updateOrderStatus: (orderId: string, status: OrderStatus, driverInfo?: Order['driverInfo']) => void;
   updatePaymentStatus: (orderId: string, paymentStatus: Order['paymentStatus']) => void;
   assignDriver: (orderId: string, driverId: string, driverInfo: Order['driverInfo']) => void;
+  cancelOrder: (orderId: string, reason?: string) => void;
+  sendSTKPush: (orderId: string) => void;
   getOrdersByClient: (clientId: string) => Order[];
   getOrdersByDriver: (driverId: string) => Order[];
   getPendingOrders: () => Order[];
@@ -321,6 +323,45 @@ export const useOrdersStore = create<OrdersState>()(
       
       getOrderById: (orderId) => {
         return get().orders.find((order) => order.id === orderId);
+      },
+      
+      cancelOrder: (orderId, reason) => {
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  status: 'cancelled' as OrderStatus,
+                  updatedAt: new Date().toISOString(),
+                  timeline: [...order.timeline, {
+                    status: 'cancelled' as OrderStatus,
+                    time: new Date().toLocaleTimeString('en-US', { 
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      hour12: true 
+                    }),
+                    description: reason || 'Order cancelled',
+                    completed: true,
+                  }],
+                }
+              : order
+          ),
+        }));
+      },
+      
+      sendSTKPush: (orderId) => {
+        // Mock STK push - in real app, this would call M-Pesa API
+        set((state) => ({
+          orders: state.orders.map((order) =>
+            order.id === orderId
+              ? {
+                  ...order,
+                  paymentStatus: 'paid' as Order['paymentStatus'],
+                  updatedAt: new Date().toISOString(),
+                }
+              : order
+          ),
+        }));
       },
     }),
     {

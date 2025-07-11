@@ -596,7 +596,7 @@ export default function BookingScreen() {
                   </View>
                 </View>
                 {bookingData.paymentTerm === term.id && (
-                  <CheckCircle size={20} color={Colors.light.accent} />
+                  <ActivityIndicator size="small" color={colors.light.accent} />
                 )}
               </TouchableOpacity>
             ))}

@@ -81,11 +81,11 @@ function OrderCard({ order, onAssignDriver, onCancelOrder, onSendSTKPush }: Orde
         <View style={styles.orderMeta}>
           <View style={styles.metaRow}>
             <User size={16} color={colors.light.textMuted} />
-            <Text style={styles.metaText}>{order.customerName}</Text>
+            <Text style={styles.metaText}>{order.recipientName}</Text>
           </View>
           <View style={styles.metaRow}>
             <Phone size={16} color={colors.light.textMuted} />
-            <Text style={styles.metaText}>{order.customerPhone}</Text>
+            <Text style={styles.metaText}>{order.recipientPhone}</Text>
           </View>
           <View style={styles.metaRow}>
             <Package size={16} color={colors.light.textMuted} />
@@ -95,10 +95,10 @@ function OrderCard({ order, onAssignDriver, onCancelOrder, onSendSTKPush }: Orde
             <DollarSign size={16} color={colors.light.textMuted} />
             <Text style={styles.metaText}>KES {order.price}</Text>
           </View>
-          {order.driverName && (
+          {order.driverInfo?.name && (
             <View style={styles.metaRow}>
               <Truck size={16} color={colors.light.textMuted} />
-              <Text style={styles.metaText}>Driver: {order.driverName}</Text>
+              <Text style={styles.metaText}>Driver: {order.driverInfo.name}</Text>
             </View>
           )}
         </View>
@@ -145,7 +145,7 @@ export function OrdersManagement() {
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.recipientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.from.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.to.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -164,7 +164,12 @@ export function OrdersManagement() {
           text: 'Assign', 
           onPress: () => {
             // In a real app, you'd show a driver selection modal
-            assignDriver(orderId, 'driver1', 'John Doe');
+            assignDriver(orderId, 'driver1', {
+              name: 'John Doe',
+              phone: '+254700000000',
+              rating: 4.5,
+              vehicleInfo: 'Honda CB 150R - KCA 123A'
+            });
           }
         }
       ]

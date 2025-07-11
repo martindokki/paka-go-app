@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../create-context';
+import { publicProcedure } from '../../../create-context';
 
 const settingsSchema = z.object({
   baseFare: z.number().min(0),
@@ -38,7 +38,7 @@ export const getSettingsProcedure = publicProcedure
 
 export const updateSettingsProcedure = publicProcedure
   .input(settingsSchema.partial())
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: any }) => {
     // Mock implementation - replace with actual database update
     console.log('Updating settings:', input);
     

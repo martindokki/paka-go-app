@@ -27,7 +27,7 @@ import {
   Wallet,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { MapViewComponent } from "@/components/MapView";
 import { MapService, Coordinates } from "@/services/map-service";
@@ -61,8 +61,8 @@ export default function TrackingScreen() {
         MapService.geocodeAddress(order.to)
       ]);
       
-      if (pickup) setPickupCoords(pickup);
-      if (delivery) setDeliveryCoords(delivery);
+      if (pickup) setPickupCoords(pickup as any);
+      if (delivery) setDeliveryCoords(delivery as any);
     } catch (error) {
       console.error('Geocoding error:', error);
     }
@@ -375,8 +375,8 @@ export default function TrackingScreen() {
             <MapViewComponent
               showSearch={false}
               showRoute={true}
-              height={300}
-              initialLocation={pickupCoords || undefined}
+              height="300"
+              initialLocation={pickupCoords as any}
             />
           </View>
         </View>

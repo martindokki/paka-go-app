@@ -14,7 +14,7 @@ import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import { useMapStore } from '@/stores/map-store';
 import { MapService, Coordinates } from '@/services/map-service';
 import { useLocation } from '@/hooks/useLocation';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 
 interface MapViewComponentProps {
   onLocationSelect?: (location: Coordinates) => void;
@@ -286,7 +286,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
             coordinate={userLocation}
             title="Your Location"
             description="You are here"
-            pinColor={Colors.light.primary}
+            pinColor={colors.light.primary}
           >
             <View style={styles.userMarker}>
               <View style={styles.userMarkerInner} />
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   searchButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.light.primary,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.light.primary,
     borderWidth: 3,
     borderColor: 'white',
     justifyContent: 'center',

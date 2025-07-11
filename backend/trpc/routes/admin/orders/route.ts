@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../create-context';
+import { publicProcedure } from '../../../create-context';
 
 export const getOrdersProcedure = publicProcedure
   .query(async () => {
@@ -47,7 +47,7 @@ export const assignOrderProcedure = publicProcedure
     driverId: z.string(),
     driverName: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: any }) => {
     // Mock implementation - replace with actual database update
     console.log('Assigning order:', input.orderId, 'to driver:', input.driverId);
     
@@ -62,7 +62,7 @@ export const cancelOrderProcedure = publicProcedure
     orderId: z.string(),
     reason: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: any }) => {
     // Mock implementation - replace with actual database update
     console.log('Cancelling order:', input.orderId, 'reason:', input.reason);
     
@@ -76,7 +76,7 @@ export const sendSTKPushProcedure = publicProcedure
   .input(z.object({
     orderId: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: any }) => {
     // Mock implementation - replace with actual M-Pesa STK Push
     console.log('Sending STK Push for order:', input.orderId);
     
