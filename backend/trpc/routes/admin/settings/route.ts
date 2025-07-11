@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure } from '../../create-context.js';
+import { protectedProcedure } from '../../create-context';
 
 const settingsSchema = z.object({
   baseFare: z.number().min(0),
