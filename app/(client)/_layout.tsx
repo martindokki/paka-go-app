@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Slot } from "expo-router";
+import { Tabs } from "expo-router";
 import { Home, Package, Clock, User } from "lucide-react-native";
 import Colors from "@/constants/colors";
 

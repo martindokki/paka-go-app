@@ -539,7 +539,7 @@ export default function AuthScreen() {
                           </TouchableOpacity>
                           {authError.includes('already registered as a') && (
                             <TouchableOpacity 
-                              style={styles.userTypeButton}
+                              style={styles.switchUserTypeButton}
                               onPress={() => {
                                 // Extract the user type from the error message
                                 const match = authError.match(/already registered as a (\w+)/);
@@ -549,7 +549,7 @@ export default function AuthScreen() {
                                 }
                               }}
                             >
-                              <Text style={styles.userTypeText}>Switch Account Type</Text>
+                              <Text style={styles.switchUserTypeText}>Switch Account Type</Text>
                             </TouchableOpacity>
                           )}
                         </View>
@@ -1016,5 +1016,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-
+  switchUserTypeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.light.accent + "20",
+    borderRadius: 12,
+  },
+  switchUserTypeText: {
+    color: Colors.light.accent,
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+  },
 });
