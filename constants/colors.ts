@@ -169,5 +169,45 @@ export const safeColors = {
   cancelled: colors?.cancelled || "#EF4444",
 };
 
-export default colors;
+// Ensure colors is always defined with fallbacks
+const safeColorsExport = colors || {
+  text: "#1A1A1A",
+  textSecondary: "#2D2D2D",
+  textMuted: "#6B7280",
+  background: "#FFFFFF",
+  backgroundSecondary: "#F8F9FA",
+  backgroundTertiary: "#F3F4F6",
+  primary: "#FF6A00",
+  primaryLight: "#FFF4F0",
+  primaryDark: "#E55A00",
+  secondary: "#2563EB",
+  secondaryLight: "#EFF6FF",
+  secondaryDark: "#1D4ED8",
+  accent: "#2563EB",
+  accentLight: "#EFF6FF",
+  accentDark: "#1D4ED8",
+  border: "#E5E7EB",
+  borderLight: "#F3F4F6",
+  success: "#10B981",
+  successDark: "#059669",
+  warning: "#F59E0B",
+  error: "#EF4444",
+  info: "#2563EB",
+  tint: "#FF6A00",
+  tabIconDefault: "#9CA3AF",
+  tabIconSelected: "#FF6A00",
+  shadow: "rgba(0, 0, 0, 0.1)",
+  overlay: "rgba(0, 0, 0, 0.5)",
+  mpesa: "#00A651",
+  mpesaLight: "#E8F5E8",
+  pending: "#F59E0B",
+  assigned: "#3B82F6",
+  picked_up: "#8B5CF6",
+  in_transit: "#06B6D4",
+  delivered: "#10B981",
+  cancelled: "#EF4444",
+};
+
+export default safeColorsExport;
 export { Colors };
+export { safeColors };

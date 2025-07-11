@@ -335,7 +335,7 @@ export default function BookingScreen() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>📍 Pickup & Delivery</Text>
             <TouchableOpacity style={styles.mapToggle} onPress={toggleMap}>
-              <MapPin size={16} color={colors.primary} />
+              <MapPin size={16} color={safeColors.primary} />
               <Text style={styles.mapToggleText}>{showMap ? 'Hide Map' : 'Show Map'}</Text>
             </TouchableOpacity>
           </View>
@@ -357,7 +357,7 @@ export default function BookingScreen() {
               onPress={() => setShowPickupSearch(true)}
             >
               <View style={styles.locationIcon}>
-                <MapPin size={20} color={colors.primary} />
+                <MapPin size={20} color={safeColors.primary} />
               </View>
               <View style={styles.locationTextContainer}>
                 <Text style={[
@@ -367,7 +367,7 @@ export default function BookingScreen() {
                   {bookingData.pickupLocation || "Where should we pick up?"}
                 </Text>
               </View>
-              <Search size={16} color={colors.textSecondary} />
+              <Search size={16} color={safeColors.textSecondary} />
             </TouchableOpacity>
             
             <View style={styles.locationConnector}>
@@ -392,7 +392,7 @@ export default function BookingScreen() {
                   {bookingData.dropoffLocation || "Where should we deliver?"}
                 </Text>
               </View>
-              <Search size={16} color={colors.textSecondary} />
+              <Search size={16} color={safeColors.textSecondary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -799,13 +799,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "900",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 8,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: safeColors.textSecondary,
     fontWeight: "500",
   },
   section: {
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: colors.text,
+    color: safeColors.text,
   },
   mapToggle: {
     flexDirection: 'row',
@@ -828,19 +828,19 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: safeColors.primaryLight,
     borderRadius: 12,
   },
   mapToggleText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.primary,
+    color: safeColors.primary,
   },
   mapContainer: {
     borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 16,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -852,12 +852,12 @@ const styles = StyleSheet.create({
   locationInput: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     gap: 16,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -867,7 +867,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: safeColors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -876,11 +876,11 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 16,
-    color: colors.text,
+    color: safeColors.text,
     fontWeight: "500",
   },
   locationPlaceholder: {
-    color: colors.textMuted,
+    color: safeColors.textMuted,
   },
   locationConnector: {
     flexDirection: "row",
@@ -891,13 +891,13 @@ const styles = StyleSheet.create({
   connectorLine: {
     width: 2,
     height: 24,
-    backgroundColor: colors.border,
+    backgroundColor: safeColors.border,
   },
   connectorDot: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.primary,
+    backgroundColor: safeColors.primary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -909,7 +909,7 @@ const styles = StyleSheet.create({
   packageTypeCard: {
     flex: 1,
     minWidth: "47%",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 20,
     alignItems: "center",
@@ -918,15 +918,15 @@ const styles = StyleSheet.create({
     gap: 12,
     position: "relative",
     overflow: "hidden",
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
   packageTypeCardActive: {
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
+    borderColor: safeColors.primary,
+    shadowColor: safeColors.primary,
     shadowOpacity: 0.2,
   },
   packageTypeGradient: {
@@ -943,26 +943,26 @@ const styles = StyleSheet.create({
   packageTypeText: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.text,
+    color: safeColors.text,
     textAlign: "center",
   },
   packageTypeTextActive: {
-    color: colors.primary,
+    color: safeColors.primary,
     fontWeight: "700",
   },
   packageTypePrice: {
     fontSize: 12,
-    color: colors.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "600",
   },
   packageTypePriceActive: {
-    color: colors.primary,
+    color: safeColors.primary,
     fontWeight: "700",
   },
   fragileIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.accent,
+    backgroundColor: safeColors.accent,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 8,
@@ -980,12 +980,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 2,
     borderColor: "transparent",
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -993,18 +993,18 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   paymentMethodCardActive: {
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
+    borderColor: safeColors.primary,
+    shadowColor: safeColors.primary,
     shadowOpacity: 0.2,
   },
   paymentMethodCardFeatured: {
-    borderColor: colors.mpesa,
+    borderColor: safeColors.mpesa,
   },
   featuredBadge: {
     position: "absolute",
     top: -8,
     right: 12,
-    backgroundColor: colors.mpesa,
+    backgroundColor: safeColors.mpesa,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1035,15 +1035,15 @@ const styles = StyleSheet.create({
   paymentMethodName: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   paymentMethodNameActive: {
-    color: colors.primary,
+    color: safeColors.primary,
   },
   paymentMethodDescription: {
     fontSize: 12,
-    color: colors.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "500",
   },
   benefitsList: {
@@ -1052,7 +1052,7 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     fontSize: 11,
-    color: colors.primary,
+    color: safeColors.primary,
     fontWeight: "600",
   },
   paymentTerms: {
@@ -1062,12 +1062,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 2,
     borderColor: "transparent",
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1075,18 +1075,18 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   paymentTermCardActive: {
-    borderColor: colors.accent,
-    shadowColor: colors.accent,
+    borderColor: safeColors.accent,
+    shadowColor: safeColors.accent,
     shadowOpacity: 0.2,
   },
   paymentTermCardRecommended: {
-    borderColor: colors.accent,
+    borderColor: safeColors.accent,
   },
   recommendedBadge: {
     position: "absolute",
     top: -8,
     right: 12,
-    backgroundColor: colors.accent,
+    backgroundColor: safeColors.accent,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1117,15 +1117,15 @@ const styles = StyleSheet.create({
   paymentTermName: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   paymentTermNameActive: {
-    color: colors.accent,
+    color: safeColors.accent,
   },
   paymentTermDescription: {
     fontSize: 12,
-    color: colors.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "500",
   },
   inputContainer: {
@@ -1134,20 +1134,20 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 8,
   },
   inputWithIcon: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     borderWidth: 2,
-    borderColor: colors.borderLight,
+    borderColor: safeColors.borderLight,
     gap: 12,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -1156,21 +1156,21 @@ const styles = StyleSheet.create({
   textInputWithIcon: {
     flex: 1,
     fontSize: 16,
-    color: colors.text,
+    color: safeColors.text,
     fontWeight: "500",
   },
   textArea: {
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 18,
     fontSize: 16,
-    color: colors.text,
+    color: safeColors.text,
     borderWidth: 2,
-    borderColor: colors.borderLight,
+    borderColor: safeColors.borderLight,
     textAlignVertical: "top",
     fontWeight: "500",
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -1180,7 +1180,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 24,
     marginBottom: 24,
-    shadowColor: colors.accent,
+    shadowColor: safeColors.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -1228,7 +1228,7 @@ const styles = StyleSheet.create({
   bookButton: {
     borderRadius: 20,
     marginBottom: 32,
-    shadowColor: colors.primary,
+    shadowColor: safeColors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -1256,11 +1256,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   addOnContainer: {
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 16,
     gap: 16,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1283,12 +1283,12 @@ const styles = StyleSheet.create({
   addOnTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   addOnDescription: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: safeColors.textSecondary,
     fontWeight: '500',
   },
   addOnsIndicator: {

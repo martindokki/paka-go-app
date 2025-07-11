@@ -61,7 +61,7 @@ export default function ProfileScreen() {
       title: "Saved Addresses",
       subtitle: "Manage your delivery locations",
       icon: MapPin,
-      color: colors.primary,
+      color: safeColors.primary,
       onPress: () => console.log("Navigate to addresses"),
     },
     {
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
       title: "Payment Methods",
       subtitle: "Cards, M-Pesa, and more",
       icon: CreditCard,
-      color: colors.accent,
+      color: safeColors.accent,
       onPress: () => console.log("Navigate to payment methods"),
     },
     {
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
       title: "Payment History",
       subtitle: "View all your transactions",
       icon: Receipt,
-      color: colors.mpesa,
+      color: safeColors.mpesa,
       onPress: () => router.push("/payment/history"),
     },
     {
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
       title: "Notifications",
       subtitle: "Manage your preferences",
       icon: Bell,
-      color: colors.warning,
+      color: safeColors.warning,
       onPress: () => console.log("Navigate to notifications"),
     },
     {
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
       title: "Privacy & Security",
       subtitle: "Account security settings",
       icon: Shield,
-      color: colors.info,
+      color: safeColors.info,
       onPress: () => console.log("Navigate to privacy"),
     },
     {
@@ -101,7 +101,7 @@ export default function ProfileScreen() {
       title: "App Settings",
       subtitle: "Preferences and configuration",
       icon: Settings,
-      color: colors.textMuted,
+      color: safeColors.textMuted,
       onPress: () => console.log("Navigate to settings"),
     },
     {
@@ -109,7 +109,7 @@ export default function ProfileScreen() {
       title: "Help & Support",
       subtitle: "Get help or contact us",
       icon: HelpCircle,
-      color: colors.primary,
+      color: safeColors.primary,
       onPress: () => console.log("Navigate to help"),
     },
   ];
@@ -306,16 +306,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
   },
   profileCard: {
     flexDirection: "row",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
     alignItems: "center",
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: safeColors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -336,12 +336,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: safeColors.textSecondary,
     marginBottom: 12,
   },
   userStats: {
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.textMuted,
+    backgroundColor: safeColors.textMuted,
     marginHorizontal: 8,
   },
   statText: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 4,
   },
   statLabel: {
@@ -389,11 +389,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   contactInfo: {
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -407,14 +407,14 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 14,
-    color: colors.text,
+    color: safeColors.text,
     fontWeight: "500",
   },
   menuSection: {
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     marginBottom: 24,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight,
+    borderBottomColor: safeColors.borderLight,
   },
   menuItemLast: {
     borderBottomWidth: 0,
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
@@ -461,14 +461,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.error + "30",
+    borderColor: safeColors.error + "30",
     gap: 8,
     marginBottom: 32,
-    shadowColor: colors.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.error,
+    color: safeColors.error,
   },
   footer: {
     alignItems: "center",
