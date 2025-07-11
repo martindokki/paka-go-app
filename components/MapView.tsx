@@ -36,7 +36,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     return (
       <View style={[styles.container, { height }]}>
         <View style={styles.webFallback}>
-          <MapPin size={48} color={colors.light.primary} />
+          <MapPin size={48} color={Colors.light.primary} />
           <Text style={styles.webFallbackTitle}>Map View</Text>
           <Text style={styles.webFallbackText}>
             Interactive maps are not available on web.
@@ -226,11 +226,11 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       {showSearch && (
         <View style={styles.searchContainer}>
           <View style={[styles.searchBar, searchFocused && styles.searchBarFocused]}>
-            <Search size={20} color={colors.light.text} style={styles.searchIcon} />
+            <Search size={20} color={Colors.light.text} style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search for a destination..."
-              placeholderTextColor={colors.light.textSecondary}
+              placeholderTextColor={Colors.light.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
               onFocus={() => setSearchFocused(true)}
@@ -240,11 +240,11 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-                <X size={16} color={colors.light.textSecondary} />
+                <X size={16} color={Colors.light.textSecondary} />
               </TouchableOpacity>
             )}
             {isGeocoding && (
-              <ActivityIndicator size="small" color={colors.light.primary} style={styles.searchLoader} />
+              <ActivityIndicator size="small" color={Colors.light.primary} style={styles.searchLoader} />
             )}
           </View>
           
@@ -286,7 +286,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
             coordinate={userLocation}
             title="Your Location"
             description="You are here"
-            pinColor={colors.light.primary}
+            pinColor={Colors.light.primary}
           >
             <View style={styles.userMarker}>
               <View style={styles.userMarkerInner} />
@@ -300,7 +300,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
             coordinate={destination}
             title="Destination"
             description="Delivery destination"
-            pinColor={colors.light.accent}
+            pinColor={Colors.light.accent}
           >
             <View style={styles.destinationMarker}>
               <MapPin size={24} color="white" />
@@ -312,7 +312,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         {showRoute && routePoints.length > 0 && (
           <Polyline
             coordinates={routePoints}
-            strokeColor={colors.light.primary}
+            strokeColor={Colors.light.primary}
             strokeWidth={4}
             lineDashPattern={[0]}
           />
@@ -328,9 +328,9 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
           disabled={!userLocation}
         >
           {(isLoadingLocation || locationLoading) ? (
-            <ActivityIndicator size="small" color={colors.light.primary} />
+            <ActivityIndicator size="small" color={Colors.light.primary} />
           ) : (
-            <Navigation size={20} color={userLocation ? colors.light.primary : colors.light.textSecondary} />
+            <Navigation size={20} color={userLocation ? Colors.light.primary : Colors.light.textSecondary} />
           )}
         </TouchableOpacity>
       </View>
@@ -338,7 +338,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       {/* Loading Route Indicator */}
       {isLoadingRoute && (
         <View style={styles.routeLoader}>
-          <ActivityIndicator size="small" color={colors.light.primary} />
+          <ActivityIndicator size="small" color={Colors.light.primary} />
           <Text style={styles.routeLoaderText}>Calculating route...</Text>
         </View>
       )}
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: colors.light.text,
+    color: Colors.light.text,
   },
   clearButton: {
     padding: 4,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   searchButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: Colors.light.primary,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: colors.light.primary,
+    backgroundColor: Colors.light.primary,
     borderWidth: 3,
     borderColor: 'white',
     justifyContent: 'center',
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.light.accent,
+    backgroundColor: Colors.light.accent,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
   },
   routeLoaderText: {
     marginLeft: 8,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontSize: 14,
   },
   webFallback: {
@@ -479,18 +479,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 40,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   webFallbackTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: colors.light.text,
+    color: Colors.light.text,
     marginTop: 16,
     marginBottom: 8,
   },
   webFallbackText: {
     fontSize: 14,
-    color: colors.light.textSecondary,
+    color: Colors.light.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },

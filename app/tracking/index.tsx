@@ -79,7 +79,7 @@ export default function TrackingScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Package size={64} color={colors.light.textMuted} />
+          <Package size={64} color={Colors.light.textMuted} />
           <Text style={styles.errorTitle}>Order Not Found</Text>
           <Text style={styles.errorSubtitle}>
             The order you're looking for doesn't exist or has been removed.
@@ -89,10 +89,10 @@ export default function TrackingScreen() {
             onPress={() => router.back()}
           >
             <LinearGradient
-              colors={[colors.light.primary, colors.light.primaryDark]}
+              colors={[Colors.light.primary, Colors.light.primaryDark]}
               style={styles.errorButtonGradient}
             >
-              <ArrowLeft size={20} color={colors.light.background} />
+              <ArrowLeft size={20} color={Colors.light.background} />
               <Text style={styles.errorButtonText}>Go Back</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -104,18 +104,18 @@ export default function TrackingScreen() {
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case "pending":
-        return colors.light.warning;
+        return Colors.light.warning;
       case "assigned":
-        return colors.light.primary;
+        return Colors.light.primary;
       case "picked_up":
       case "in_transit":
-        return colors.light.accent;
+        return Colors.light.accent;
       case "delivered":
-        return colors.light.success;
+        return Colors.light.success;
       case "cancelled":
-        return colors.light.error;
+        return Colors.light.error;
       default:
-        return colors.light.textMuted;
+        return Colors.light.textMuted;
     }
   };
 
@@ -184,13 +184,13 @@ export default function TrackingScreen() {
   const getPaymentStatusColor = () => {
     switch (order.paymentStatus) {
       case "paid":
-        return colors.light.success;
+        return Colors.light.success;
       case "pending":
-        return colors.light.warning;
+        return Colors.light.warning;
       case "failed":
-        return colors.light.error;
+        return Colors.light.error;
       default:
-        return colors.light.textMuted;
+        return Colors.light.textMuted;
     }
   };
 
@@ -203,12 +203,12 @@ export default function TrackingScreen() {
             {
               backgroundColor: item.completed
                 ? getStatusColor(item.status)
-                : colors.light.border,
+                : Colors.light.border,
             },
           ]}
         >
           {item.completed && (
-            <CheckCircle size={12} color={colors.light.background} />
+            <CheckCircle size={12} color={Colors.light.background} />
           )}
         </View>
         {index < order.timeline.length - 1 && (
@@ -218,7 +218,7 @@ export default function TrackingScreen() {
               {
                 backgroundColor: item.completed
                   ? getStatusColor(item.status)
-                  : colors.light.border,
+                  : Colors.light.border,
               },
             ]}
           />
@@ -228,7 +228,7 @@ export default function TrackingScreen() {
         <Text
           style={[
             styles.timelineDescription,
-            { color: item.completed ? colors.light.text : colors.light.textMuted },
+            { color: item.completed ? Colors.light.text : Colors.light.textMuted },
           ]}
         >
           {item.description}
@@ -244,7 +244,7 @@ export default function TrackingScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
-            <Zap size={16} color={colors.light.primary} />
+            <Zap size={16} color={Colors.light.primary} />
             <Text style={styles.refreshText}>Pull to refresh</Text>
           </TouchableOpacity>
         }
@@ -266,7 +266,7 @@ export default function TrackingScreen() {
               </Text>
               {order.estimatedTime && order.status !== "delivered" && (
                 <View style={styles.estimatedTime}>
-                  <Clock size={16} color={colors.light.background} />
+                  <Clock size={16} color={Colors.light.background} />
                   <Text style={styles.estimatedTimeText}>
                     ETA: {order.estimatedTime}
                   </Text>
@@ -302,7 +302,7 @@ export default function TrackingScreen() {
 
           <View style={styles.packageInfo}>
             <View style={styles.packageDetail}>
-              <Package size={16} color={colors.light.textMuted} />
+              <Package size={16} color={Colors.light.textMuted} />
               <Text style={styles.packageType}>{order.packageType}</Text>
             </View>
             <View style={styles.recipientInfo}>
@@ -315,7 +315,7 @@ export default function TrackingScreen() {
         {order.driverInfo && (
           <View style={styles.driverCard}>
             <LinearGradient
-              colors={[colors.light.accent, colors.light.accentDark]}
+              colors={[Colors.light.accent, Colors.light.accentDark]}
               style={styles.driverGradient}
             >
               <View style={styles.driverInfo}>
@@ -327,7 +327,7 @@ export default function TrackingScreen() {
                 <View style={styles.driverDetails}>
                   <Text style={styles.driverName}>{order.driverInfo.name}</Text>
                   <View style={styles.driverRating}>
-                    <Star size={14} color={colors.light.warning} fill={colors.light.warning} />
+                    <Star size={14} color={Colors.light.warning} fill={Colors.light.warning} />
                     <Text style={styles.ratingText}>{order.driverInfo.rating}</Text>
                     <Text style={styles.driverLabel}>• Your Driver</Text>
                   </View>
@@ -338,7 +338,7 @@ export default function TrackingScreen() {
                   style={styles.actionButton}
                   onPress={() => router.push(`/chat?orderId=${order.id}`)}
                 >
-                  <MessageCircle size={20} color={colors.light.background} />
+                  <MessageCircle size={20} color={Colors.light.background} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.actionButton}
@@ -346,7 +346,7 @@ export default function TrackingScreen() {
                     console.log("Call driver:", order.driverInfo?.phone);
                   }}
                 >
-                  <Phone size={20} color={colors.light.background} />
+                  <Phone size={20} color={Colors.light.background} />
                 </TouchableOpacity>
               </View>
             </LinearGradient>
@@ -367,7 +367,7 @@ export default function TrackingScreen() {
               style={styles.fullMapButton}
               onPress={() => router.push(`/map?orderId=${order.id}`)}
             >
-              <Navigation size={16} color={colors.light.primary} />
+              <Navigation size={16} color={Colors.light.primary} />
               <Text style={styles.fullMapText}>Full Map</Text>
             </TouchableOpacity>
           </View>
@@ -390,14 +390,14 @@ export default function TrackingScreen() {
                 <LinearGradient
                   colors={
                     order.paymentMethod === "mpesa" 
-                      ? [colors.light.mpesa, "#00B85C"]
-                      : [colors.light.primary, colors.light.primaryDark]
+                      ? [Colors.light.mpesa, "#00B85C"]
+                      : [Colors.light.primary, Colors.light.primaryDark]
                   }
                   style={styles.paymentIcon}
                 >
                   {React.createElement(getPaymentMethodIcon(), {
                     size: 20,
-                    color: colors.light.background,
+                    color: Colors.light.background,
                   })}
                 </LinearGradient>
                 <View style={styles.paymentTextInfo}>
@@ -413,12 +413,12 @@ export default function TrackingScreen() {
             <View style={styles.paymentRow}>
               <View style={styles.paymentMethodInfo}>
                 <LinearGradient
-                  colors={[colors.light.accent, colors.light.accentDark]}
+                  colors={[Colors.light.accent, Colors.light.accentDark]}
                   style={styles.paymentIcon}
                 >
                   {React.createElement(getPaymentTermIcon(), {
                     size: 20,
-                    color: colors.light.background,
+                    color: Colors.light.background,
                   })}
                 </LinearGradient>
                 <View style={styles.paymentTextInfo}>
@@ -446,10 +446,10 @@ export default function TrackingScreen() {
                 onPress={() => router.push(`/payment?orderId=${order.id}`)}
               >
                 <LinearGradient
-                  colors={[colors.light.primary, colors.light.primaryDark]}
+                  colors={[Colors.light.primary, Colors.light.primaryDark]}
                   style={styles.payNowButtonGradient}
                 >
-                  <Zap size={16} color={colors.light.background} />
+                  <Zap size={16} color={Colors.light.background} />
                   <Text style={styles.payNowButtonText}>Complete Payment</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -464,7 +464,7 @@ export default function TrackingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
   },
   refreshText: {
     fontSize: 12,
-    color: colors.light.primary,
+    color: Colors.light.primary,
     fontWeight: "600",
   },
   header: {
@@ -488,20 +488,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "900",
-    color: colors.light.text,
+    color: Colors.light.text,
     marginBottom: 4,
     letterSpacing: -1,
   },
   orderId: {
     fontSize: 16,
-    color: colors.light.textSecondary,
+    color: Colors.light.textSecondary,
     fontWeight: "500",
   },
   statusCard: {
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 24,
     fontWeight: "900",
-    color: colors.light.background,
+    color: Colors.light.background,
     marginBottom: 4,
   },
   estimatedTime: {
@@ -531,15 +531,15 @@ const styles = StyleSheet.create({
   },
   estimatedTimeText: {
     fontSize: 14,
-    color: colors.light.background + "CC",
+    color: Colors.light.background + "CC",
     fontWeight: "600",
   },
   routeCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -554,12 +554,12 @@ const styles = StyleSheet.create({
   routeTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: colors.light.text,
+    color: Colors.light.text,
   },
   routePrice: {
     fontSize: 24,
     fontWeight: "900",
-    color: colors.light.text,
+    color: Colors.light.text,
   },
   route: {
     marginBottom: 20,
@@ -576,36 +576,36 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   routeDotStart: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: Colors.light.primary,
   },
   routeDotEnd: {
-    backgroundColor: colors.light.accent,
+    backgroundColor: Colors.light.accent,
   },
   routeInfo: {
     flex: 1,
   },
   routeLabel: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "600",
     marginBottom: 4,
   },
   routeText: {
     fontSize: 16,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontWeight: "600",
   },
   routeLine: {
     width: 2,
     height: 24,
-    backgroundColor: colors.light.border,
+    backgroundColor: Colors.light.border,
     marginLeft: 5,
     marginVertical: 4,
   },
   packageInfo: {
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: colors.light.borderLight,
+    borderTopColor: Colors.light.borderLight,
     gap: 12,
   },
   packageDetail: {
@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   },
   packageType: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "600",
     textTransform: "capitalize",
   },
@@ -626,19 +626,19 @@ const styles = StyleSheet.create({
   },
   recipientLabel: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "500",
   },
   recipientName: {
     fontSize: 14,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontWeight: "600",
   },
   driverCard: {
     borderRadius: 20,
     marginBottom: 20,
     overflow: "hidden",
-    shadowColor: colors.light.accent,
+    shadowColor: Colors.light.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
   driverInitial: {
     fontSize: 24,
     fontWeight: "900",
-    color: colors.light.background,
+    color: Colors.light.background,
   },
   driverDetails: {
     flex: 1,
@@ -675,7 +675,7 @@ const styles = StyleSheet.create({
   driverName: {
     fontSize: 18,
     fontWeight: "800",
-    color: colors.light.background,
+    color: Colors.light.background,
     marginBottom: 4,
   },
   driverRating: {
@@ -685,12 +685,12 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 14,
-    color: colors.light.background + "CC",
+    color: Colors.light.background + "CC",
     fontWeight: "600",
   },
   driverLabel: {
     fontSize: 14,
-    color: colors.light.background + "CC",
+    color: Colors.light.background + "CC",
     fontWeight: "500",
   },
   driverActions: {
@@ -706,11 +706,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   timelineCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -719,7 +719,7 @@ const styles = StyleSheet.create({
   timelineTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: colors.light.text,
+    color: Colors.light.text,
     marginBottom: 20,
   },
   timeline: {
@@ -755,15 +755,15 @@ const styles = StyleSheet.create({
   },
   timelineTime: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "500",
   },
   mapContainer: {
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -778,7 +778,7 @@ const styles = StyleSheet.create({
   mapTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: colors.light.text,
+    color: Colors.light.text,
   },
   fullMapButton: {
     flexDirection: 'row',
@@ -786,29 +786,29 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: Colors.light.primaryLight,
     borderRadius: 12,
   },
   fullMapText: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.light.primary,
+    color: Colors.light.primary,
   },
   mapWrapper: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   paymentInfo: {
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -817,7 +817,7 @@ const styles = StyleSheet.create({
   paymentTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: colors.light.text,
+    color: Colors.light.text,
     marginBottom: 16,
   },
   paymentDetails: {
@@ -845,13 +845,13 @@ const styles = StyleSheet.create({
   },
   paymentMethodText: {
     fontSize: 16,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontWeight: "600",
     marginBottom: 2,
   },
   paymentMethodSubtext: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "500",
   },
   paymentStatusRow: {
@@ -860,11 +860,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: colors.light.borderLight,
+    borderTopColor: Colors.light.borderLight,
   },
   paymentStatusLabel: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     fontWeight: "500",
   },
   paymentStatusBadge: {
@@ -880,7 +880,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginTop: 8,
-    shadowColor: colors.light.primary,
+    shadowColor: Colors.light.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -894,7 +894,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   payNowButtonText: {
-    color: colors.light.background,
+    color: Colors.light.background,
     fontSize: 14,
     fontWeight: "700",
   },
@@ -907,14 +907,14 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: colors.light.text,
+    color: Colors.light.text,
     marginTop: 20,
     marginBottom: 8,
     textAlign: "center",
   },
   errorSubtitle: {
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: Colors.light.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 32,
@@ -923,7 +923,7 @@ const styles = StyleSheet.create({
   errorButton: {
     borderRadius: 16,
     overflow: "hidden",
-    shadowColor: colors.light.primary,
+    shadowColor: Colors.light.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -939,6 +939,6 @@ const styles = StyleSheet.create({
   errorButtonText: {
     fontSize: 16,
     fontWeight: "800",
-    color: colors.light.background,
+    color: Colors.light.background,
   },
 });

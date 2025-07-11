@@ -70,7 +70,7 @@ export default function MapScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={colors.light.text} />
+          <ArrowLeft size={24} color={Colors.light.text} />
         </TouchableOpacity>
         
         <View style={styles.headerInfo}>
@@ -85,7 +85,7 @@ export default function MapScreen() {
         </View>
 
         <TouchableOpacity style={styles.centerButton}>
-          <Navigation size={20} color={colors.light.primary} />
+          <Navigation size={20} color={Colors.light.primary} />
         </TouchableOpacity>
       </View>
 
@@ -103,13 +103,13 @@ export default function MapScreen() {
       {(userLocation && destination) && (
         <View style={styles.bottomPanel}>
           <LinearGradient
-            colors={[colors.light.background, colors.light.backgroundSecondary]}
+            colors={[Colors.light.background, Colors.light.backgroundSecondary]}
             style={styles.panelGradient}
           >
             <View style={styles.routeInfo}>
               <View style={styles.routeStats}>
                 <View style={styles.statItem}>
-                  <MapPin size={16} color={colors.light.primary} />
+                  <MapPin size={16} color={Colors.light.primary} />
                   <Text style={styles.statLabel}>Distance</Text>
                   <Text style={styles.statValue}>{getDistance()} km</Text>
                 </View>
@@ -141,17 +141,17 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: colors.light.background,
+    backgroundColor: Colors.light.background,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.borderLight,
-    shadowColor: colors.light.shadow,
+    borderBottomColor: Colors.light.borderLight,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: colors.light.text,
+    color: Colors.light.text,
   },
   headerSubtitle: {
     fontSize: 12,
-    color: colors.light.textSecondary,
+    color: Colors.light.textSecondary,
     fontWeight: '500',
     marginTop: 2,
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
-    shadowColor: colors.light.shadow,
+    shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: colors.light.textSecondary,
+    color: Colors.light.textSecondary,
     fontWeight: '500',
   },
   statValue: {
     fontSize: 16,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontWeight: '700',
   },
   orderInfo: {
@@ -238,23 +238,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: Colors.light.primaryLight,
     borderRadius: 12,
   },
   orderLabel: {
     fontSize: 14,
-    color: colors.light.primary,
+    color: Colors.light.primary,
     fontWeight: '600',
   },
   orderValue: {
     fontSize: 14,
-    color: colors.light.text,
+    color: Colors.light.text,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   orderPrice: {
     fontSize: 16,
-    color: colors.light.primary,
+    color: Colors.light.primary,
     fontWeight: '800',
   },
 });
