@@ -1,15 +1,10 @@
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
-import colors from '@/constants/colors';
+import colors, { safeColors } from '@/constants/colors';
 import { useAuthStore } from '@/stores/auth-store';
 
-// Ensure colors are available with fallbacks
-const safeColors = {
-  ...colors,
-  background: colors.background || '#FFFFFF',
-  primary: colors.primary || '#FF6A00'
-};
+// Use the safe colors from constants
 
 export default function Index() {
   const { isAuthenticated, user, isInitialized } = useAuthStore();

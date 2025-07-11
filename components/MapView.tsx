@@ -15,10 +15,12 @@ let MapViewComponent: React.FC<MapViewComponentProps>;
 
 if (Platform.OS === 'web') {
   // For web, use the web implementation
-  MapViewComponent = require('./MapView.web').MapViewComponent;
+  const WebMapView = require('./MapView.web');
+  MapViewComponent = WebMapView.MapViewComponent || WebMapView.default;
 } else {
   // For native, use the native implementation
-  MapViewComponent = require('./MapView.native').MapViewComponent;
+  const NativeMapView = require('./MapView.native');
+  MapViewComponent = NativeMapView.MapViewComponent || NativeMapView.default;
 }
 
 export { MapViewComponent };

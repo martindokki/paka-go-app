@@ -90,5 +90,46 @@ const Colors = {
   },
 };
 
+// Safe colors function that provides fallbacks
+export const safeColors = {
+  // Ensure all required properties exist with fallbacks
+  text: colors?.text || "#1A1A1A",
+  textSecondary: colors?.textSecondary || "#2D2D2D",
+  textMuted: colors?.textMuted || "#6B7280",
+  background: colors?.background || "#FFFFFF",
+  backgroundSecondary: colors?.backgroundSecondary || "#F8F9FA",
+  backgroundTertiary: colors?.backgroundTertiary || "#F3F4F6",
+  primary: colors?.primary || "#FF6A00",
+  primaryLight: colors?.primaryLight || "#FFF4F0",
+  primaryDark: colors?.primaryDark || "#E55A00",
+  secondary: colors?.secondary || "#2563EB",
+  secondaryLight: colors?.secondaryLight || "#EFF6FF",
+  secondaryDark: colors?.secondaryDark || "#1D4ED8",
+  accent: colors?.accent || "#2563EB",
+  accentLight: colors?.accentLight || "#EFF6FF",
+  accentDark: colors?.accentDark || "#1D4ED8",
+  success: colors?.success || "#10B981",
+  successDark: colors?.successDark || "#059669",
+  error: colors?.error || "#EF4444",
+  warning: colors?.warning || "#F59E0B",
+  info: colors?.info || "#2563EB",
+  border: colors?.border || "#E5E7EB",
+  borderLight: colors?.borderLight || "#F3F4F6",
+  shadow: colors?.shadow || "rgba(0, 0, 0, 0.1)",
+  overlay: colors?.overlay || "rgba(0, 0, 0, 0.5)",
+  tint: colors?.tint || "#FF6A00",
+  tabIconDefault: colors?.tabIconDefault || "#9CA3AF",
+  tabIconSelected: colors?.tabIconSelected || "#FF6A00",
+  mpesa: colors?.mpesa || "#00A651",
+  mpesaLight: colors?.mpesaLight || "#E8F5E8",
+  // Status colors
+  pending: colors?.pending || "#F59E0B",
+  assigned: colors?.assigned || "#3B82F6",
+  picked_up: colors?.picked_up || "#8B5CF6",
+  in_transit: colors?.in_transit || "#06B6D4",
+  delivered: colors?.delivered || "#10B981",
+  cancelled: colors?.cancelled || "#EF4444",
+};
+
 export default colors;
 export { Colors };
