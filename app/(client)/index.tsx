@@ -248,7 +248,7 @@ export default function ClientHomeScreen() {
                 </Text>
                 <TouchableOpacity 
                   style={styles.emptyOrdersButton}
-                  onPress={() => router.push("/booking")
+                  onPress={() => router.push("/booking")}
                 >
                   <LinearGradient
                     colors={[colors.primary, colors.primaryDark]}
