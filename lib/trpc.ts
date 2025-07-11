@@ -30,6 +30,7 @@ export const trpcClient = trpc.createClient({
           // Check if response is HTML (likely an error page)
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('text/html')) {
+            console.warn('Server returned HTML instead of JSON. Backend may not be available.');
             throw new Error('Server returned HTML instead of JSON. Check if the API server is running.');
           }
           
