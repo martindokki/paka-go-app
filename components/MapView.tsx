@@ -18,7 +18,7 @@ if (Platform.OS === 'web') {
   MapViewComponent = require('./MapView.web').MapViewComponent;
 } else {
   // For native, use the native implementation
-  MapViewComponent = require('./MapView.native.tsx').MapViewComponent;
+  MapViewComponent = require('./MapView.native').MapViewComponent;
 }
 
 export { MapViewComponent };

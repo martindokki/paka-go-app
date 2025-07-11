@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "../../../create-context";
+import { publicProcedure } from "../../create-context";
 
 // Mock users for testing
 const MOCK_USERS = [
@@ -35,7 +35,7 @@ export const loginProcedure = publicProcedure
     password: z.string().min(6),
     userType: z.enum(['client', 'driver', 'admin'])
   }))
-  .mutation(async ({ input }: { input: { email: string; password: string; userType: 'client' | 'driver' | 'admin' } }) => {
+  .mutation(async ({ input }) => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
