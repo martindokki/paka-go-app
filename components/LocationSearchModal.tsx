@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import { X, MapPin, Search, Clock } from 'lucide-react-native';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { MapService, Coordinates } from '@/services/map-service';
 import { useMapStore } from '@/stores/map-store';
 
@@ -137,9 +137,9 @@ export const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
     >
       <View style={styles.locationIcon}>
         {item.type === 'recent' ? (
-          <Clock size={16} color={Colors.light.textSecondary} />
+          <Clock size={16} color={colors.textSecondary} />
         ) : (
-          <MapPin size={16} color={Colors.light.primary} />
+          <MapPin size={16} color={colors.primary} />
         )}
       </View>
       <View style={styles.locationInfo}>
@@ -163,24 +163,24 @@ export const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <X size={24} color={Colors.light.text} />
+            <X size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <Search size={20} color={Colors.light.textSecondary} />
+            <Search size={20} color={colors.textSecondary} />
             <TextInput
               style={styles.searchInput}
               placeholder={placeholder}
-              placeholderTextColor={Colors.light.textSecondary}
+              placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoFocus
             />
             {isSearching && (
-              <ActivityIndicator size="small" color={Colors.light.primary} />
+              <ActivityIndicator size="small" color={colors.primary} />
             )}
           </View>
         </View>
@@ -216,18 +216,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   title: {
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
   },
   resultsContainer: {
     flex: 1,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   listContent: {
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     marginBottom: 8,
     gap: 12,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -286,12 +286,12 @@ const styles = StyleSheet.create({
   locationAddress: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   locationType: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
 });
