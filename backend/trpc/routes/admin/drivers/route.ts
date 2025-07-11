@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../create-context';
+import { publicProcedure } from '../../create-context.js';
 
 const driverSchema = z.object({
   id: z.string(),
@@ -90,7 +90,7 @@ export const assignVehicleProcedure = publicProcedure
     driverId: z.string(),
     vehicleId: z.string(),
   }))
-  .mutation(async ({ input }: { input: { driverId: string } }) => {
+  .mutation(async ({ input }: { input: { driverId: string; vehicleId: string } }) => {
     // Mock implementation - replace with actual database update
     console.log('Assigning vehicle:', input.vehicleId, 'to driver:', input.driverId);
     

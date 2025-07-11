@@ -6,9 +6,9 @@ import { useAuthStore } from '@/stores/auth-store';
 
 // Ensure colors are available with fallbacks
 const safeColors = {
+  ...colors,
   background: colors?.background || '#FFFFFF',
-  primary: colors?.primary || '#FF6A00',
-  ...colors
+  primary: colors?.primary || '#FF6A00'
 };
 
 export default function Index() {
