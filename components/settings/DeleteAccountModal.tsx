@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { AlertTriangle, X } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { useAuthStore } from '@/stores/auth-store';
 import { router } from 'expo-router';
 
@@ -89,15 +89,15 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
       <View style={styles.overlay}>
         <View style={styles.container}>
           <LinearGradient
-            colors={[Colors.light.background, '#FFFFFF']}
+            colors={[colors.background, '#FFFFFF']}
             style={styles.gradient}
           >
             <View style={styles.header}>
               <View style={styles.iconContainer}>
-                <AlertTriangle size={32} color={Colors.light.error} />
+                <AlertTriangle size={32} color={colors.error} />
               </View>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <X size={24} color={Colors.light.textMuted} />
+                <X size={24} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
 
@@ -126,7 +126,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
                   value={confirmText}
                   onChangeText={setConfirmText}
                   placeholder="Type DELETE here"
-                  placeholderTextColor={Colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                   autoCapitalize="characters"
                 />
               </View>
@@ -150,7 +150,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
                 disabled={confirmText.toLowerCase() !== 'delete' || isDeleting}
               >
                 {isDeleting ? (
-                  <ActivityIndicator size="small" color={Colors.light.background} />
+                  <ActivityIndicator size="small" color={colors.background} />
                 ) : (
                   <Text style={styles.deleteButtonText}>Delete Forever</Text>
                 )}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.light.error + '20',
+    backgroundColor: colors.error + '20',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -208,32 +208,32 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     lineHeight: 24,
     marginBottom: 20,
   },
   warningBox: {
-    backgroundColor: Colors.light.error + '10',
+    backgroundColor: colors.error + '10',
     borderRadius: 12,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.error,
+    borderLeftColor: colors.error,
     marginBottom: 20,
   },
   warningText: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.error,
+    color: colors.error,
     marginBottom: 8,
   },
   warningItem: {
     fontSize: 14,
-    color: Colors.light.error,
+    color: colors.error,
     marginBottom: 4,
     paddingLeft: 8,
   },
@@ -243,17 +243,17 @@ const styles = StyleSheet.create({
   confirmationLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   confirmationInput: {
     borderWidth: 2,
-    borderColor: Colors.light.border,
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: Colors.light.text,
-    backgroundColor: Colors.light.backgroundSecondary,
+    color: colors.text,
+    backgroundColor: colors.backgroundSecondary,
   },
   actions: {
     flexDirection: 'row',
@@ -263,19 +263,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
   },
   deleteButton: {
     flex: 1,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: Colors.light.error,
+    backgroundColor: colors.error,
     alignItems: 'center',
   },
   deleteButtonDisabled: {
@@ -284,6 +284,6 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.background,
+    color: colors.background,
   },
 });

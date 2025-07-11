@@ -62,7 +62,7 @@ export function AdminLayout({ children, activeTab, onTabChange }: AdminLayoutPro
             >
               <IconComponent 
                 size={20} 
-                color={isActive ? colors.light.primary : colors.light.textMuted} 
+                color={isActive ? colors.primary : colors.textMuted} 
               />
               <Text style={[
                 styles.sidebarItemText,
@@ -81,7 +81,7 @@ export function AdminLayout({ children, activeTab, onTabChange }: AdminLayoutPro
           <Text style={styles.userRole}>Admin</Text>
         </View>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <LogOut size={20} color={colors.light.error} />
+          <LogOut size={20} color={colors.error} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -95,7 +95,7 @@ export function AdminLayout({ children, activeTab, onTabChange }: AdminLayoutPro
           style={styles.menuButton}
           onPress={() => setSidebarOpen(!sidebarOpen)}
         >
-          <Menu size={24} color={colors.light.text} />
+          <Menu size={24} color={colors.text} />
         </TouchableOpacity>
       )}
       
@@ -105,7 +105,7 @@ export function AdminLayout({ children, activeTab, onTabChange }: AdminLayoutPro
       
       <View style={styles.headerActions}>
         <TouchableOpacity style={styles.headerAction}>
-          <Bell size={20} color={colors.light.textMuted} />
+          <Bell size={20} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
     </View>
@@ -151,7 +151,7 @@ export function AdminLayout({ children, activeTab, onTabChange }: AdminLayoutPro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   webLayout: {
     flex: 1,
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
   },
   sidebar: {
     width: Platform.OS === 'web' ? 280 : 280,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRightWidth: 1,
-    borderRightColor: colors.light.border,
+    borderRightColor: colors.border,
     elevation: Platform.OS === 'android' ? 4 : 0,
-    shadowColor: Platform.OS === 'ios' ? colors.light.shadow : 'transparent',
+    shadowColor: Platform.OS === 'ios' ? colors.shadow : 'transparent',
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -174,16 +174,16 @@ const styles = StyleSheet.create({
   sidebarHeader: {
     padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   logo: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.light.primary,
+    color: colors.primary,
   },
   logoSubtitle: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 4,
   },
   sidebarContent: {
@@ -199,21 +199,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   sidebarItemActive: {
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
   },
   sidebarItemText: {
     marginLeft: 12,
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   sidebarItemTextActive: {
-    color: colors.light.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   sidebarFooter: {
     padding: 24,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
+    borderTopColor: colors.border,
   },
   userInfo: {
     marginBottom: 16,
@@ -221,11 +221,11 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
   },
   userRole: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   logoutButton: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   logoutText: {
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.error,
+    color: colors.error,
   },
   mainContent: {
     flex: 1,
@@ -247,9 +247,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingVertical: 16,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   menuButton: {
     padding: 8,
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     flex: 1,
     marginLeft: Platform.OS !== 'web' ? 16 : 0,
   },

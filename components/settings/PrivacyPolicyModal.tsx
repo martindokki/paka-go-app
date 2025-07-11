@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 
 interface PrivacyPolicyModalProps {
   visible: boolean;
@@ -33,7 +33,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
             style={styles.closeButton}
             onPress={onClose}
           >
-            <X size={24} color={Colors.light.text} />
+            <X size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
         
@@ -127,7 +127,7 @@ export const PrivacyPolicyModal: React.FC<PrivacyPolicyModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -136,12 +136,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     padding: 8,
@@ -156,12 +156,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   sectionText: {
     fontSize: 16,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   footer: {
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '500',
   },
 });

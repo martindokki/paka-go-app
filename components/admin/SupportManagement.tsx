@@ -34,19 +34,19 @@ interface QueryCardProps {
 function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return colors.light.error;
-      case 'in_progress': return colors.light.warning;
-      case 'resolved': return colors.light.success;
-      default: return colors.light.textMuted;
+      case 'open': return colors.error;
+      case 'in_progress': return colors.warning;
+      case 'resolved': return colors.success;
+      default: return colors.textMuted;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return colors.light.error;
-      case 'medium': return colors.light.warning;
-      case 'low': return colors.light.info;
-      default: return colors.light.textMuted;
+      case 'high': return colors.error;
+      case 'medium': return colors.warning;
+      case 'low': return colors.info;
+      default: return colors.textMuted;
     }
   };
 
@@ -83,7 +83,7 @@ function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProp
 
       <View style={styles.queryDetails}>
         <View style={styles.customerInfo}>
-          <User size={16} color={colors.light.textMuted} />
+          <User size={16} color={colors.textMuted} />
           <Text style={styles.customerName}>{query.userName}</Text>
         </View>
         
@@ -93,7 +93,7 @@ function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProp
         
         {query.assignedTo && (
           <View style={styles.assignedInfo}>
-            <UserCheck size={16} color={colors.light.info} />
+            <UserCheck size={16} color={colors.info} />
             <Text style={styles.assignedText}>Assigned to: {query.assignedTo}</Text>
           </View>
         )}
@@ -114,7 +114,7 @@ function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProp
             style={[styles.actionButton, styles.assignButton]}
             onPress={() => onAssign(query.id)}
           >
-            <UserCheck size={16} color={colors.light.background} />
+            <UserCheck size={16} color={colors.background} />
             <Text style={styles.assignButtonText}>Assign to Me</Text>
           </TouchableOpacity>
         )}
@@ -124,7 +124,7 @@ function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProp
             style={[styles.actionButton, styles.respondButton]}
             onPress={() => onRespond(query)}
           >
-            <Send size={16} color={colors.light.background} />
+            <Send size={16} color={colors.background} />
             <Text style={styles.respondButtonText}>Respond</Text>
           </TouchableOpacity>
         )}
@@ -134,7 +134,7 @@ function QueryCard({ query, onAssign, onRespond, onUpdateStatus }: QueryCardProp
             style={[styles.actionButton, styles.resolveButton]}
             onPress={() => onUpdateStatus(query.id, 'resolved')}
           >
-            <CheckCircle size={16} color={colors.light.background} />
+            <CheckCircle size={16} color={colors.background} />
             <Text style={styles.resolveButtonText}>Mark Resolved</Text>
           </TouchableOpacity>
         )}
@@ -212,7 +212,7 @@ function ResponseModal({ visible, query, onClose, onSend }: ResponseModalProps) 
                 multiline
                 numberOfLines={6}
                 textAlignVertical="top"
-                placeholderTextColor={colors.light.textMuted}
+                placeholderTextColor={colors.textMuted}
               />
             </View>
           </View>
@@ -310,13 +310,13 @@ export function SupportManagement() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search queries..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         
@@ -324,7 +324,7 @@ export function SupportManagement() {
           style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color={colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -375,7 +375,7 @@ export function SupportManagement() {
       <ScrollView style={styles.queriesList} showsVerticalScrollIndicator={false}>
         {filteredQueries.length === 0 ? (
           <View style={styles.emptyState}>
-            <MessageSquare size={48} color={colors.light.textMuted} />
+            <MessageSquare size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No support queries found</Text>
             <Text style={styles.emptyStateSubtext}>
               {searchQuery || statusFilter !== 'all' || priorityFilter !== 'all'
@@ -421,25 +421,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     padding: 12,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filtersContainer: {
     marginBottom: 16,
@@ -450,35 +450,35 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterChipText: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   filterChipTextActive: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
   queriesList: {
     flex: 1,
   },
   queryCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   querySubject: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   badges: {
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
   },
   queryDate: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   queryDetails: {
     marginBottom: 16,
@@ -538,11 +538,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
   },
   queryMessage: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     lineHeight: 20,
     marginBottom: 8,
   },
@@ -554,11 +554,11 @@ const styles = StyleSheet.create({
   assignedText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.info,
+    color: colors.info,
     fontWeight: '500',
   },
   responseInfo: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     padding: 12,
     borderRadius: 8,
     marginTop: 8,
@@ -566,12 +566,12 @@ const styles = StyleSheet.create({
   responseLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 4,
   },
   responseText: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     lineHeight: 18,
   },
   queryActions: {
@@ -588,26 +588,26 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   assignButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
   },
   assignButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   respondButton: {
-    backgroundColor: colors.light.info,
+    backgroundColor: colors.info,
   },
   respondButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   resolveButton: {
-    backgroundColor: colors.light.success,
+    backgroundColor: colors.success,
   },
   resolveButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -619,12 +619,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     width: '90%',
     maxWidth: 600,
@@ -648,30 +648,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
     fontSize: 20,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   modalBody: {
     padding: 20,
   },
   queryPreview: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
@@ -679,13 +679,13 @@ const styles = StyleSheet.create({
   previewLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 4,
     marginTop: 8,
   },
   previewText: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     lineHeight: 18,
   },
   responseSection: {
@@ -693,12 +693,12 @@ const styles = StyleSheet.create({
   },
   responseInput: {
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: colors.light.text,
-    backgroundColor: colors.light.backgroundSecondary,
+    color: colors.text,
+    backgroundColor: colors.backgroundSecondary,
     minHeight: 120,
   },
   modalActions: {
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
+    borderTopColor: colors.border,
   },
   modalButton: {
     flex: 1,
@@ -715,19 +715,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   cancelButtonText: {
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '600',
   },
   sendButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
   },
   sendButtonText: {
     fontSize: 16,
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
 });

@@ -91,7 +91,7 @@ export default function ChatScreen() {
     if (item.type === "system") {
       return (
         <View style={styles.systemMessage}>
-          <Text style={styles.systemMessageText}>{item.text}</Text>
+          <Text style={styles.systemMessageText}>{item.text || ''}</Text>
           <Text style={styles.systemMessageTime}>{item.timestamp}</Text>
         </View>
       );
@@ -103,7 +103,7 @@ export default function ChatScreen() {
       <View style={[styles.messageContainer, isUser ? styles.userMessage : styles.driverMessage]}>
         <View style={[styles.messageBubble, isUser ? styles.userBubble : styles.driverBubble]}>
           <Text style={[styles.messageText, isUser ? styles.userMessageText : styles.driverMessageText]}>
-            {item.text}
+            {item.text || ''}
           </Text>
         </View>
         <Text style={[styles.messageTime, isUser ? styles.userMessageTime : styles.driverMessageTime]}>

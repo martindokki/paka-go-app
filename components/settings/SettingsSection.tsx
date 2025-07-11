@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 
 interface SettingsItemProps {
   title: string;
@@ -62,7 +62,7 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({
       {showChevron && !disabled && (
         <ChevronRight
           size={20}
-          color={destructive ? Colors.light.error : Colors.light.textMuted}
+          color={destructive ? colors.error : colors.textMuted}
         />
       )}
     </TouchableOpacity>
@@ -95,15 +95,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
     paddingHorizontal: 4,
   },
   sectionContent: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: colors.border,
   },
   settingsItemDisabled: {
     opacity: 0.5,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -141,18 +141,18 @@ const styles = StyleSheet.create({
   settingsItemTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   settingsItemSubtitle: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     lineHeight: 20,
   },
   destructiveText: {
-    color: Colors.light.error,
+    color: colors.error,
   },
   disabledText: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
 });

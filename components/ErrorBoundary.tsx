@@ -7,7 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { logReactError } from '@/utils/error-logger';
 
 interface ErrorBoundaryState {
@@ -62,7 +62,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, rese
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <AlertTriangle size={64} color={Colors.light.error} />
+          <AlertTriangle size={64} color={colors.error} />
         </View>
         
         <Text style={styles.title}>Oops! Something went wrong</Text>
@@ -83,7 +83,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, rese
         )}
         
         <TouchableOpacity style={styles.retryButton} onPress={resetError}>
-          <RefreshCw size={20} color={Colors.light.background} />
+          <RefreshCw size={20} color={colors.background} />
           <Text style={styles.retryButtonText}>Try Again</Text>
         </TouchableOpacity>
         
@@ -98,7 +98,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, rese
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: Colors.light.error + '20',
+    backgroundColor: colors.error + '20',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
@@ -118,19 +118,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 32,
   },
   errorDetails: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 32,
@@ -140,24 +140,24 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.error,
+    color: colors.error,
     marginBottom: 8,
   },
   errorMessage: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
     fontWeight: '600',
   },
   errorStack: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontFamily: 'monospace',
   },
   retryButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: 12,
@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   retryButtonText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: 16,
     fontWeight: '700',
   },
   supportText: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
   },
 });

@@ -38,11 +38,11 @@ interface DriverCardProps {
 function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocation }: DriverCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return colors.light.warning;
-      case 'approved': return colors.light.success;
-      case 'active': return colors.light.success;
-      case 'suspended': return colors.light.error;
-      default: return colors.light.textMuted;
+      case 'pending': return colors.warning;
+      case 'approved': return colors.success;
+      case 'active': return colors.success;
+      case 'suspended': return colors.error;
+      default: return colors.textMuted;
     }
   };
 
@@ -55,8 +55,8 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
       <Star
         key={i}
         size={16}
-        color={i < Math.floor(rating) ? colors.light.warning : colors.light.border}
-        fill={i < Math.floor(rating) ? colors.light.warning : 'transparent'}
+        color={i < Math.floor(rating) ? colors.warning : colors.border}
+        fill={i < Math.floor(rating) ? colors.warning : 'transparent'}
       />
     ));
   };
@@ -80,11 +80,11 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
       <View style={styles.driverDetails}>
         <View style={styles.contactInfo}>
           <View style={styles.contactRow}>
-            <Mail size={16} color={colors.light.textMuted} />
+            <Mail size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{driver.email}</Text>
           </View>
           <View style={styles.contactRow}>
-            <Phone size={16} color={colors.light.textMuted} />
+            <Phone size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{driver.phone}</Text>
           </View>
         </View>
@@ -97,18 +97,18 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
             </View>
           </View>
           <View style={styles.statItem}>
-            <Package size={16} color={colors.light.textMuted} />
+            <Package size={16} color={colors.textMuted} />
             <Text style={styles.statText}>{driver.totalDeliveries} deliveries</Text>
           </View>
           <View style={styles.statItem}>
-            <DollarSign size={16} color={colors.light.textMuted} />
+            <DollarSign size={16} color={colors.textMuted} />
             <Text style={styles.statText}>KES {driver.earnings.toLocaleString()}</Text>
           </View>
         </View>
 
         {driver.vehicleId && (
           <View style={styles.vehicleInfo}>
-            <Car size={16} color={colors.light.textMuted} />
+            <Car size={16} color={colors.textMuted} />
             <Text style={styles.vehicleText}>Vehicle: {driver.vehicleId}</Text>
           </View>
         )}
@@ -120,7 +120,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
             style={[styles.actionButton, styles.approveButton]}
             onPress={() => onApprove(driver.id)}
           >
-            <CheckCircle size={16} color={colors.light.background} />
+            <CheckCircle size={16} color={colors.background} />
             <Text style={styles.approveButtonText}>Approve</Text>
           </TouchableOpacity>
         )}
@@ -130,7 +130,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
             style={[styles.actionButton, styles.assignButton]}
             onPress={() => onAssignVehicle(driver.id)}
           >
-            <Car size={16} color={colors.light.background} />
+            <Car size={16} color={colors.background} />
             <Text style={styles.assignButtonText}>Assign Vehicle</Text>
           </TouchableOpacity>
         )}
@@ -140,7 +140,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
             style={[styles.actionButton, styles.locationButton]}
             onPress={() => onViewLocation(driver)}
           >
-            <MapPin size={16} color={colors.light.background} />
+            <MapPin size={16} color={colors.background} />
             <Text style={styles.locationButtonText}>View Location</Text>
           </TouchableOpacity>
         )}
@@ -150,7 +150,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
             style={[styles.actionButton, styles.suspendButton]}
             onPress={() => onSuspend(driver.id)}
           >
-            <Pause size={16} color={colors.light.background} />
+            <Pause size={16} color={colors.background} />
             <Text style={styles.suspendButtonText}>Suspend</Text>
           </TouchableOpacity>
         )}
@@ -265,13 +265,13 @@ export function DriversManagement() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search drivers..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         
@@ -279,7 +279,7 @@ export function DriversManagement() {
           style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color={colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -310,7 +310,7 @@ export function DriversManagement() {
       <ScrollView style={styles.driversList} showsVerticalScrollIndicator={false}>
         {filteredDrivers.length === 0 ? (
           <View style={styles.emptyState}>
-            <User size={48} color={colors.light.textMuted} />
+            <User size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No drivers found</Text>
             <Text style={styles.emptyStateSubtext}>
               {searchQuery || statusFilter !== 'all' 
@@ -389,25 +389,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     padding: 12,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filtersContainer: {
     marginBottom: 16,
@@ -415,35 +415,35 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterChipText: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   filterChipTextActive: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
   driversList: {
     flex: 1,
   },
   driverCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
   driverName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
   },
   joinDate: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   driverDetails: {
     marginBottom: 16,
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   contactText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
   },
   statsRow: {
     flexDirection: 'row',
@@ -510,13 +510,13 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     marginLeft: 4,
   },
   statText: {
     marginLeft: 4,
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   vehicleInfo: {
     flexDirection: 'row',
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   vehicleText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   driverActions: {
     flexDirection: 'row',
@@ -541,34 +541,34 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   approveButton: {
-    backgroundColor: colors.light.success,
+    backgroundColor: colors.success,
   },
   approveButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   assignButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
   },
   assignButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   locationButton: {
-    backgroundColor: colors.light.info,
+    backgroundColor: colors.info,
   },
   locationButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   suspendButton: {
-    backgroundColor: colors.light.error,
+    backgroundColor: colors.error,
   },
   suspendButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -580,12 +580,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 24,
     width: '90%',
@@ -607,13 +607,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 16,
     textAlign: 'center',
   },
   noVehiclesText: {
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     paddingVertical: 24,
   },
@@ -626,23 +626,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 8,
     marginBottom: 8,
   },
   vehiclePlate: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
   },
   vehicleType: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textTransform: 'capitalize',
   },
   vehicleCapacity: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   modalCloseButton: {
     marginTop: 16,
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   },
   modalCloseText: {
     fontSize: 16,
-    color: colors.light.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
 });

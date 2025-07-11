@@ -36,7 +36,7 @@ function SettingCard({ title, description, icon: IconComponent, children }: Sett
     <View style={styles.settingCard}>
       <View style={styles.settingHeader}>
         <View style={styles.settingIcon}>
-          <IconComponent size={24} color={colors.light.primary} />
+          <IconComponent size={24} color={colors.primary} />
         </View>
         <View style={styles.settingInfo}>
           <Text style={styles.settingTitle}>{title}</Text>
@@ -68,7 +68,7 @@ function PricingInput({ label, value, onChangeText, suffix = 'KES', keyboardType
           value={value}
           onChangeText={onChangeText}
           keyboardType={keyboardType}
-          placeholderTextColor={colors.light.textMuted}
+          placeholderTextColor={colors.textMuted}
         />
         {suffix && <Text style={styles.inputSuffix}>{suffix}</Text>}
       </View>
@@ -199,7 +199,7 @@ export function SettingsManagement() {
           style={styles.resetButton}
           onPress={handleResetToDefaults}
         >
-          <RefreshCw size={16} color={colors.light.textMuted} />
+          <RefreshCw size={16} color={colors.textMuted} />
           <Text style={styles.resetButtonText}>Reset to Defaults</Text>
         </TouchableOpacity>
         
@@ -208,7 +208,7 @@ export function SettingsManagement() {
           onPress={handleSaveSettings}
           disabled={isLoading}
         >
-          <Save size={16} color={colors.light.background} />
+          <Save size={16} color={colors.background} />
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
       </View>
@@ -297,7 +297,7 @@ export function SettingsManagement() {
           />
           
           <View style={styles.infoBox}>
-            <Info size={16} color={colors.light.info} />
+            <Info size={16} color={colors.info} />
             <Text style={styles.infoText}>
               Drivers receive {100 - (parseFloat(commissionRate) || 15)}% of the total fare
             </Text>
@@ -320,14 +320,14 @@ export function SettingsManagement() {
             <Switch
               value={maintenanceMode}
               onValueChange={setMaintenanceMode}
-              trackColor={{ false: colors.light.border, true: colors.light.primaryLight }}
-              thumbColor={maintenanceMode ? colors.light.primary : colors.light.textMuted}
+              trackColor={{ false: colors.border, true: colors.primaryLight }}
+              thumbColor={maintenanceMode ? colors.primary : colors.textMuted}
             />
           </View>
           
           {maintenanceMode && (
             <View style={styles.warningBox}>
-              <AlertTriangle size={16} color={colors.light.warning} />
+              <AlertTriangle size={16} color={colors.warning} />
               <Text style={styles.warningText}>
                 Maintenance mode is enabled. Users cannot place new orders.
               </Text>
@@ -397,26 +397,26 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    backgroundColor: colors.light.background,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
     gap: 8,
   },
   resetButtonText: {
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '600',
     fontSize: 14,
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
   },
   saveButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -424,13 +424,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -456,12 +456,12 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   settingDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   settingContent: {
     gap: 16,
@@ -476,28 +476,28 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   input: {
     flex: 1,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   inputSuffix: {
     paddingHorizontal: 12,
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '500',
   },
   switchContainer: {
@@ -512,49 +512,49 @@ const styles = StyleSheet.create({
   switchLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   switchDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   infoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.secondaryLight,
+    backgroundColor: colors.secondaryLight,
     padding: 12,
     borderRadius: 8,
     gap: 8,
   },
   infoText: {
     fontSize: 14,
-    color: colors.light.info,
+    color: colors.info,
     flex: 1,
   },
   warningBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.warning + '20',
+    backgroundColor: colors.warning + '20',
     padding: 12,
     borderRadius: 8,
     gap: 8,
   },
   warningText: {
     fontSize: 14,
-    color: colors.light.warning,
+    color: colors.warning,
     flex: 1,
     fontWeight: '500',
   },
   calculatorContainer: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     padding: 16,
     borderRadius: 8,
   },
   calculatorTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   calculatorRow: {
@@ -565,27 +565,27 @@ const styles = StyleSheet.create({
   },
   calculatorLabel: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   calculatorValue: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     fontWeight: '500',
   },
   calculatorTotal: {
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
+    borderTopColor: colors.border,
     marginTop: 8,
     paddingTop: 8,
   },
   calculatorTotalLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   calculatorTotalValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.primary,
+    color: colors.primary,
   },
 });

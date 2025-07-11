@@ -81,7 +81,7 @@ export default function EarningsScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <LinearGradient
-          colors={[Colors.light.warning, "#F59E0B"]}
+          colors={[colors.warning, "#F59E0B"]}
           style={styles.headerGradient}
         >
           <View style={styles.header}>
@@ -114,12 +114,12 @@ export default function EarningsScreen() {
         </View>
 
         <LinearGradient
-          colors={[Colors.light.success, "#10B981"]}
+          colors={[colors.success, "#10B981"]}
           style={styles.totalEarningsCard}
         >
           <View style={styles.earningsHeader}>
             <View style={styles.earningsIconContainer}>
-              <DollarSign size={32} color={Colors.light.background} />
+              <DollarSign size={32} color={colors.background} />
             </View>
             <View style={styles.earningsContent}>
               <Text style={styles.totalEarningsLabel}>Total Earnings</Text>
@@ -127,7 +127,7 @@ export default function EarningsScreen() {
                 KSh {currentData.totalEarnings.toLocaleString()}
               </Text>
               <View style={styles.earningsGrowth}>
-                <TrendingUp size={16} color={Colors.light.background} />
+                <TrendingUp size={16} color={colors.background} />
                 <Text style={styles.growthText}>+12% from last {selectedPeriod}</Text>
               </View>
             </View>
@@ -144,10 +144,10 @@ export default function EarningsScreen() {
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[Colors.light.primary, Colors.light.primaryDark]}
+              colors={[colors.primary, colors.primaryDark]}
               style={styles.statGradient}
             >
-              <Package size={20} color={Colors.light.background} />
+              <Package size={20} color={colors.background} />
               <Text style={styles.statNumber}>{currentData.ordersCompleted}</Text>
               <Text style={styles.statLabel}>Orders</Text>
             </LinearGradient>
@@ -155,10 +155,10 @@ export default function EarningsScreen() {
           
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[Colors.light.accent, Colors.light.accentDark]}
+              colors={[colors.accent, colors.accentDark]}
               style={styles.statGradient}
             >
-              <Clock size={20} color={Colors.light.background} />
+              <Clock size={20} color={colors.background} />
               <Text style={styles.statNumber}>{currentData.hoursWorked}h</Text>
               <Text style={styles.statLabel}>Hours</Text>
             </LinearGradient>
@@ -166,10 +166,10 @@ export default function EarningsScreen() {
           
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[Colors.light.info, "#3B82F6"]}
+              colors={[colors.info, "#3B82F6"]}
               style={styles.statGradient}
             >
-              <Target size={20} color={Colors.light.background} />
+              <Target size={20} color={colors.background} />
               <Text style={styles.statNumber}>KSh {currentData.averagePerOrder}</Text>
               <Text style={styles.statLabel}>Avg/Order</Text>
             </LinearGradient>
@@ -208,7 +208,7 @@ export default function EarningsScreen() {
                 </View>
                 {achievement.unlocked && (
                   <View style={styles.unlockedBadge}>
-                    <Award size={16} color={Colors.light.warning} />
+                    <Award size={16} color={colors.warning} />
                   </View>
                 )}
               </View>
@@ -218,7 +218,7 @@ export default function EarningsScreen() {
 
         <View style={styles.breakdownContainer}>
           <View style={styles.breakdownHeader}>
-            <Calendar size={20} color={Colors.light.primary} />
+            <Calendar size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Earnings Breakdown</Text>
           </View>
           <View style={styles.breakdownList}>
@@ -240,12 +240,12 @@ export default function EarningsScreen() {
         </View>
 
         <LinearGradient
-          colors={[Colors.light.accent, Colors.light.accentDark]}
+          colors={[colors.accent, colors.accentDark]}
           style={styles.payoutContainer}
         >
           <View style={styles.payoutHeader}>
             <View style={styles.payoutIconContainer}>
-              <Zap size={24} color={Colors.light.background} />
+              <Zap size={24} color={colors.background} />
             </View>
             <Text style={styles.payoutTitle}>Payout Information 💳</Text>
           </View>
@@ -277,7 +277,7 @@ export default function EarningsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -294,22 +294,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 4,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   periodSelector: {
     flexDirection: "row",
     margin: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 4,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -323,8 +323,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   activePeriodButton: {
-    backgroundColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -336,10 +336,10 @@ const styles = StyleSheet.create({
   periodText: {
     fontSize: 12,
     fontWeight: "600",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   activePeriodText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
   },
   totalEarningsCard: {
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    shadowColor: Colors.light.success,
+    shadowColor: colors.success,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -372,14 +372,14 @@ const styles = StyleSheet.create({
   },
   totalEarningsLabel: {
     fontSize: 16,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     marginBottom: 4,
     fontWeight: "600",
   },
   totalEarningsAmount: {
     fontSize: 32,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 8,
     letterSpacing: -1,
   },
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   },
   growthText: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   tipsContainer: {
@@ -403,13 +403,13 @@ const styles = StyleSheet.create({
   },
   tipsLabel: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   tipsAmount: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statsContainer: {
     flexDirection: "row",
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -435,11 +435,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 16,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statLabel: {
     fontSize: 11,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     textAlign: "center",
     fontWeight: "600",
   },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -460,10 +460,10 @@ const styles = StyleSheet.create({
   achievementCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -482,25 +482,25 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   achievementTitleLocked: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   achievementDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   achievementDescriptionLocked: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   unlockedBadge: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.light.warning + "20",
+    backgroundColor: colors.warning + "20",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -515,9 +515,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   breakdownList: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   breakdownLeft: {
     flex: 1,
@@ -537,25 +537,25 @@ const styles = StyleSheet.create({
   breakdownTime: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   breakdownOrders: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   breakdownAmount: {
     fontSize: 18,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
   },
   payoutContainer: {
     marginHorizontal: 20,
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    shadowColor: Colors.light.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
   payoutTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   payoutDetails: {
     gap: 12,
@@ -591,13 +591,13 @@ const styles = StyleSheet.create({
   },
   payoutLabel: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   payoutValue: {
     fontSize: 14,
     fontWeight: "700",
-    color: Colors.light.background,
+    color: colors.background,
   },
   editPayoutButton: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -607,7 +607,7 @@ const styles = StyleSheet.create({
   },
   editPayoutText: {
     fontSize: 14,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
   },
 });

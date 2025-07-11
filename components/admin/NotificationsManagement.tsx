@@ -35,7 +35,7 @@ function NotificationTemplate({ title, description, icon: IconComponent, onSelec
   return (
     <TouchableOpacity style={styles.templateCard} onPress={onSelect}>
       <View style={styles.templateIcon}>
-        <IconComponent size={24} color={colors.light.primary} />
+        <IconComponent size={24} color={colors.primary} />
       </View>
       <View style={styles.templateContent}>
         <Text style={styles.templateTitle}>{title}</Text>
@@ -133,7 +133,7 @@ function SendNotificationModal({ visible, onClose, onSend }: SendNotificationMod
                     <View style={styles.typeOptionContent}>
                       <IconComponent 
                         size={20} 
-                        color={selectedType === type.value ? colors.light.primary : colors.light.textMuted} 
+                        color={selectedType === type.value ? colors.primary : colors.textMuted} 
                       />
                       <View style={styles.typeOptionText}>
                         <Text style={[
@@ -146,7 +146,7 @@ function SendNotificationModal({ visible, onClose, onSend }: SendNotificationMod
                       </View>
                     </View>
                     {selectedType === type.value && (
-                      <CheckCircle size={20} color={colors.light.primary} />
+                      <CheckCircle size={20} color={colors.primary} />
                     )}
                   </TouchableOpacity>
                 );
@@ -163,7 +163,7 @@ function SendNotificationModal({ visible, onClose, onSend }: SendNotificationMod
                   value={title}
                   onChangeText={setTitle}
                   placeholder="Enter notification title"
-                  placeholderTextColor={colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                 />
               </View>
 
@@ -177,7 +177,7 @@ function SendNotificationModal({ visible, onClose, onSend }: SendNotificationMod
                   multiline
                   numberOfLines={6}
                   textAlignVertical="top"
-                  placeholderTextColor={colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                 />
               </View>
             </View>
@@ -195,7 +195,7 @@ function SendNotificationModal({ visible, onClose, onSend }: SendNotificationMod
               style={[styles.modalButton, styles.sendButton]}
               onPress={handleSend}
             >
-              <Send size={16} color={colors.light.background} />
+              <Send size={16} color={colors.background} />
               <Text style={styles.sendButtonText}>Send Notification</Text>
             </TouchableOpacity>
           </View>
@@ -289,7 +289,7 @@ export function NotificationsManagement() {
           style={styles.sendButton}
           onPress={() => setShowSendModal(true)}
         >
-          <Plus size={20} color={colors.light.background} />
+          <Plus size={20} color={colors.background} />
           <Text style={styles.sendButtonText}>Send Notification</Text>
         </TouchableOpacity>
       </View>
@@ -345,7 +345,7 @@ export function NotificationsManagement() {
                   </View>
                   
                   <View style={styles.notificationStatus}>
-                    <CheckCircle size={16} color={colors.light.success} />
+                    <CheckCircle size={16} color={colors.success} />
                     <Text style={styles.notificationStatusText}>Delivered</Text>
                   </View>
                 </View>
@@ -360,7 +360,7 @@ export function NotificationsManagement() {
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
               <View style={styles.statIcon}>
-                <Send size={24} color={colors.light.primary} />
+                <Send size={24} color={colors.primary} />
               </View>
               <Text style={styles.statValue}>127</Text>
               <Text style={styles.statLabel}>Total Sent</Text>
@@ -368,7 +368,7 @@ export function NotificationsManagement() {
             
             <View style={styles.statCard}>
               <View style={styles.statIcon}>
-                <CheckCircle size={24} color={colors.light.success} />
+                <CheckCircle size={24} color={colors.success} />
               </View>
               <Text style={styles.statValue}>98.5%</Text>
               <Text style={styles.statLabel}>Delivery Rate</Text>
@@ -376,7 +376,7 @@ export function NotificationsManagement() {
             
             <View style={styles.statCard}>
               <View style={styles.statIcon}>
-                <Clock size={24} color={colors.light.info} />
+                <Clock size={24} color={colors.info} />
               </View>
               <Text style={styles.statValue}>15</Text>
               <Text style={styles.statLabel}>This Week</Text>
@@ -406,14 +406,14 @@ const styles = StyleSheet.create({
   sendButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
   },
   sendButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -426,12 +426,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   sectionDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 16,
   },
   templatesGrid: {
@@ -440,12 +440,12 @@ const styles = StyleSheet.create({
   templateCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -466,23 +466,23 @@ const styles = StyleSheet.create({
   templateTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   templateDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   notificationsList: {
     gap: 12,
   },
   notificationCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -497,15 +497,15 @@ const styles = StyleSheet.create({
   notificationTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
   },
   notificationDate: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   notificationMessage: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   },
   notificationMetaText: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 2,
   },
   notificationStatus: {
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   },
   notificationStatusText: {
     fontSize: 12,
-    color: colors.light.success,
+    color: colors.success,
     fontWeight: '500',
   },
   statsGrid: {
@@ -538,13 +538,13 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 20,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -562,12 +562,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
   },
   modalOverlay: {
@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     width: '90%',
     maxWidth: 600,
@@ -589,24 +589,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
     fontSize: 20,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   modalBody: {
     maxHeight: 400,
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   formSection: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   typeOption: {
     flexDirection: 'row',
@@ -623,12 +623,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     marginBottom: 8,
   },
   typeOptionSelected: {
-    borderColor: colors.light.primary,
-    backgroundColor: colors.light.primaryLight,
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
   },
   typeOptionContent: {
     flexDirection: 'row',
@@ -642,14 +642,14 @@ const styles = StyleSheet.create({
   typeOptionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
   },
   typeOptionLabelSelected: {
-    color: colors.light.primary,
+    color: colors.primary,
   },
   typeOptionDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   formGroup: {
@@ -658,18 +658,18 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   formInput: {
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
-    color: colors.light.text,
-    backgroundColor: colors.light.backgroundSecondary,
+    color: colors.text,
+    backgroundColor: colors.backgroundSecondary,
   },
   messageInput: {
     minHeight: 120,
@@ -680,7 +680,7 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: colors.light.border,
+    borderTopColor: colors.border,
   },
   modalButton: {
     flex: 1,
@@ -692,11 +692,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cancelButton: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   cancelButtonText: {
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '600',
   },
 });

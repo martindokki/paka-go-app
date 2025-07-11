@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/stores/auth-store';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -19,7 +19,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -29,7 +29,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     router.replace('/auth');
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -52,7 +52,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     }
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
 });

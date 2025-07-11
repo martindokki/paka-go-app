@@ -91,18 +91,18 @@ export default function AdminOrdersScreen() {
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case "pending":
-        return Colors.light.warning;
+        return colors.warning;
       case "assigned":
-        return Colors.light.primary;
+        return colors.primary;
       case "picked_up":
       case "in_transit":
-        return Colors.light.accent;
+        return colors.accent;
       case "delivered":
-        return Colors.light.success;
+        return colors.success;
       case "cancelled":
-        return Colors.light.error;
+        return colors.error;
       default:
-        return Colors.light.textMuted;
+        return colors.textMuted;
     }
   };
 
@@ -176,12 +176,12 @@ export default function AdminOrdersScreen() {
       <View style={styles.orderDetails}>
         <View style={styles.participantInfo}>
           <View style={styles.participant}>
-            <User size={14} color={Colors.light.textMuted} />
+            <User size={14} color={colors.textMuted} />
             <Text style={styles.participantText}>{item.customer}</Text>
           </View>
           {item.driver && (
             <View style={styles.participant}>
-              <Truck size={14} color={Colors.light.textMuted} />
+              <Truck size={14} color={colors.textMuted} />
               <Text style={styles.participantText}>{item.driver}</Text>
             </View>
           )}
@@ -194,7 +194,7 @@ export default function AdminOrdersScreen() {
 
       <View style={styles.orderFooter}>
         <View style={styles.packageInfo}>
-          <Package size={12} color={Colors.light.textMuted} />
+          <Package size={12} color={colors.textMuted} />
           <Text style={styles.packageType}>{item.packageType}</Text>
         </View>
         <Text style={styles.orderTime}>{item.createdAt}</Text>
@@ -210,17 +210,17 @@ export default function AdminOrdersScreen() {
 
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
-          <Search size={20} color={Colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search orders..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={Colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         <TouchableOpacity style={styles.filterButton}>
-          <Filter size={20} color={Colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -268,7 +268,7 @@ export default function AdminOrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: 20,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   searchContainer: {
     flexDirection: "row",
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -297,13 +297,13 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -317,40 +317,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: "center",
   },
   activeStatusTab: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   statusTabText: {
     fontSize: 12,
     fontWeight: "500",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   activeStatusTabText: {
-    color: Colors.light.background,
+    color: colors.background,
   },
   statusTabCount: {
     fontSize: 10,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   activeStatusTabCount: {
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
   },
   ordersList: {
     padding: 20,
     paddingTop: 0,
   },
   orderCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
-    shadowColor: Colors.light.text,
+    borderColor: colors.borderLight,
+    shadowColor: colors.text,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
   orderId: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -391,21 +391,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   routeDotStart: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   routeDotEnd: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.accent,
   },
   routeText: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "500",
     flex: 1,
   },
   routeLine: {
     width: 1,
     height: 12,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.border,
     marginLeft: 2,
     marginVertical: 2,
   },
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   },
   participantText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   orderMeta: {
     alignItems: "flex-end",
@@ -433,12 +433,12 @@ const styles = StyleSheet.create({
   orderAmount: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   orderDistance: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   orderFooter: {
     flexDirection: "row",
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
+    borderTopColor: colors.borderLight,
   },
   packageInfo: {
     flexDirection: "row",
@@ -455,10 +455,10 @@ const styles = StyleSheet.create({
   },
   packageType: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   orderTime: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
 });

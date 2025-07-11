@@ -36,9 +36,9 @@ interface CustomerCardProps {
 function CustomerCard({ customer, onSuspend, onDelete, onViewDetails }: CustomerCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return colors.light.success;
-      case 'suspended': return colors.light.error;
-      default: return colors.light.textMuted;
+      case 'active': return colors.success;
+      case 'suspended': return colors.error;
+      default: return colors.textMuted;
     }
   };
 
@@ -72,22 +72,22 @@ function CustomerCard({ customer, onSuspend, onDelete, onViewDetails }: Customer
       <View style={styles.customerDetails}>
         <View style={styles.contactInfo}>
           <View style={styles.contactRow}>
-            <Mail size={16} color={colors.light.textMuted} />
+            <Mail size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{customer.email}</Text>
           </View>
           <View style={styles.contactRow}>
-            <Phone size={16} color={colors.light.textMuted} />
+            <Phone size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{customer.phone}</Text>
           </View>
         </View>
 
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Package size={16} color={colors.light.textMuted} />
+            <Package size={16} color={colors.textMuted} />
             <Text style={styles.statText}>{customer.totalOrders} orders</Text>
           </View>
           <View style={styles.statItem}>
-            <DollarSign size={16} color={colors.light.textMuted} />
+            <DollarSign size={16} color={colors.textMuted} />
             <Text style={styles.statText}>KES {customer.totalSpent.toLocaleString()}</Text>
           </View>
         </View>
@@ -98,7 +98,7 @@ function CustomerCard({ customer, onSuspend, onDelete, onViewDetails }: Customer
           style={[styles.actionButton, styles.viewButton]}
           onPress={() => onViewDetails(customer)}
         >
-          <Eye size={16} color={colors.light.background} />
+          <Eye size={16} color={colors.background} />
           <Text style={styles.viewButtonText}>View Details</Text>
         </TouchableOpacity>
         
@@ -107,7 +107,7 @@ function CustomerCard({ customer, onSuspend, onDelete, onViewDetails }: Customer
             style={[styles.actionButton, styles.suspendButton]}
             onPress={() => onSuspend(customer.id)}
           >
-            <Pause size={16} color={colors.light.background} />
+            <Pause size={16} color={colors.background} />
             <Text style={styles.suspendButtonText}>Suspend</Text>
           </TouchableOpacity>
         )}
@@ -116,7 +116,7 @@ function CustomerCard({ customer, onSuspend, onDelete, onViewDetails }: Customer
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => onDelete(customer.id)}
         >
-          <Trash2 size={16} color={colors.light.background} />
+          <Trash2 size={16} color={colors.background} />
           <Text style={styles.deleteButtonText}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -167,7 +167,7 @@ function CustomerDetailsModal({ visible, customer, onClose }: CustomerDetailsMod
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Status:</Text>
                 <Text style={[styles.detailValue, { 
-                  color: customer.status === 'active' ? colors.light.success : colors.light.error 
+                  color: customer.status === 'active' ? colors.success : colors.error 
                 }]}>
                   {customer.status.toUpperCase()}
                 </Text>
@@ -302,13 +302,13 @@ export function CustomersManagement() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search customers..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         
@@ -316,7 +316,7 @@ export function CustomersManagement() {
           style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color={colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -347,7 +347,7 @@ export function CustomersManagement() {
       <ScrollView style={styles.customersList} showsVerticalScrollIndicator={false}>
         {filteredCustomers.length === 0 ? (
           <View style={styles.emptyState}>
-            <User size={48} color={colors.light.textMuted} />
+            <User size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No customers found</Text>
             <Text style={styles.emptyStateSubtext}>
               {searchQuery || statusFilter !== 'all' 
@@ -392,25 +392,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     padding: 12,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filtersContainer: {
     marginBottom: 16,
@@ -418,35 +418,35 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterChipText: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   filterChipTextActive: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
   customersList: {
     flex: 1,
   },
   customerCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -467,19 +467,19 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.background,
+    color: colors.background,
   },
   customerName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   statusBadge: {
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
   },
   joinDate: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   customerDetails: {
     marginBottom: 16,
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
   contactText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
   },
   statsRow: {
     flexDirection: 'row',
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
   statText: {
     marginLeft: 4,
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   customerActions: {
     flexDirection: 'row',
@@ -539,26 +539,26 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   viewButton: {
-    backgroundColor: colors.light.info,
+    backgroundColor: colors.info,
   },
   viewButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   suspendButton: {
-    backgroundColor: colors.light.warning,
+    backgroundColor: colors.warning,
   },
   suspendButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   deleteButton: {
-    backgroundColor: colors.light.error,
+    backgroundColor: colors.error,
   },
   deleteButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -570,12 +570,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     width: '90%',
     maxWidth: 500,
@@ -599,24 +599,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeButtonText: {
     fontSize: 20,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   modalBody: {
     padding: 20,
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   detailRow: {
@@ -636,16 +636,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   detailLabel: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '500',
   },
   detailValue: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     fontWeight: '600',
     textAlign: 'right',
     flex: 1,

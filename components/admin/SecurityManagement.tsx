@@ -39,7 +39,7 @@ function SecurityCard({ title, description, icon: IconComponent, children }: Sec
     <View style={styles.securityCard}>
       <View style={styles.securityHeader}>
         <View style={styles.securityIcon}>
-          <IconComponent size={24} color={colors.light.primary} />
+          <IconComponent size={24} color={colors.primary} />
         </View>
         <View style={styles.securityInfo}>
           <Text style={styles.securityTitle}>{title}</Text>
@@ -60,15 +60,15 @@ interface ActivityLogItemProps {
 function ActivityLogItem({ log }: ActivityLogItemProps) {
   const getActionColor = (action: string) => {
     if (action.toLowerCase().includes('delete') || action.toLowerCase().includes('suspend')) {
-      return colors.light.error;
+      return colors.error;
     }
     if (action.toLowerCase().includes('approve') || action.toLowerCase().includes('create')) {
-      return colors.light.success;
+      return colors.success;
     }
     if (action.toLowerCase().includes('update') || action.toLowerCase().includes('edit')) {
-      return colors.light.warning;
+      return colors.warning;
     }
-    return colors.light.info;
+    return colors.info;
   };
 
   return (
@@ -87,7 +87,7 @@ function ActivityLogItem({ log }: ActivityLogItemProps) {
       
       <View style={styles.logFooter}>
         <View style={styles.logMeta}>
-          <MapPin size={12} color={colors.light.textMuted} />
+          <MapPin size={12} color={colors.textMuted} />
           <Text style={styles.logMetaText}>{log.ipAddress}</Text>
         </View>
         <View style={[styles.logStatus, { backgroundColor: getActionColor(log.action) + '20' }]}>
@@ -171,7 +171,7 @@ export function SecurityManagement() {
           style={styles.settingsButton}
           onPress={() => setShowSettings(!showSettings)}
         >
-          <Lock size={16} color={colors.light.primary} />
+          <Lock size={16} color={colors.primary} />
           <Text style={styles.settingsButtonText}>Security Settings</Text>
         </TouchableOpacity>
         
@@ -179,7 +179,7 @@ export function SecurityManagement() {
           style={styles.refreshButton}
           onPress={handleRefreshLogs}
         >
-          <RefreshCw size={16} color={colors.light.textMuted} />
+          <RefreshCw size={16} color={colors.textMuted} />
           <Text style={styles.refreshButtonText}>Refresh</Text>
         </TouchableOpacity>
       </View>
@@ -194,7 +194,7 @@ export function SecurityManagement() {
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
               <View style={styles.statIcon}>
-                <Users size={20} color={colors.light.success} />
+                <Users size={20} color={colors.success} />
               </View>
               <Text style={styles.statValue}>{securityStats.totalLogins}</Text>
               <Text style={styles.statLabel}>Total Logins</Text>
@@ -202,7 +202,7 @@ export function SecurityManagement() {
             
             <View style={styles.statItem}>
               <View style={styles.statIcon}>
-                <AlertTriangle size={20} color={colors.light.error} />
+                <AlertTriangle size={20} color={colors.error} />
               </View>
               <Text style={styles.statValue}>{securityStats.failedAttempts}</Text>
               <Text style={styles.statLabel}>Failed Attempts</Text>
@@ -210,7 +210,7 @@ export function SecurityManagement() {
             
             <View style={styles.statItem}>
               <View style={styles.statIcon}>
-                <Activity size={20} color={colors.light.info} />
+                <Activity size={20} color={colors.info} />
               </View>
               <Text style={styles.statValue}>{securityStats.activeSessions}</Text>
               <Text style={styles.statLabel}>Active Sessions</Text>
@@ -218,7 +218,7 @@ export function SecurityManagement() {
             
             <View style={styles.statItem}>
               <View style={styles.statIcon}>
-                <Eye size={20} color={colors.light.warning} />
+                <Eye size={20} color={colors.warning} />
               </View>
               <Text style={styles.statValue}>{securityStats.suspiciousActivity}</Text>
               <Text style={styles.statLabel}>Suspicious Activity</Text>
@@ -241,8 +241,8 @@ export function SecurityManagement() {
               <Switch
                 value={twoFactorEnabled}
                 onValueChange={setTwoFactorEnabled}
-                trackColor={{ false: colors.light.border, true: colors.light.primaryLight }}
-                thumbColor={twoFactorEnabled ? colors.light.primary : colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primaryLight }}
+                thumbColor={twoFactorEnabled ? colors.primary : colors.textMuted}
               />
             </View>
 
@@ -254,8 +254,8 @@ export function SecurityManagement() {
               <Switch
                 value={ipWhitelistEnabled}
                 onValueChange={setIpWhitelistEnabled}
-                trackColor={{ false: colors.light.border, true: colors.light.primaryLight }}
-                thumbColor={ipWhitelistEnabled ? colors.light.primary : colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primaryLight }}
+                thumbColor={ipWhitelistEnabled ? colors.primary : colors.textMuted}
               />
             </View>
 
@@ -267,7 +267,7 @@ export function SecurityManagement() {
                   value={sessionTimeout}
                   onChangeText={setSessionTimeout}
                   keyboardType="numeric"
-                  placeholderTextColor={colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                 />
               </View>
               
@@ -278,7 +278,7 @@ export function SecurityManagement() {
                   value={maxLoginAttempts}
                   onChangeText={setMaxLoginAttempts}
                   keyboardType="numeric"
-                  placeholderTextColor={colors.light.textMuted}
+                  placeholderTextColor={colors.textMuted}
                 />
               </View>
             </View>
@@ -290,7 +290,7 @@ export function SecurityManagement() {
                 value={auditLogsRetention}
                 onChangeText={setAuditLogsRetention}
                 keyboardType="numeric"
-                placeholderTextColor={colors.light.textMuted}
+                placeholderTextColor={colors.textMuted}
               />
             </View>
 
@@ -299,7 +299,7 @@ export function SecurityManagement() {
                 style={styles.revokeButton}
                 onPress={handleRevokeAllSessions}
               >
-                <UserX size={16} color={colors.light.background} />
+                <UserX size={16} color={colors.background} />
                 <Text style={styles.revokeButtonText}>Revoke All Sessions</Text>
               </TouchableOpacity>
               
@@ -307,7 +307,7 @@ export function SecurityManagement() {
                 style={styles.saveButton}
                 onPress={handleSaveSecuritySettings}
               >
-                <CheckCircle size={16} color={colors.light.background} />
+                <CheckCircle size={16} color={colors.background} />
                 <Text style={styles.saveButtonText}>Save Settings</Text>
               </TouchableOpacity>
             </View>
@@ -327,7 +327,7 @@ export function SecurityManagement() {
                 placeholder="Search activity logs..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholderTextColor={colors.light.textMuted}
+                placeholderTextColor={colors.textMuted}
               />
             </View>
           </View>
@@ -335,7 +335,7 @@ export function SecurityManagement() {
           <View style={styles.logsList}>
             {filteredLogs.length === 0 ? (
               <View style={styles.emptyState}>
-                <Activity size={48} color={colors.light.textMuted} />
+                <Activity size={48} color={colors.textMuted} />
                 <Text style={styles.emptyStateText}>No activity logs found</Text>
                 <Text style={styles.emptyStateSubtext}>
                   {searchQuery 
@@ -361,7 +361,7 @@ export function SecurityManagement() {
           <View style={styles.alertsList}>
             <View style={styles.alertItem}>
               <View style={styles.alertIcon}>
-                <AlertTriangle size={20} color={colors.light.warning} />
+                <AlertTriangle size={20} color={colors.warning} />
               </View>
               <View style={styles.alertContent}>
                 <Text style={styles.alertTitle}>Multiple Failed Login Attempts</Text>
@@ -374,7 +374,7 @@ export function SecurityManagement() {
 
             <View style={styles.alertItem}>
               <View style={styles.alertIcon}>
-                <Eye size={20} color={colors.light.info} />
+                <Eye size={20} color={colors.info} />
               </View>
               <View style={styles.alertContent}>
                 <Text style={styles.alertTitle}>New Admin Login</Text>
@@ -387,7 +387,7 @@ export function SecurityManagement() {
 
             <View style={styles.alertItem}>
               <View style={styles.alertIcon}>
-                <CheckCircle size={20} color={colors.light.success} />
+                <CheckCircle size={20} color={colors.success} />
               </View>
               <View style={styles.alertContent}>
                 <Text style={styles.alertTitle}>Security Scan Complete</Text>
@@ -420,11 +420,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     gap: 8,
   },
   settingsButtonText: {
-    color: colors.light.primary,
+    color: colors.primary,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -435,12 +435,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    backgroundColor: colors.light.background,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
     gap: 8,
   },
   refreshButtonText: {
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -448,13 +448,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   securityCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -480,12 +480,12 @@ const styles = StyleSheet.create({
   securityTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   securityDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   securityContent: {
     gap: 16,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 120,
     alignItems: 'center',
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     padding: 16,
     borderRadius: 8,
   },
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -515,12 +515,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
   },
   settingRow: {
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   settingInfo: {
     flex: 1,
@@ -538,12 +538,12 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   settingDesc: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   inputRow: {
     flexDirection: 'row',
@@ -555,18 +555,18 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
-    color: colors.light.text,
-    backgroundColor: colors.light.backgroundSecondary,
+    color: colors.text,
+    backgroundColor: colors.backgroundSecondary,
   },
   settingActions: {
     flexDirection: 'row',
@@ -578,13 +578,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.light.error,
+    backgroundColor: colors.error,
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
   },
   revokeButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -593,13 +593,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.light.success,
+    backgroundColor: colors.success,
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
   },
   saveButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -607,24 +607,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   searchContainer: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   searchInput: {
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   logsList: {
     gap: 12,
   },
   logItem: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 8,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: colors.light.primary,
+    borderLeftColor: colors.primary,
   },
   logHeader: {
     flexDirection: 'row',
@@ -638,20 +638,20 @@ const styles = StyleSheet.create({
   logAction: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   logAdmin: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   logTime: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   logDetails: {
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
   },
   logMetaText: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   logStatus: {
     paddingHorizontal: 8,
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
   alertItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     padding: 16,
     borderRadius: 8,
   },
@@ -692,7 +692,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -703,18 +703,18 @@ const styles = StyleSheet.create({
   alertTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   alertDescription: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 4,
     lineHeight: 18,
   },
   alertTime: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   emptyState: {
     alignItems: 'center',
@@ -724,12 +724,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,

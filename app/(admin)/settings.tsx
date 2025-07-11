@@ -155,8 +155,8 @@ export default function AdminSettingsScreen() {
               <Switch
                 value={settings.autoAssignOrders}
                 onValueChange={(value) => updateSetting("autoAssignOrders", value)}
-                trackColor={{ false: Colors.light.border, true: Colors.light.primary + "40" }}
-                thumbColor={settings.autoAssignOrders ? Colors.light.primary : Colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primary + "40" }}
+                thumbColor={settings.autoAssignOrders ? colors.primary : colors.textMuted}
               />
             </View>
 
@@ -170,8 +170,8 @@ export default function AdminSettingsScreen() {
               <Switch
                 value={settings.enableNotifications}
                 onValueChange={(value) => updateSetting("enableNotifications", value)}
-                trackColor={{ false: Colors.light.border, true: Colors.light.primary + "40" }}
-                thumbColor={settings.enableNotifications ? Colors.light.primary : Colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primary + "40" }}
+                thumbColor={settings.enableNotifications ? colors.primary : colors.textMuted}
               />
             </View>
 
@@ -185,8 +185,8 @@ export default function AdminSettingsScreen() {
               <Switch
                 value={settings.requireDriverVerification}
                 onValueChange={(value) => updateSetting("requireDriverVerification", value)}
-                trackColor={{ false: Colors.light.border, true: Colors.light.primary + "40" }}
-                thumbColor={settings.requireDriverVerification ? Colors.light.primary : Colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primary + "40" }}
+                thumbColor={settings.requireDriverVerification ? colors.primary : colors.textMuted}
               />
             </View>
 
@@ -200,8 +200,8 @@ export default function AdminSettingsScreen() {
               <Switch
                 value={settings.enableRealTimeTracking}
                 onValueChange={(value) => updateSetting("enableRealTimeTracking", value)}
-                trackColor={{ false: Colors.light.border, true: Colors.light.primary + "40" }}
-                thumbColor={settings.enableRealTimeTracking ? Colors.light.primary : Colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.primary + "40" }}
+                thumbColor={settings.enableRealTimeTracking ? colors.primary : colors.textMuted}
               />
             </View>
           </View>
@@ -259,7 +259,7 @@ export default function AdminSettingsScreen() {
             {paymentMethods.map((method) => (
               <View key={method.id} style={styles.paymentItem}>
                 <View style={styles.paymentIcon}>
-                  <CreditCard size={20} color={Colors.light.primary} />
+                  <CreditCard size={20} color={colors.primary} />
                 </View>
                 <View style={styles.paymentInfo}>
                   <Text style={styles.paymentName}>{method.name}</Text>
@@ -271,8 +271,8 @@ export default function AdminSettingsScreen() {
                     // TODO: Update payment method status
                     console.log(`Toggle ${method.id}:`, value);
                   }}
-                  trackColor={{ false: Colors.light.border, true: Colors.light.success + "40" }}
-                  thumbColor={method.enabled ? Colors.light.success : Colors.light.textMuted}
+                  trackColor={{ false: colors.border, true: colors.success + "40" }}
+                  thumbColor={method.enabled ? colors.success : colors.textMuted}
                 />
               </View>
             ))}
@@ -284,35 +284,35 @@ export default function AdminSettingsScreen() {
           <View style={styles.configList}>
             <TouchableOpacity style={styles.configItem}>
               <View style={styles.configIcon}>
-                <MapPin size={20} color={Colors.light.primary} />
+                <MapPin size={20} color={colors.primary} />
               </View>
               <View style={styles.configInfo}>
                 <Text style={styles.configName}>Service Areas</Text>
                 <Text style={styles.configDescription}>Manage delivery zones</Text>
               </View>
-              <ChevronRight size={20} color={Colors.light.textMuted} />
+              <ChevronRight size={20} color={colors.textMuted} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.configItem}>
               <View style={styles.configIcon}>
-                <Bell size={20} color={Colors.light.primary} />
+                <Bell size={20} color={colors.primary} />
               </View>
               <View style={styles.configInfo}>
                 <Text style={styles.configName}>Notification Templates</Text>
                 <Text style={styles.configDescription}>Customize messages</Text>
               </View>
-              <ChevronRight size={20} color={Colors.light.textMuted} />
+              <ChevronRight size={20} color={colors.textMuted} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.configItem}>
               <View style={styles.configIcon}>
-                <Shield size={20} color={Colors.light.primary} />
+                <Shield size={20} color={colors.primary} />
               </View>
               <View style={styles.configInfo}>
                 <Text style={styles.configName}>Security Settings</Text>
                 <Text style={styles.configDescription}>API keys and permissions</Text>
               </View>
-              <ChevronRight size={20} color={Colors.light.textMuted} />
+              <ChevronRight size={20} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
         </View>
@@ -325,19 +325,19 @@ export default function AdminSettingsScreen() {
           <SettingsItem
             title="Privacy Policy"
             subtitle="How we handle user data"
-            icon={<Shield size={20} color={Colors.light.info} />}
+            icon={<Shield size={20} color={colors.info} />}
             onPress={() => setShowPrivacyModal(true)}
           />
           <SettingsItem
             title="Terms of Service"
             subtitle="Platform terms and conditions"
-            icon={<FileText size={20} color={Colors.light.info} />}
+            icon={<FileText size={20} color={colors.info} />}
             onPress={() => setShowTermsModal(true)}
           />
           <SettingsItem
             title="View Error Logs"
             subtitle="System debug information"
-            icon={<Eye size={20} color={Colors.light.textMuted} />}
+            icon={<Eye size={20} color={colors.textMuted} />}
             onPress={handleViewErrorLogs}
           />
         </SettingsSection>
@@ -346,14 +346,14 @@ export default function AdminSettingsScreen() {
           <SettingsItem
             title="Logout"
             subtitle="Sign out of admin panel"
-            icon={<LogOut size={20} color={Colors.light.error} />}
+            icon={<LogOut size={20} color={colors.error} />}
             onPress={handleLogout}
             destructive
           />
           <SettingsItem
             title="Delete Account"
             subtitle="Permanently delete admin account"
-            icon={<Trash2 size={20} color={Colors.light.error} />}
+            icon={<Trash2 size={20} color={colors.error} />}
             onPress={() => setShowDeleteModal(true)}
             destructive
           />
@@ -381,7 +381,7 @@ export default function AdminSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   section: {
     marginBottom: 32,
@@ -401,14 +401,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 16,
   },
   settingsList: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
   },
   settingItem: {
     flexDirection: "row",
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   settingInfo: {
     flex: 1,
@@ -425,12 +425,12 @@ const styles = StyleSheet.create({
   settingName: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   settingDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   pricingGrid: {
     flexDirection: "row",
@@ -440,42 +440,42 @@ const styles = StyleSheet.create({
   pricingItem: {
     flex: 1,
     minWidth: "47%",
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 16,
   },
   pricingLabel: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 8,
     fontWeight: "500",
   },
   pricingInput: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: colors.border,
     paddingVertical: 4,
   },
   paymentsList: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
   },
   paymentItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   paymentIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -487,31 +487,31 @@ const styles = StyleSheet.create({
   paymentName: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   paymentDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   configList: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
   },
   configItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   configIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -522,22 +522,22 @@ const styles = StyleSheet.create({
   configName: {
     fontSize: 16,
     fontWeight: "500",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   configDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   saveButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
     marginTop: 16,
   },
   saveButtonText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: 16,
     fontWeight: "600",
   },

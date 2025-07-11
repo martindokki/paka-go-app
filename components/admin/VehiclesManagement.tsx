@@ -33,10 +33,10 @@ interface VehicleCardProps {
 function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return colors.light.success;
-      case 'assigned': return colors.light.info;
-      case 'maintenance': return colors.light.warning;
-      default: return colors.light.textMuted;
+      case 'available': return colors.success;
+      case 'assigned': return colors.info;
+      case 'maintenance': return colors.warning;
+      default: return colors.textMuted;
     }
   };
 
@@ -63,7 +63,7 @@ function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
       <View style={styles.vehicleHeader}>
         <View style={styles.vehicleInfo}>
           <View style={styles.vehicleIconContainer}>
-            <VehicleIcon size={24} color={colors.light.primary} />
+            <VehicleIcon size={24} color={colors.primary} />
           </View>
           <View>
             <Text style={styles.vehiclePlate}>{vehicle.plateNumber}</Text>
@@ -79,13 +79,13 @@ function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
 
       <View style={styles.vehicleDetails}>
         <View style={styles.detailRow}>
-          <Package size={16} color={colors.light.textMuted} />
+          <Package size={16} color={colors.textMuted} />
           <Text style={styles.detailText}>Load Capacity: {vehicle.loadCapacity}kg</Text>
         </View>
         
         {vehicle.driverId && (
           <View style={styles.detailRow}>
-            <User size={16} color={colors.light.textMuted} />
+            <User size={16} color={colors.textMuted} />
             <Text style={styles.detailText}>Assigned to Driver: {vehicle.driverId}</Text>
           </View>
         )}
@@ -102,7 +102,7 @@ function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
           style={[styles.actionButton, styles.editButton]}
           onPress={() => onEdit(vehicle)}
         >
-          <Settings size={16} color={colors.light.background} />
+          <Settings size={16} color={colors.background} />
           <Text style={styles.editButtonText}>Edit</Text>
         </TouchableOpacity>
         
@@ -110,7 +110,7 @@ function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => onDelete(vehicle.id)}
         >
-          <Trash2 size={16} color={colors.light.background} />
+          <Trash2 size={16} color={colors.background} />
           <Text style={styles.deleteButtonText}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -191,7 +191,7 @@ function VehicleForm({ visible, vehicle, onClose, onSave }: VehicleFormProps) {
               value={plateNumber}
               onChangeText={setPlateNumber}
               placeholder="e.g., KCA 123A"
-              placeholderTextColor={colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
             />
           </View>
 
@@ -219,7 +219,7 @@ function VehicleForm({ visible, vehicle, onClose, onSave }: VehicleFormProps) {
                   >
                     <Text style={styles.typeOptionText}>{vehicleType.label}</Text>
                     {type === vehicleType.value && (
-                      <CheckCircle size={16} color={colors.light.success} />
+                      <CheckCircle size={16} color={colors.success} />
                     )}
                   </TouchableOpacity>
                 ))}
@@ -235,7 +235,7 @@ function VehicleForm({ visible, vehicle, onClose, onSave }: VehicleFormProps) {
               onChangeText={setLoadCapacity}
               placeholder="e.g., 50"
               keyboardType="numeric"
-              placeholderTextColor={colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
             />
           </View>
 
@@ -351,13 +351,13 @@ export function VehiclesManagement() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search vehicles..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         
@@ -365,14 +365,14 @@ export function VehiclesManagement() {
           style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color={colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={styles.addButton}
           onPress={handleAddVehicle}
         >
-          <Plus size={20} color={colors.light.background} />
+          <Plus size={20} color={colors.background} />
         </TouchableOpacity>
       </View>
 
@@ -423,7 +423,7 @@ export function VehiclesManagement() {
       <ScrollView style={styles.vehiclesList} showsVerticalScrollIndicator={false}>
         {filteredVehicles.length === 0 ? (
           <View style={styles.emptyState}>
-            <Car size={48} color={colors.light.textMuted} />
+            <Car size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No vehicles found</Text>
             <Text style={styles.emptyStateSubtext}>
               {searchQuery || statusFilter !== 'all' || typeFilter !== 'all'
@@ -468,29 +468,29 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     padding: 12,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   addButton: {
     padding: 12,
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
     borderRadius: 8,
   },
   filtersContainer: {
@@ -502,35 +502,35 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterChipText: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   filterChipTextActive: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
   vehiclesList: {
     flex: 1,
   },
   vehicleCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -551,18 +551,18 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },
   vehiclePlate: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   vehicleType: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textTransform: 'capitalize',
   },
   statusBadge: {
@@ -585,11 +585,11 @@ const styles = StyleSheet.create({
   detailText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   dateText: {
     fontSize: 12,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   vehicleActions: {
     flexDirection: 'row',
@@ -604,18 +604,18 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   editButton: {
-    backgroundColor: colors.light.info,
+    backgroundColor: colors.info,
   },
   editButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   deleteButton: {
-    backgroundColor: colors.light.error,
+    backgroundColor: colors.error,
   },
   deleteButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -627,12 +627,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 24,
     width: '90%',
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -663,29 +663,29 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   formInput: {
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
-    color: colors.light.text,
-    backgroundColor: colors.light.backgroundSecondary,
+    color: colors.text,
+    backgroundColor: colors.backgroundSecondary,
   },
   formInputText: {
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   typeSelector: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
     borderRadius: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
   },
   typeOption: {
     flexDirection: 'row',
@@ -694,11 +694,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.light.border,
+    borderBottomColor: colors.border,
   },
   typeOptionText: {
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   modalActions: {
     flexDirection: 'row',
@@ -712,19 +712,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   cancelButtonText: {
     fontSize: 16,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
   },
   saveButtonText: {
     fontSize: 16,
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
 });

@@ -98,13 +98,13 @@ export default function AdminUsersScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return Colors.light.success;
+        return colors.success;
       case "inactive":
-        return Colors.light.warning;
+        return colors.warning;
       case "suspended":
-        return Colors.light.error;
+        return colors.error;
       default:
-        return Colors.light.textMuted;
+        return colors.textMuted;
     }
   };
 
@@ -125,8 +125,8 @@ export default function AdminUsersScreen() {
           <Star
             key={star}
             size={12}
-            color={star <= rating ? Colors.light.warning : Colors.light.border}
-            fill={star <= rating ? Colors.light.warning : "transparent"}
+            color={star <= rating ? colors.warning : colors.border}
+            fill={star <= rating ? colors.warning : "transparent"}
           />
         ))}
       </View>
@@ -139,9 +139,9 @@ export default function AdminUsersScreen() {
         <View style={styles.userInfo}>
           <View style={styles.userAvatar}>
             {item.type === "driver" ? (
-              <Truck size={20} color={Colors.light.primary} />
+              <Truck size={20} color={colors.primary} />
             ) : (
-              <User size={20} color={Colors.light.accent} />
+              <User size={20} color={colors.accent} />
             )}
           </View>
           <View style={styles.userDetails}>
@@ -171,11 +171,11 @@ export default function AdminUsersScreen() {
 
       <View style={styles.contactInfo}>
         <View style={styles.contactItem}>
-          <Mail size={14} color={Colors.light.textMuted} />
+          <Mail size={14} color={colors.textMuted} />
           <Text style={styles.contactText}>{item.email}</Text>
         </View>
         <View style={styles.contactItem}>
-          <Phone size={14} color={Colors.light.textMuted} />
+          <Phone size={14} color={colors.textMuted} />
           <Text style={styles.contactText}>{item.phone}</Text>
         </View>
       </View>
@@ -210,17 +210,17 @@ export default function AdminUsersScreen() {
 
       <View style={styles.searchContainer}>
         <View style={styles.searchBar}>
-          <Search size={20} color={Colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search users..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={Colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         <TouchableOpacity style={styles.filterButton}>
-          <Filter size={20} color={Colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -268,7 +268,7 @@ export default function AdminUsersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: 20,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   searchContainer: {
     flexDirection: "row",
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -297,13 +297,13 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -318,40 +318,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     alignItems: "center",
   },
   activeTypeTab: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   typeTabText: {
     fontSize: 12,
     fontWeight: "500",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   activeTypeTabText: {
-    color: Colors.light.background,
+    color: colors.background,
   },
   typeTabCount: {
     fontSize: 10,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   activeTypeTabCount: {
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
   },
   usersList: {
     padding: 20,
     paddingTop: 0,
   },
   userCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
-    shadowColor: Colors.light.text,
+    borderColor: colors.borderLight,
+    shadowColor: colors.text,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -383,12 +383,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   userType: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -410,27 +410,27 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   userStats: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
+    borderTopColor: colors.borderLight,
   },
   statItem: {
     alignItems: "center",
   },
   statLabel: {
     fontSize: 10,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     marginBottom: 4,
   },
   statValue: {
     fontSize: 12,
     fontWeight: "500",
-    color: Colors.light.text,
+    color: colors.text,
   },
   ratingContainer: {
     flexDirection: "row",
@@ -443,6 +443,6 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
 });
