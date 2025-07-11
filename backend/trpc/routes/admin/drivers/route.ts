@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../create-context.ts';
+import { publicProcedure } from '../../create-context';
 
 const driverSchema = z.object({
   id: z.string(),

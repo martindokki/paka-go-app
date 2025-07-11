@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "../../create-context.ts";
+import { publicProcedure } from "../../create-context";
 
 // Mock users storage (in real app, this would be a database)
 const MOCK_USERS = [
