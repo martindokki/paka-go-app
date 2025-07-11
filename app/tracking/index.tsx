@@ -27,7 +27,7 @@ import {
   Wallet,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors.light from "@/constants/colors";
+import { colors } from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { MapViewComponent } from "@/components/MapView";
 import { MapService, Coordinates } from "@/services/map-service";

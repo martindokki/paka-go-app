@@ -14,7 +14,7 @@ import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import { useMapStore } from '@/stores/map-store';
 import { MapService, Coordinates } from '@/services/map-service';
 import { useLocation } from '@/hooks/useLocation';
-import Colors.light from '@/constants/colors';
+import { colors } from '@/constants/colors';
 
 interface MapViewComponentProps {
   onLocationSelect?: (location: Coordinates) => void;
