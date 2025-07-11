@@ -32,7 +32,7 @@ import {
   Search,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
@@ -787,7 +787,7 @@ export default function BookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -799,7 +799,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "900",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 8,
     letterSpacing: -1,
   },
@@ -820,7 +820,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: colors.text,
+    color: safeColors.text,
   },
   mapToggle: {
     flexDirection: 'row',

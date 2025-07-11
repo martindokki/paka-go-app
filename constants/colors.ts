@@ -128,9 +128,6 @@ const Colors = {
   },
 };
 
-export default colors;
-export { Colors };
-
 // Create a safe colors object that provides fallbacks
 export const safeColors = {
   ...colors,
@@ -147,3 +144,6 @@ export const safeColors = {
   border: colors.border || '#E5E7EB',
   shadow: colors.shadow || 'rgba(0, 0, 0, 0.1)',
 };
+
+export default colors;
+export { Colors };

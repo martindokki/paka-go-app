@@ -36,7 +36,7 @@ import {
   Eye,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import colors, { safeColors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -488,7 +488,7 @@ export default function DriverProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: colors.text,
+    color: safeColors.text,
     textAlign: "center",
     marginBottom: 4,
   },
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
   vehicleValue: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
+    color: safeColors.text,
   },
   menuSection: {
     paddingHorizontal: 20,
@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
