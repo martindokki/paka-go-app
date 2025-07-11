@@ -1,7 +1,7 @@
 import { createTRPCRouter } from "./create-context";
-import hiRoute from "./routes/example/hi/route";
-import loginRoute from "./routes/auth/login/route";
-import registerRoute from "./routes/auth/register/route";
+import { hiProcedure } from "./routes/example/hi/route";
+import { loginProcedure } from "./routes/auth/login/route";
+import { registerProcedure } from "./routes/auth/register/route";
 import { dashboardProcedure } from "./routes/admin/dashboard/route";
 import { getDriversProcedure, approveDriverProcedure, suspendDriverProcedure, assignVehicleProcedure } from "./routes/admin/drivers/route";
 import { getOrdersProcedure, assignOrderProcedure, cancelOrderProcedure, sendSTKPushProcedure } from "./routes/admin/orders/route";
@@ -10,11 +10,11 @@ import { getSettingsProcedure, updateSettingsProcedure } from "./routes/admin/se
 
 export const appRouter = createTRPCRouter({
   example: createTRPCRouter({
-    hi: hiRoute,
+    hi: hiProcedure,
   }),
   auth: createTRPCRouter({
-    login: loginRoute,
-    register: registerRoute,
+    login: loginProcedure,
+    register: registerProcedure,
   }),
   admin: createTRPCRouter({
     dashboard: dashboardProcedure,

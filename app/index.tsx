@@ -7,6 +7,18 @@ import { useAuthStore } from '@/stores/auth-store';
 export default function Index() {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
   const [hasNavigated, setHasNavigated] = useState(false);
+  
+  // Fallback initialization if store is not ready
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const state = useAuthStore.getState();
+      if (!state.isInitialized) {
+        state.setInitialized(true);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (!isInitialized || hasNavigated) return;

@@ -20,7 +20,7 @@ import {
   Receipt,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { usePaymentStore, PaymentTransaction } from "@/stores/payment-store";
 import { useOrdersStore } from "@/stores/orders-store";
 
@@ -73,16 +73,16 @@ export default function PaymentHistoryScreen() {
   const getStatusColor = (status: PaymentTransaction['status']) => {
     switch (status) {
       case 'completed':
-        return Colors.light.success;
+        return colors.success;
       case 'failed':
       case 'cancelled':
-        return Colors.light.error;
+        return colors.error;
       case 'processing':
-        return Colors.light.primary;
+        return colors.primary;
       case 'pending':
-        return Colors.light.warning;
+        return colors.warning;
       default:
-        return Colors.light.textMuted;
+        return colors.textMuted;
     }
   };
 
@@ -111,7 +111,7 @@ export default function PaymentHistoryScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={Colors.light.text} />
+          <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Payment History</Text>
         <View style={styles.placeholder} />
@@ -141,14 +141,14 @@ export default function PaymentHistoryScreen() {
                       <LinearGradient
                         colors={
                           transaction.method === 'mpesa'
-                            ? [Colors.light.mpesa, "#00B85C"]
+                            ? [colors.mpesa, "#00B85C"]
                             : transaction.method === 'card'
-                            ? [Colors.light.accent, Colors.light.accentDark]
-                            : [Colors.light.textMuted, Colors.light.textMuted]
+                            ? [colors.accent, colors.accentDark]
+                            : [colors.textMuted, colors.textMuted]
                         }
                         style={styles.paymentIcon}
                       >
-                        <PaymentIcon size={20} color={Colors.light.background} />
+                        <PaymentIcon size={20} color={colors.background} />
                       </LinearGradient>
                       <View style={styles.transactionInfo}>
                         <Text style={styles.transactionTitle}>
@@ -201,7 +201,7 @@ export default function PaymentHistoryScreen() {
 
                   {transaction.errorMessage && (
                     <View style={styles.errorMessage}>
-                      <AlertTriangle size={14} color={Colors.light.error} />
+                      <AlertTriangle size={14} color={colors.error} />
                       <Text style={styles.errorText}>{transaction.errorMessage}</Text>
                     </View>
                   )}
@@ -212,10 +212,10 @@ export default function PaymentHistoryScreen() {
         ) : (
           <View style={styles.emptyState}>
             <LinearGradient
-              colors={[Colors.light.primaryLight, Colors.light.backgroundSecondary]}
+              colors={[colors.primaryLight, colors.backgroundSecondary]}
               style={styles.emptyStateGradient}
             >
-              <Receipt size={64} color={Colors.light.primary} />
+              <Receipt size={64} color={colors.primary} />
               <Text style={styles.emptyStateTitle}>No Payment History</Text>
               <Text style={styles.emptyStateSubtitle}>
                 Your payment transactions will appear here once you start making orders.
@@ -225,7 +225,7 @@ export default function PaymentHistoryScreen() {
                 onPress={() => router.push("/booking")}
               >
                 <LinearGradient
-                  colors={[Colors.light.primary, Colors.light.primaryDark]}
+                  colors={[colors.primary, colors.primaryDark]}
                   style={styles.emptyStateButtonGradient}
                 >
                   <Text style={styles.emptyStateButtonText}>Make Your First Order</Text>
@@ -242,7 +242,7 @@ export default function PaymentHistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   header: {
     flexDirection: "row",
@@ -250,22 +250,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
   },
   placeholder: {
     width: 40,
@@ -278,10 +278,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   transactionCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -313,18 +313,18 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   transactionSubtitle: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
     marginBottom: 2,
   },
   transactionRoute: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   transactionRight: {
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   transactionAmount: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
   },
   statusBadge: {
     flexDirection: "row",
@@ -351,23 +351,23 @@ const styles = StyleSheet.create({
   },
   transactionFooter: {
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
+    borderTopColor: colors.borderLight,
     paddingTop: 12,
     gap: 4,
   },
   transactionDate: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   receiptNumber: {
     fontSize: 12,
-    color: Colors.light.success,
+    color: colors.success,
     fontWeight: "600",
   },
   phoneNumber: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   errorMessage: {
@@ -376,12 +376,12 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 8,
     padding: 8,
-    backgroundColor: Colors.light.error + "10",
+    backgroundColor: colors.error + "10",
     borderRadius: 8,
   },
   errorText: {
     fontSize: 12,
-    color: Colors.light.error,
+    color: colors.error,
     fontWeight: "500",
     flex: 1,
   },
@@ -401,14 +401,14 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: 16,
     marginBottom: 8,
     textAlign: "center",
   },
   emptyStateSubtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 24,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   },
   emptyStateButton: {
     borderRadius: 16,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -430,6 +430,6 @@ const styles = StyleSheet.create({
   emptyStateButtonText: {
     fontSize: 16,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
 });

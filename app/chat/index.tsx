@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { Send, Phone, MoreVertical } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 interface Message {
   id: string;
@@ -133,10 +133,10 @@ export default function ChatScreen() {
               console.log("Call driver:", driverInfo.phone);
             }}
           >
-            <Phone size={20} color={Colors.light.primary} />
+            <Phone size={20} color={colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton}>
-            <MoreVertical size={20} color={Colors.light.textMuted} />
+            <MoreVertical size={20} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
       </View>
@@ -160,7 +160,7 @@ export default function ChatScreen() {
             value={message}
             onChangeText={setMessage}
             multiline
-            placeholderTextColor={Colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
           <TouchableOpacity
             style={[styles.sendButton, message.trim() ? styles.sendButtonActive : null]}
@@ -169,7 +169,7 @@ export default function ChatScreen() {
           >
             <Send
               size={20}
-              color={message.trim() ? Colors.light.background : Colors.light.textMuted}
+              color={message.trim() ? colors.background : colors.textMuted}
             />
           </TouchableOpacity>
         </View>
@@ -181,7 +181,7 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -189,8 +189,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-    backgroundColor: Colors.light.background,
+    borderBottomColor: colors.borderLight,
+    backgroundColor: colors.background,
   },
   driverInfo: {
     flexDirection: "row",
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   driverInitial: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.background,
+    color: colors.background,
   },
   driverDetails: {
     flex: 1,
@@ -217,12 +217,12 @@ const styles = StyleSheet.create({
   driverName: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   driverStatus: {
     fontSize: 12,
-    color: Colors.light.success,
+    color: colors.success,
   },
   headerActions: {
     flexDirection: "row",
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -256,11 +256,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   userBubble: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   driverBubble: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderBottomLeftRadius: 4,
   },
   messageText: {
@@ -268,21 +268,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   userMessageText: {
-    color: Colors.light.background,
+    color: colors.background,
   },
   driverMessageText: {
-    color: Colors.light.text,
+    color: colors.text,
   },
   messageTime: {
     fontSize: 12,
     marginTop: 4,
   },
   userMessageTime: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "right",
   },
   driverMessageTime: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "left",
   },
   systemMessage: {
@@ -291,8 +291,8 @@ const styles = StyleSheet.create({
   },
   systemMessageText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
-    backgroundColor: Colors.light.backgroundSecondary,
+    color: colors.textMuted,
+    backgroundColor: colors.backgroundSecondary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -300,13 +300,13 @@ const styles = StyleSheet.create({
   },
   systemMessageTime: {
     fontSize: 10,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     marginTop: 4,
   },
   inputContainer: {
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
-    backgroundColor: Colors.light.background,
+    borderTopColor: colors.borderLight,
+    backgroundColor: colors.background,
   },
   inputRow: {
     flexDirection: "row",
@@ -316,23 +316,23 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     maxHeight: 100,
   },
   sendButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
   sendButtonActive: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
 });

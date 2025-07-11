@@ -25,7 +25,7 @@ import {
   RefreshCw,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
 import { usePaymentStore } from "@/stores/payment-store";
 import mpesaService, { MpesaPaymentRequest } from "@/services/mpesa";
@@ -339,26 +339,26 @@ export default function PaymentScreen() {
         <View style={styles.connectionStatusContent}>
           {connectionStatus === 'testing' && (
             <>
-              <ActivityIndicator size="small" color={Colors.light.primary} />
+              <ActivityIndicator size="small" color={colors.primary} />
               <Text style={styles.connectionStatusText}>Testing M-Pesa connection...</Text>
             </>
           )}
           {connectionStatus === 'success' && (
             <>
-              <CheckCircle size={16} color={Colors.light.success} />
-              <Text style={[styles.connectionStatusText, { color: Colors.light.success }]}>
+              <CheckCircle size={16} color={colors.success} />
+              <Text style={[styles.connectionStatusText, { color: colors.success }]}>
                 M-Pesa connection ready
               </Text>
             </>
           )}
           {connectionStatus === 'failed' && (
             <>
-              <AlertCircle size={16} color={Colors.light.error} />
-              <Text style={[styles.connectionStatusText, { color: Colors.light.error }]}>
+              <AlertCircle size={16} color={colors.error} />
+              <Text style={[styles.connectionStatusText, { color: colors.error }]}>
                 M-Pesa connection failed
               </Text>
               <TouchableOpacity onPress={testMpesaConnection} style={styles.retryButton}>
-                <RefreshCw size={14} color={Colors.light.primary} />
+                <RefreshCw size={14} color={colors.primary} />
                 <Text style={styles.retryButtonText}>Retry</Text>
               </TouchableOpacity>
             </>
@@ -371,11 +371,11 @@ export default function PaymentScreen() {
   const renderMpesaForm = () => (
     <View style={styles.paymentForm}>
       <LinearGradient
-        colors={[Colors.light.mpesa, "#00B85C"]}
+        colors={[colors.mpesa, "#00B85C"]}
         style={styles.mpesaHeader}
       >
         <View style={styles.mpesaHeaderContent}>
-          <Zap size={24} color={Colors.light.background} />
+          <Zap size={24} color={colors.background} />
           <Text style={styles.mpesaHeaderTitle}>M-Pesa Payment</Text>
         </View>
         <Text style={styles.mpesaHeaderSubtitle}>
@@ -399,13 +399,13 @@ export default function PaymentScreen() {
               value={mpesaPhone}
               onChangeText={handlePhoneChange}
               keyboardType="phone-pad"
-              placeholderTextColor={Colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
               editable={!isProcessing}
             />
           </View>
           {!phoneValidation.valid && phoneValidation.message && (
             <View style={styles.validationError}>
-              <AlertCircle size={14} color={Colors.light.error} />
+              <AlertCircle size={14} color={colors.error} />
               <Text style={styles.validationErrorText}>{phoneValidation.message}</Text>
             </View>
           )}
@@ -439,7 +439,7 @@ export default function PaymentScreen() {
   const renderCardForm = () => (
     <View style={styles.paymentForm}>
       <View style={styles.cardHeader}>
-        <CreditCard size={24} color={Colors.light.accent} />
+        <CreditCard size={24} color={colors.accent} />
         <Text style={styles.formTitle}>Card Payment</Text>
       </View>
       
@@ -452,7 +452,7 @@ export default function PaymentScreen() {
             value={cardDetails.number}
             onChangeText={(text) => setCardDetails({ ...cardDetails, number: text })}
             keyboardType="numeric"
-            placeholderTextColor={Colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
 
@@ -465,7 +465,7 @@ export default function PaymentScreen() {
               value={cardDetails.expiry}
               onChangeText={(text) => setCardDetails({ ...cardDetails, expiry: text })}
               keyboardType="numeric"
-              placeholderTextColor={Colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
             />
           </View>
           <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
@@ -477,7 +477,7 @@ export default function PaymentScreen() {
               onChangeText={(text) => setCardDetails({ ...cardDetails, cvv: text })}
               keyboardType="numeric"
               secureTextEntry
-              placeholderTextColor={Colors.light.textMuted}
+              placeholderTextColor={colors.textMuted}
             />
           </View>
         </View>
@@ -489,7 +489,7 @@ export default function PaymentScreen() {
             placeholder="John Doe"
             value={cardDetails.name}
             onChangeText={(text) => setCardDetails({ ...cardDetails, name: text })}
-            placeholderTextColor={Colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
       </View>
@@ -500,7 +500,7 @@ export default function PaymentScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <Package size={64} color={Colors.light.textMuted} />
+          <Package size={64} color={colors.textMuted} />
           <Text style={styles.errorTitle}>Order Not Found</Text>
           <Text style={styles.errorSubtitle}>
             The order you're trying to pay for doesn't exist or has been removed.
@@ -510,10 +510,10 @@ export default function PaymentScreen() {
             onPress={() => router.back()}
           >
             <LinearGradient
-              colors={[Colors.light.primary, Colors.light.primaryDark]}
+              colors={[colors.primary, colors.primaryDark]}
               style={styles.errorButtonGradient}
             >
-              <ArrowLeft size={20} color={Colors.light.background} />
+              <ArrowLeft size={20} color={colors.background} />
               <Text style={styles.errorButtonText}>Go Back</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -531,13 +531,13 @@ export default function PaymentScreen() {
         </View>
 
         <LinearGradient
-          colors={[Colors.light.primary, Colors.light.primaryDark]}
+          colors={[colors.primary, colors.primaryDark]}
           style={styles.amountCard}
         >
           <Text style={styles.amountLabel}>Total Amount</Text>
           <Text style={styles.amountValue}>KSh {orderAmount.toLocaleString()}</Text>
           <View style={styles.amountBadge}>
-            <Zap size={16} color={Colors.light.primary} />
+            <Zap size={16} color={colors.primary} />
             <Text style={styles.amountBadgeText}>
               {order.paymentTerm === "pay_now" ? "Pay Now" : "Pay on Delivery"}
             </Text>
@@ -581,14 +581,14 @@ export default function PaymentScreen() {
           >
             <LinearGradient
               colors={[
-                isProcessing || connectionStatus === 'failed' ? Colors.light.textMuted : Colors.light.primary,
-                isProcessing || connectionStatus === 'failed' ? Colors.light.textMuted : Colors.light.primaryDark
+                isProcessing || connectionStatus === 'failed' ? colors.textMuted : colors.primary,
+                isProcessing || connectionStatus === 'failed' ? colors.textMuted : colors.primaryDark
               ]}
               style={styles.payButtonGradient}
             >
               {isProcessing ? (
                 <>
-                  <ActivityIndicator size="small" color={Colors.light.background} />
+                  <ActivityIndicator size="small" color={colors.background} />
                   <Text style={styles.payButtonText}>
                     {paymentStep === 'processing' ? 'Initiating Payment...' : 
                      paymentStep === 'waiting' ? 'Confirming Payment...' : 'Processing...'}
@@ -596,8 +596,8 @@ export default function PaymentScreen() {
                 </>
               ) : (
                 <>
-                  {order.paymentMethod === "mpesa" && <Smartphone size={20} color={Colors.light.background} />}
-                  {order.paymentMethod === "card" && <CreditCard size={20} color={Colors.light.background} />}
+                  {order.paymentMethod === "mpesa" && <Smartphone size={20} color={colors.background} />}
+                  {order.paymentMethod === "card" && <CreditCard size={20} color={colors.background} />}
                   <Text style={styles.payButtonText}>
                     {order.paymentMethod === "mpesa" ? 'Pay with M-Pesa' : 'Pay with Card'} - KSh {orderAmount.toLocaleString()}
                   </Text>
@@ -610,11 +610,11 @@ export default function PaymentScreen() {
         {paymentStep === 'waiting' && (
           <View style={styles.waitingCard}>
             <LinearGradient
-              colors={[Colors.light.mpesa, "#00B85C"]}
+              colors={[colors.mpesa, "#00B85C"]}
               style={styles.waitingGradient}
             >
               <View style={styles.waitingContent}>
-                <Clock size={32} color={Colors.light.background} />
+                <Clock size={32} color={colors.background} />
                 <Text style={styles.waitingTitle}>Waiting for Payment</Text>
                 <Text style={styles.waitingSubtitle}>
                   Please complete the payment on your phone using M-Pesa PIN
@@ -626,7 +626,7 @@ export default function PaymentScreen() {
         )}
 
         <View style={styles.securityNote}>
-          <Shield size={16} color={Colors.light.success} />
+          <Shield size={16} color={colors.success} />
           <Text style={styles.securityText}>
             Your payment information is secure and encrypted
           </Text>
@@ -639,7 +639,7 @@ export default function PaymentScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -651,13 +651,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   amountCard: {
@@ -665,7 +665,7 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     marginBottom: 24,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -673,21 +673,21 @@ const styles = StyleSheet.create({
   },
   amountLabel: {
     fontSize: 16,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     marginBottom: 8,
     fontWeight: "600",
   },
   amountValue: {
     fontSize: 36,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 12,
     letterSpacing: -1,
   },
   amountBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -695,11 +695,11 @@ const styles = StyleSheet.create({
   },
   amountBadgeText: {
     fontSize: 12,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: "700",
   },
   orderSummary: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 24,
@@ -712,7 +712,7 @@ const styles = StyleSheet.create({
   orderSummaryTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 16,
   },
   orderSummaryItem: {
@@ -723,18 +723,18 @@ const styles = StyleSheet.create({
   },
   orderSummaryLabel: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   orderSummaryValue: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "600",
     flex: 1,
     textAlign: "right",
   },
   paymentForm: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginBottom: 24,
     overflow: "hidden",
@@ -756,11 +756,11 @@ const styles = StyleSheet.create({
   mpesaHeaderTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   mpesaHeaderSubtitle: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   cardHeader: {
@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
   formTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
   },
   formContent: {
     padding: 20,
@@ -782,7 +782,7 @@ const styles = StyleSheet.create({
   connectionStatus: {
     marginBottom: 16,
     padding: 12,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
   },
   connectionStatusContent: {
@@ -793,7 +793,7 @@ const styles = StyleSheet.create({
   connectionStatusText: {
     fontSize: 14,
     fontWeight: "500",
-    color: Colors.light.text,
+    color: colors.text,
     flex: 1,
   },
   retryButton: {
@@ -805,7 +805,7 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     fontSize: 12,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: "600",
   },
   inputContainer: {
@@ -814,13 +814,13 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   phoneInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: Colors.light.borderLight,
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
   countryCode: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.text,
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderRightWidth: 1,
@@ -837,18 +837,18 @@ const styles = StyleSheet.create({
   phoneInput: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontWeight: "500",
   },
   textInput: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     borderWidth: 2,
     borderColor: Colors.light.borderLight,
     fontWeight: "500",
@@ -862,7 +862,7 @@ const styles = StyleSheet.create({
   stepsTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   stepItem: {
@@ -875,24 +875,24 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.light.mpesa,
+    backgroundColor: colors.mpesa,
     justifyContent: "center",
     alignItems: "center",
   },
   stepNumberText: {
     fontSize: 12,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   stepText: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   payButton: {
     borderRadius: 20,
     marginBottom: 16,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -912,13 +912,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   payButtonText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0.5,
   },
   phoneInputError: {
-    borderColor: Colors.light.error,
+    borderColor: colors.error,
     borderWidth: 2,
   },
   validationError: {
@@ -929,13 +929,13 @@ const styles = StyleSheet.create({
   },
   validationErrorText: {
     fontSize: 12,
-    color: Colors.light.error,
+    color: colors.error,
     fontWeight: "500",
   },
   waitingCard: {
     borderRadius: 20,
     marginBottom: 16,
-    shadowColor: Colors.light.mpesa,
+    shadowColor: colors.mpesa,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -952,19 +952,19 @@ const styles = StyleSheet.create({
   waitingTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
     textAlign: "center",
   },
   waitingSubtitle: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     textAlign: "center",
     fontWeight: "500",
     lineHeight: 20,
   },
   waitingPhone: {
     fontSize: 16,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
     textAlign: "center",
     marginTop: 8,
@@ -978,7 +978,7 @@ const styles = StyleSheet.create({
   },
   securityText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     fontWeight: "500",
   },
@@ -991,14 +991,14 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: 20,
     marginBottom: 8,
     textAlign: "center",
   },
   errorSubtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 32,
@@ -1007,7 +1007,7 @@ const styles = StyleSheet.create({
   errorButton: {
     borderRadius: 16,
     overflow: "hidden",
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1023,6 +1023,6 @@ const styles = StyleSheet.create({
   errorButtonText: {
     fontSize: 16,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
 });

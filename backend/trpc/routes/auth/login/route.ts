@@ -29,7 +29,7 @@ const MOCK_USERS = [
   },
 ];
 
-export default publicProcedure
+export const loginProcedure = publicProcedure
   .input(z.object({
     email: z.string().email(),
     password: z.string().min(6),
