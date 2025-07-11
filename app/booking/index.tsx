@@ -30,10 +30,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { MapViewComponent } from "@/components/MapView";
+import { useMapStore } from "@/stores/map-store";
+import { MapService, Coordinates } from "@/services/map-service";
 
 export default function BookingScreen() {
   const { user } = useAuthStore();
   const { createOrder } = useOrdersStore();
+  const { userLocation, destination, routePoints, clearRoute } = useMapStore();
   
   const [bookingData, setBookingData] = useState({
     pickupLocation: "",
@@ -49,6 +53,8 @@ export default function BookingScreen() {
 
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState("");
+  const [showMap, setShowMap] = useState(false);
+  const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
 
   const packageTypes = [
     { id: "documents", label: "Documents", price: 200, icon: "📄" },
@@ -124,10 +130,67 @@ export default function BookingScreen() {
     if (key === "packageType") {
       const selectedType = packageTypes.find(type => type.id === value);
       if (selectedType) {
-        setEstimatedPrice(selectedType.price);
-        setEstimatedTime("25-35 mins");
+        calculatePrice(selectedType.price);
       }
     }
+  };
+
+  const calculatePrice = async (basePrice: number) => {
+    if (!userLocation || !destination) {
+      setEstimatedPrice(basePrice);
+      setEstimatedTime("25-35 mins");
+      return;
+    }
+
+    setIsCalculatingPrice(true);
+    try {
+      const distance = MapService.calculateDistance(userLocation, destination);
+      
+      // PAKA-Go pricing structure
+      const baseFare = 80;
+      const perKm = 11;
+      const minimumCharge = 150;
+      
+      let calculatedPrice = baseFare + (distance * perKm);
+      calculatedPrice = Math.max(calculatedPrice, minimumCharge);
+      
+      // Add package type premium
+      const packagePremium = basePrice - 200; // Base documents price is 200
+      calculatedPrice += packagePremium;
+      
+      setEstimatedPrice(Math.round(calculatedPrice));
+      
+      // Estimate time based on distance (assuming 30 km/h average speed)
+      const estimatedMinutes = Math.round((distance / 30) * 60) + 15; // +15 for pickup/dropoff
+      setEstimatedTime(`${estimatedMinutes}-${estimatedMinutes + 10} mins`);
+      
+    } catch (error) {
+      console.error('Price calculation error:', error);
+      setEstimatedPrice(basePrice);
+      setEstimatedTime("25-35 mins");
+    } finally {
+      setIsCalculatingPrice(false);
+    }
+  };
+
+  const handleLocationSelect = async (location: Coordinates) => {
+    try {
+      const address = await MapService.reverseGeocode(location);
+      if (address) {
+        setBookingData(prev => ({ ...prev, dropoffLocation: address }));
+        // Recalculate price with new destination
+        const selectedType = packageTypes.find(type => type.id === bookingData.packageType);
+        if (selectedType) {
+          calculatePrice(selectedType.price);
+        }
+      }
+    } catch (error) {
+      console.error('Reverse geocoding error:', error);
+    }
+  };
+
+  const toggleMap = () => {
+    setShowMap(!showMap);
   };
 
   const getAvailablePaymentTerms = () => {
@@ -236,7 +299,24 @@ export default function BookingScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📍 Pickup & Delivery</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>📍 Pickup & Delivery</Text>
+            <TouchableOpacity style={styles.mapToggle} onPress={toggleMap}>
+              <MapPin size={16} color={Colors.light.primary} />
+              <Text style={styles.mapToggleText}>{showMap ? 'Hide Map' : 'Show Map'}</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {showMap && (
+            <View style={styles.mapContainer}>
+              <MapViewComponent
+                onLocationSelect={handleLocationSelect}
+                showSearch={true}
+                showRoute={true}
+                height={300}
+              />
+            </View>
+          )}
           
           <View style={styles.locationContainer}>
             <View style={styles.locationInput}>
@@ -514,6 +594,9 @@ export default function BookingScreen() {
             <View style={styles.estimateHeader}>
               <Zap size={24} color={Colors.light.background} />
               <Text style={styles.estimateTitle}>Delivery Estimate</Text>
+              {isCalculatingPrice && (
+                <ActivityIndicator size="small" color={Colors.light.background} />
+              )}
             </View>
             <View style={styles.estimateDetails}>
               <View style={styles.estimateItem}>
@@ -533,6 +616,15 @@ export default function BookingScreen() {
                   {bookingData.paymentTerm === "pay_now" ? "Pay Now" : "On Delivery"}
                 </Text>
               </View>
+              {userLocation && destination && (
+                <View style={styles.estimateItem}>
+                  <MapPin size={20} color={Colors.light.background} />
+                  <Text style={styles.estimateLabel}>Distance</Text>
+                  <Text style={styles.estimateValue}>
+                    {MapService.calculateDistance(userLocation, destination).toFixed(1)} km
+                  </Text>
+                </View>
+              )}
             </View>
           </LinearGradient>
         )}
@@ -583,11 +675,40 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 32,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "800",
     color: Colors.light.text,
+  },
+  mapToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: Colors.light.primaryLight,
+    borderRadius: 12,
+  },
+  mapToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.light.primary,
+  },
+  mapContainer: {
+    borderRadius: 16,
+    overflow: 'hidden',
     marginBottom: 16,
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   locationContainer: {
     gap: 8,

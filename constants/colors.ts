@@ -26,6 +26,7 @@ export default {
     border: "#E5E7EB",
     borderLight: "#F3F4F6",
     success: "#10B981",
+    successDark: "#059669",
     warning: "#F59E0B",
     error: "#EF4444",
     info: accentBlue,

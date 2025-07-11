@@ -57,6 +57,14 @@ export default function ClientHomeScreen() {
       gradient: [Colors.light.accent, Colors.light.accentDark] as const,
       onPress: () => router.push("/(client)/orders"),
     },
+    {
+      id: "map",
+      title: "Map View",
+      subtitle: "Explore delivery areas",
+      icon: MapPin,
+      gradient: [Colors.light.success, Colors.light.successDark] as const,
+      onPress: () => router.push("/map"),
+    },
   ];
 
   const getStatusColor = (status: string) => {

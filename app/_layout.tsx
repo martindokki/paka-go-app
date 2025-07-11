@@ -116,6 +116,14 @@ function RootLayoutNav() {
                   headerShown: true,
                 }} 
               />
+              <Stack.Screen 
+                name="map/index" 
+                options={{ 
+                  presentation: 'fullScreenModal',
+                  title: 'Map',
+                  headerShown: false,
+                }} 
+              />
             </Stack>
           </ThemeProvider>
         </QueryClientProvider>

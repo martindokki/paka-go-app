@@ -29,11 +29,15 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
+import { MapViewComponent } from "@/components/MapView";
+import { MapService } from "@/services/map-service";
 
 export default function TrackingScreen() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
   const { getOrderById, updateOrderStatus } = useOrdersStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [pickupCoords, setPickupCoords] = useState(null);
+  const [deliveryCoords, setDeliveryCoords] = useState(null);
   
   const order = orderId ? getOrderById(orderId) : null;
 
@@ -42,8 +46,27 @@ export default function TrackingScreen() {
       Alert.alert("Order Not Found", "The order you're looking for doesn't exist.", [
         { text: "Go Back", onPress: () => router.back() }
       ]);
+    } else {
+      // Geocode pickup and delivery addresses
+      geocodeAddresses();
     }
   }, [order]);
+
+  const geocodeAddresses = async () => {
+    if (!order) return;
+    
+    try {
+      const [pickup, delivery] = await Promise.all([
+        MapService.geocodeAddress(order.from),
+        MapService.geocodeAddress(order.to)
+      ]);
+      
+      if (pickup) setPickupCoords(pickup);
+      if (delivery) setDeliveryCoords(delivery);
+    } catch (error) {
+      console.error('Geocoding error:', error);
+    }
+  };
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -337,26 +360,25 @@ export default function TrackingScreen() {
           </View>
         </View>
 
-        <View style={styles.mapPlaceholder}>
-          <LinearGradient
-            colors={[Colors.light.primaryLight, Colors.light.backgroundSecondary]}
-            style={styles.mapGradient}
-          >
-            <MapPin size={32} color={Colors.light.primary} />
-            <Text style={styles.mapPlaceholderText}>Live Map View</Text>
-            <Text style={styles.mapPlaceholderSubtext}>
-              Track your delivery in real-time
-            </Text>
-            <TouchableOpacity style={styles.mapButton}>
-              <LinearGradient
-                colors={[Colors.light.primary, Colors.light.primaryDark]}
-                style={styles.mapButtonGradient}
-              >
-                <Navigation size={16} color={Colors.light.background} />
-                <Text style={styles.mapButtonText}>Open in Maps</Text>
-              </LinearGradient>
+        <View style={styles.mapContainer}>
+          <View style={styles.mapHeader}>
+            <Text style={styles.mapTitle}>Live Tracking</Text>
+            <TouchableOpacity 
+              style={styles.fullMapButton}
+              onPress={() => router.push(`/map?orderId=${order.id}`)}
+            >
+              <Navigation size={16} color={Colors.light.primary} />
+              <Text style={styles.fullMapText}>Full Map</Text>
             </TouchableOpacity>
-          </LinearGradient>
+          </View>
+          <View style={styles.mapWrapper}>
+            <MapViewComponent
+              showSearch={false}
+              showRoute={true}
+              height={300}
+              initialLocation={pickupCoords}
+            />
+          </View>
         </View>
 
         <View style={styles.paymentInfo}>
@@ -736,54 +758,50 @@ const styles = StyleSheet.create({
     color: Colors.light.textMuted,
     fontWeight: "500",
   },
-  mapPlaceholder: {
+  mapContainer: {
+    backgroundColor: Colors.light.background,
     borderRadius: 20,
+    padding: 20,
     marginBottom: 20,
-    overflow: "hidden",
     shadowColor: Colors.light.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 4,
   },
-  mapGradient: {
-    alignItems: "center",
-    padding: 40,
+  mapHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  mapPlaceholderText: {
-    fontSize: 20,
+  mapTitle: {
+    fontSize: 18,
     fontWeight: "800",
     color: Colors.light.text,
-    marginTop: 16,
-    marginBottom: 8,
   },
-  mapPlaceholderSubtext: {
-    fontSize: 14,
-    color: Colors.light.textMuted,
-    textAlign: "center",
-    marginBottom: 24,
-    fontWeight: "500",
+  fullMapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: Colors.light.primaryLight,
+    borderRadius: 12,
   },
-  mapButton: {
+  fullMapText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.light.primary,
+  },
+  mapWrapper: {
     borderRadius: 16,
-    overflow: "hidden",
-    shadowColor: Colors.light.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  mapButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  mapButtonText: {
-    color: Colors.light.background,
-    fontSize: 14,
-    fontWeight: "700",
+    overflow: 'hidden',
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   paymentInfo: {
     backgroundColor: Colors.light.background,
