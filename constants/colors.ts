@@ -9,7 +9,7 @@ const softBlack = "#2D2D2D";
 const lightGray = "#F8F9FA";
 const mediumGray = "#6B7280";
 
-export default {
+const Colors = {
   light: {
     text: charcoalBlack,
     textSecondary: softBlack,
@@ -49,3 +49,5 @@ export default {
     cancelled: "#EF4444",
   },
 };
+
+export default Colors;

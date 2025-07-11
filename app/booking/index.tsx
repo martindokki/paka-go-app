@@ -596,7 +596,7 @@ export default function BookingScreen() {
                   </View>
                 </View>
                 {bookingData.paymentTerm === term.id && (
-                  <ActivityIndicator size="small" color={colors.light.accent} />
+                  <ActivityIndicator size="small" color={Colors.light.accent} />
                 )}
               </TouchableOpacity>
             ))}

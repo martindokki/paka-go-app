@@ -10,7 +10,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Navigation, MapPin, Package } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import colors from '@/constants/colors';
+import Colors.light from '@/constants/colors';
 import { MapViewComponent } from '@/components/MapView';
 import { useMapStore } from '@/stores/map-store';
 import { useOrdersStore, Order } from '@/stores/orders-store';
@@ -95,7 +95,7 @@ export default function MapScreen() {
           onLocationSelect={handleLocationSelect}
           showSearch={!order} // Only show search if not viewing an order
           showRoute={true}
-          height="400"
+          height={400}
         />
       </View>
 
@@ -141,17 +141,17 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.light.light.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.light.light.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-    shadowColor: Colors.light.shadow,
+    borderBottomColor: Colors.light.light.borderLight,
+    shadowColor: Colors.light.light.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: Colors.light.light.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: Colors.light.light.text,
   },
   headerSubtitle: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: Colors.light.light.textSecondary,
     fontWeight: '500',
     marginTop: 2,
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
-    shadowColor: Colors.light.shadow,
+    shadowColor: Colors.light.light.shadow,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: Colors.light.light.textSecondary,
     fontWeight: '500',
   },
   statValue: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: Colors.light.light.text,
     fontWeight: '700',
   },
   orderInfo: {
@@ -238,23 +238,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.light.primaryLight,
     borderRadius: 12,
   },
   orderLabel: {
     fontSize: 14,
-    color: Colors.light.primary,
+    color: Colors.light.light.primary,
     fontWeight: '600',
   },
   orderValue: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: Colors.light.light.text,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   orderPrice: {
     fontSize: 16,
-    color: Colors.light.primary,
+    color: Colors.light.light.primary,
     fontWeight: '800',
   },
 });

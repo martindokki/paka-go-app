@@ -27,7 +27,7 @@ import {
   Wallet,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import Colors.light from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { MapViewComponent } from "@/components/MapView";
 import { MapService, Coordinates } from "@/services/map-service";
@@ -375,7 +375,7 @@ export default function TrackingScreen() {
             <MapViewComponent
               showSearch={false}
               showRoute={true}
-              height="300"
+              height={300}
               initialLocation={pickupCoords as any}
             />
           </View>
