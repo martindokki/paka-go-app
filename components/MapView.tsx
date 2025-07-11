@@ -61,7 +61,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       </View>
     );
   }
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   
   const {
