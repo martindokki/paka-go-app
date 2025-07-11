@@ -376,7 +376,7 @@ export default function TrackingScreen() {
               showSearch={false}
               showRoute={true}
               height={300}
-              initialLocation={pickupCoords ?? undefined}
+              initialLocation={pickupCoords || undefined}
             />
           </View>
         </View>

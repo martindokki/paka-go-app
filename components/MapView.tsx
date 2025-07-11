@@ -128,9 +128,12 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
 
     try {
       setGeocoding(true);
+      console.log('Searching for:', searchQuery);
+      
       const coordinates = await MapService.geocodeAddress(searchQuery);
       
       if (coordinates) {
+        console.log('Found coordinates:', coordinates);
         setDestination(coordinates);
         
         // Animate to destination
@@ -148,11 +151,12 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
           onLocationSelect(coordinates);
         }
       } else {
-        Alert.alert('Not found', 'Could not find the specified location.');
+        console.warn('No coordinates found for:', searchQuery);
+        Alert.alert('Not found', 'Could not find the specified location. Please try a different search term.');
       }
     } catch (error) {
       console.error('Search error:', error);
-      Alert.alert('Error', 'Failed to search for location.');
+      Alert.alert('Search Error', 'Failed to search for location. Please check your internet connection and try again.');
     } finally {
       setGeocoding(false);
     }
@@ -163,10 +167,13 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
 
     try {
       setLoadingRoute(true);
+      console.log('Calculating route between:', userLocation, 'and', destination);
+      
       const route = await MapService.getRoute(userLocation, destination);
       
-      if (route) {
+      if (route && route.length > 0) {
         setRoutePoints(route);
+        console.log('Route calculated successfully with', route.length, 'points');
         
         // Fit map to show both locations
         if (mapRef.current) {
@@ -176,11 +183,22 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
           });
         }
       } else {
-        Alert.alert('Route not found', 'Could not calculate route to destination.');
+        console.warn('No route returned from MapService');
+        // Create a simple straight line as fallback
+        const fallbackRoute = [
+          { latitude: userLocation.latitude, longitude: userLocation.longitude },
+          { latitude: destination.latitude, longitude: destination.longitude }
+        ];
+        setRoutePoints(fallbackRoute);
       }
     } catch (error) {
-      console.error('Route error:', error);
-      Alert.alert('Error', 'Failed to calculate route.');
+      console.error('Route calculation error:', error);
+      // Create a simple straight line as fallback
+      const fallbackRoute = [
+        { latitude: userLocation.latitude, longitude: userLocation.longitude },
+        { latitude: destination.latitude, longitude: destination.longitude }
+      ];
+      setRoutePoints(fallbackRoute);
     } finally {
       setLoadingRoute(false);
     }
