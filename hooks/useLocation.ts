@@ -78,7 +78,6 @@ export const useLocation = (): UseLocationReturn => {
       // Get current position
       const position = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
-        maximumAge: 10000,
       });
 
       const locationData: LocationData = {
