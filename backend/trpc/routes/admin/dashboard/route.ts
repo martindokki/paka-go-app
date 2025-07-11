@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { protectedProcedure } from '../../create-context';
+import { protectedProcedure } from '@/backend/trpc/create-context';
 
 export const dashboardProcedure = protectedProcedure
   .query(async () => {

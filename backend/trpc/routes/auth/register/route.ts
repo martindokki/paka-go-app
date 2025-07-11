@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "../../create-context";
+import { publicProcedure } from "@/backend/trpc/create-context";
 
 // Mock users storage (in real app, this would be a database)
 const MOCK_USERS = [
