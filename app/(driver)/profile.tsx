@@ -36,7 +36,7 @@ import {
   Eye,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors, { safeColors, Colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -80,7 +80,7 @@ export default function DriverProfileScreen() {
       title: "Vehicle Information",
       subtitle: "Update your vehicle details",
       icon: Car,
-      color: safeColors.primary,
+      color: colors.primary,
       onPress: () => console.log("Navigate to vehicle info"),
     },
     {
@@ -88,7 +88,7 @@ export default function DriverProfileScreen() {
       title: "Documents & Verification",
       subtitle: "License, insurance, etc.",
       icon: Shield,
-      color: safeColors.accent,
+      color: colors.accent,
       onPress: () => console.log("Navigate to documents"),
     },
     {
@@ -96,7 +96,7 @@ export default function DriverProfileScreen() {
       title: "Earnings & Payouts",
       subtitle: "View payment history",
       icon: TrendingUp,
-      color: safeColors.warning,
+      color: colors.warning,
       onPress: () => router.push("/(driver)/earnings"),
     },
     {
@@ -104,7 +104,7 @@ export default function DriverProfileScreen() {
       title: "App Settings",
       subtitle: "Notifications, preferences",
       icon: Settings,
-      color: safeColors.info,
+      color: colors.info,
       onPress: () => console.log("Navigate to settings"),
     },
     {
@@ -112,7 +112,7 @@ export default function DriverProfileScreen() {
       title: "Help & Support",
       subtitle: "Get help or contact us",
       icon: HelpCircle,
-      color: safeColors.success,
+      color: colors.success,
       onPress: () => console.log("Navigate to help"),
     },
   ];
@@ -242,8 +242,8 @@ export default function DriverProfileScreen() {
           <Star
             key={star}
             size={16}
-            color={star <= rating ? safeColors.warning : safeColors.border}
-            fill={star <= rating ? safeColors.warning : "transparent"}
+            color={star <= rating ? colors.warning : colors.border}
+            fill={star <= rating ? colors.warning : "transparent"}
           />
         ))}
       </View>
@@ -254,7 +254,7 @@ export default function DriverProfileScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <LinearGradient
-          colors={[safeColors.primary, safeColors.primaryDark]}
+          colors={[colors.primary, colors.primaryDark]}
           style={styles.headerGradient}
         >
           <View style={styles.header}>
@@ -267,17 +267,17 @@ export default function DriverProfileScreen() {
                 <Image source={{ uri: profileImage }} style={styles.avatar} />
               ) : (
                 <LinearGradient
-                  colors={[safeColors.background, "#FFFFFF"]}
+                  colors={[colors.background, "#FFFFFF"]}
                   style={styles.avatar}
                 >
-                  <User size={40} color={safeColors.primary} />
+                  <User size={40} color={colors.primary} />
                 </LinearGradient>
               )}
               <LinearGradient
-                colors={[safeColors.accent, safeColors.accentDark]}
+                colors={[colors.accent, colors.accentDark]}
                 style={styles.cameraButton}
               >
-                <Camera size={16} color={safeColors.background} />
+                <Camera size={16} color={colors.background} />
               </LinearGradient>
             </TouchableOpacity>
             
@@ -285,7 +285,7 @@ export default function DriverProfileScreen() {
               <View style={styles.nameContainer}>
                 <Text style={styles.userName}>{driverInfo.name}</Text>
                 <TouchableOpacity style={styles.editButton}>
-                  <Edit3 size={16} color={safeColors.background} />
+                  <Edit3 size={16} color={colors.background} />
                 </TouchableOpacity>
               </View>
               <Text style={styles.userEmail}>{driverInfo.email}</Text>
@@ -305,10 +305,10 @@ export default function DriverProfileScreen() {
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[safeColors.success, "#10B981"]}
+              colors={[colors.success, "#10B981"]}
               style={styles.statGradient}
             >
-              <Package size={24} color={safeColors.background} />
+              <Package size={24} color={colors.background} />
               <Text style={styles.statNumber}>{driverInfo.totalDeliveries}</Text>
               <Text style={styles.statLabel}>Total Deliveries</Text>
             </LinearGradient>
@@ -316,10 +316,10 @@ export default function DriverProfileScreen() {
           
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[safeColors.warning, "#F59E0B"]}
+              colors={[colors.warning, "#F59E0B"]}
               style={styles.statGradient}
             >
-              <TrendingUp size={24} color={safeColors.background} />
+              <TrendingUp size={24} color={colors.background} />
               <Text style={styles.statNumber}>KSh {(driverInfo.earnings / 1000).toFixed(0)}K</Text>
               <Text style={styles.statLabel}>Total Earnings</Text>
             </LinearGradient>
@@ -327,10 +327,10 @@ export default function DriverProfileScreen() {
           
           <View style={styles.statCard}>
             <LinearGradient
-              colors={[safeColors.accent, safeColors.accentDark]}
+              colors={[colors.accent, colors.accentDark]}
               style={styles.statGradient}
             >
-              <Clock size={24} color={safeColors.background} />
+              <Clock size={24} color={colors.background} />
               <Text style={styles.statNumber}>{driverInfo.onTimeRate}%</Text>
               <Text style={styles.statLabel}>On-Time Rate</Text>
             </LinearGradient>
@@ -367,7 +367,7 @@ export default function DriverProfileScreen() {
                 </Text>
                 {achievement.unlocked && (
                   <View style={styles.unlockedBadge}>
-                    <Award size={12} color={safeColors.warning} />
+                    <Award size={12} color={colors.warning} />
                   </View>
                 )}
               </View>
@@ -379,11 +379,11 @@ export default function DriverProfileScreen() {
           <Text style={styles.sectionTitle}>Vehicle Information 🏍️</Text>
           <View style={styles.vehicleCard}>
             <LinearGradient
-              colors={[safeColors.backgroundSecondary, safeColors.borderLight]}
+              colors={[colors.backgroundSecondary, colors.borderLight]}
               style={styles.vehicleGradient}
             >
               <View style={styles.vehicleIcon}>
-                <Car size={24} color={safeColors.primary} />
+                <Car size={24} color={colors.primary} />
               </View>
               <View style={styles.vehicleDetails}>
                 <View style={styles.vehicleItem}>
@@ -420,19 +420,19 @@ export default function DriverProfileScreen() {
             <SettingsItem
               title="Privacy Policy"
               subtitle="How we handle your data"
-              icon={<Shield size={20} color={safeColors.info} />}
+              icon={<Shield size={20} color={colors.info} />}
               onPress={() => setShowPrivacyModal(true)}
             />
             <SettingsItem
               title="Terms of Service"
               subtitle="Terms and conditions"
-              icon={<FileText size={20} color={safeColors.info} />}
+              icon={<FileText size={20} color={colors.info} />}
               onPress={() => setShowTermsModal(true)}
             />
             <SettingsItem
               title="View Error Logs"
               subtitle="Debug information"
-              icon={<Eye size={20} color={safeColors.textMuted} />}
+              icon={<Eye size={20} color={colors.textMuted} />}
               onPress={handleViewErrorLogs}
             />
           </View>
@@ -444,7 +444,7 @@ export default function DriverProfileScreen() {
             <SettingsItem
               title="Delete Account"
               subtitle="Permanently delete your account"
-              icon={<Trash2 size={20} color={safeColors.error} />}
+              icon={<Trash2 size={20} color={colors.error} />}
               onPress={() => setShowDeleteModal(true)}
               destructive
             />
@@ -453,10 +453,10 @@ export default function DriverProfileScreen() {
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LinearGradient
-            colors={[safeColors.error, "#DC2626"]}
+            colors={[colors.error, "#DC2626"]}
             style={styles.logoutGradient}
           >
-            <LogOut size={20} color={safeColors.background} />
+            <LogOut size={20} color={colors.background} />
             <Text style={styles.logoutText}>Logout</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -488,7 +488,7 @@ export default function DriverProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: safeColors.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "900",
-    color: safeColors.background,
+    color: colors.background,
     letterSpacing: -1,
   },
   profileSection: {
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 4,
-    borderColor: safeColors.background,
+    borderColor: colors.background,
   },
   cameraButton: {
     position: "absolute",
@@ -536,8 +536,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: safeColors.background,
-    shadowColor: safeColors.accent,
+    borderColor: colors.background,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 24,
     fontWeight: "900",
-    color: safeColors.background,
+    color: colors.background,
   },
   editButton: {
     width: 28,
@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
   },
   userEmail: {
     fontSize: 14,
-    color: safeColors.background + "CC",
+    color: colors.background + "CC",
     marginBottom: 12,
     fontWeight: "500",
   },
@@ -583,12 +583,12 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 14,
-    color: safeColors.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   memberSince: {
     fontSize: 12,
-    color: safeColors.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   statsContainer: {
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: safeColors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -616,11 +616,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "900",
-    color: safeColors.background,
+    color: colors.background,
   },
   statLabel: {
     fontSize: 12,
-    color: safeColors.background + "CC",
+    color: colors.background + "CC",
     textAlign: "center",
     fontWeight: "600",
   },
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: safeColors.text,
+    color: colors.text,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -642,12 +642,12 @@ const styles = StyleSheet.create({
   },
   achievementCard: {
     width: "47%",
-    backgroundColor: safeColors.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
     position: "relative",
-    shadowColor: safeColors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -663,22 +663,22 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: safeColors.text,
+    color: colors.text,
     textAlign: "center",
     marginBottom: 4,
   },
   achievementTitleLocked: {
-    color: safeColors.textMuted,
+    color: colors.textMuted,
   },
   achievementDescription: {
     fontSize: 12,
-    color: safeColors.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 16,
     fontWeight: "500",
   },
   achievementDescriptionLocked: {
-    color: safeColors.textMuted,
+    color: colors.textMuted,
   },
   unlockedBadge: {
     position: "absolute",
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: safeColors.warning + "20",
+    backgroundColor: colors.warning + "20",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -697,7 +697,7 @@ const styles = StyleSheet.create({
   },
   vehicleCard: {
     borderRadius: 16,
-    shadowColor: safeColors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: safeColors.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -729,13 +729,13 @@ const styles = StyleSheet.create({
   },
   vehicleLabel: {
     fontSize: 14,
-    color: safeColors.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   vehicleValue: {
     fontSize: 16,
     fontWeight: "700",
-    color: safeColors.text,
+    color: colors.text,
   },
   menuSection: {
     paddingHorizontal: 20,
@@ -745,11 +745,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: safeColors.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: safeColors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -774,19 +774,19 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: safeColors.text,
+    color: colors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
     fontSize: 12,
-    color: safeColors.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   logoutButton: {
     marginHorizontal: 20,
     borderRadius: 16,
     marginBottom: 32,
-    shadowColor: safeColors.error,
+    shadowColor: colors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -803,7 +803,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: "700",
-    color: safeColors.background,
+    color: colors.background,
   },
   footer: {
     alignItems: "center",
@@ -813,13 +813,13 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: safeColors.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   settingsContainer: {
-    backgroundColor: safeColors.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
-    shadowColor: safeColors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,

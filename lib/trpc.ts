@@ -1,5 +1,5 @@
 import { createTRPCReact } from "@trpc/react-query";
-import { httpLink } from "@trpc/client";
+import { httpLink, TRPCClientError } from "@trpc/client";
 import type { AppRouter } from "@/backend/trpc/app-router";
 import superjson from "superjson";
 
@@ -23,6 +23,22 @@ export const trpcClient = trpc.createClient({
     httpLink({
       url: `${getBaseUrl()}/api/trpc`,
       transformer: superjson,
+      fetch: async (url, options) => {
+        try {
+          const response = await fetch(url, options);
+          
+          // Check if response is HTML (likely an error page)
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('text/html')) {
+            throw new Error('Server returned HTML instead of JSON. Check if the API server is running.');
+          }
+          
+          return response;
+        } catch (error) {
+          console.error('tRPC fetch error:', error);
+          throw error;
+        }
+      },
     }),
   ],
 });
