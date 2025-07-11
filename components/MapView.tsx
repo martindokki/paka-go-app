@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { Coordinates } from '@/services/map-service';
 
-interface MapViewComponentProps {
+export interface MapViewComponentProps {
   onLocationSelect?: (location: Coordinates) => void;
   showSearch?: boolean;
   showRoute?: boolean;
@@ -10,13 +10,15 @@ interface MapViewComponentProps {
   height?: number;
 }
 
-// For web, use the web implementation
+// Platform-specific component loading
+let MapViewComponent: React.FC<MapViewComponentProps>;
+
 if (Platform.OS === 'web') {
-  const { MapViewComponent: WebMapView } = require('./MapView.web');
-  export const MapViewComponent: React.FC<MapViewComponentProps> = WebMapView;
+  // For web, use the web implementation
+  MapViewComponent = require('./MapView.web').MapViewComponent;
 } else {
   // For native, use the native implementation
-  const { MapViewComponent: NativeMapView } = require('./MapView.native');
-  export const MapViewComponent: React.FC<MapViewComponentProps> = NativeMapView;
+  MapViewComponent = require('./MapView.native.tsx').MapViewComponent;
 }
-export type { MapViewComponentProps };
+
+export { MapViewComponent };

@@ -61,7 +61,7 @@ export const approveDriverProcedure = publicProcedure
   .input(z.object({
     driverId: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { driverId: string } }) => {
     // Mock implementation - replace with actual database update
     console.log('Approving driver:', input.driverId);
     
@@ -75,7 +75,7 @@ export const suspendDriverProcedure = publicProcedure
   .input(z.object({
     driverId: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { driverId: string } }) => {
     // Mock implementation - replace with actual database update
     console.log('Suspending driver:', input.driverId);
     
@@ -90,7 +90,7 @@ export const assignVehicleProcedure = publicProcedure
     driverId: z.string(),
     vehicleId: z.string(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { driverId: string } }) => {
     // Mock implementation - replace with actual database update
     console.log('Assigning vehicle:', input.vehicleId, 'to driver:', input.driverId);
     

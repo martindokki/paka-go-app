@@ -36,6 +36,7 @@ import colors, { Colors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { MapViewComponent } from "@/components/MapView";
+import type { MapViewComponentProps } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
 import { LocationSearchModal } from "@/components/LocationSearchModal";

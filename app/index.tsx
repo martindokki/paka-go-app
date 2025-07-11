@@ -4,6 +4,13 @@ import { View, ActivityIndicator } from 'react-native';
 import colors from '@/constants/colors';
 import { useAuthStore } from '@/stores/auth-store';
 
+// Ensure colors are available with fallbacks
+const safeColors = {
+  background: colors?.background || '#FFFFFF',
+  primary: colors?.primary || '#FF6A00',
+  ...colors
+};
+
 export default function Index() {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
   const [hasNavigated, setHasNavigated] = useState(false);
@@ -54,9 +61,9 @@ export default function Index() {
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center', 
-      backgroundColor: colors.background 
+      backgroundColor: safeColors.background 
     }}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <ActivityIndicator size="large" color={safeColors.primary} />
     </View>
   );
 }
