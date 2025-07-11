@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "expo-router";
+import { Tabs, Slot } from "expo-router";
 import { Home, Package, Clock, User } from "lucide-react-native";
 import Colors from "@/constants/colors";
 
@@ -8,7 +8,6 @@ function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
 }
 
 export default function ClientTabLayout() {
-
   return (
     <Tabs
       screenOptions={{
