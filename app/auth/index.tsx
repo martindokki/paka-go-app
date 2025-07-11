@@ -1016,16 +1016,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  switchUserTypeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: Colors.light.accent + "20",
-    borderRadius: 12,
-  },
-  switchUserTypeText: {
-    color: Colors.light.accent,
-    fontSize: 12,
-    fontWeight: "700",
-    textAlign: "center",
-  },
+
 });
