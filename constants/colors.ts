@@ -129,7 +129,7 @@ const Colors = {
 };
 
 // Safe colors function that provides fallbacks
-export const safeColors = {
+const safeColors = {
   // Ensure all required properties exist with fallbacks
   text: colors?.text || "#1A1A1A",
   textSecondary: colors?.textSecondary || "#2D2D2D",
@@ -209,5 +209,4 @@ const safeColorsExport = colors || {
 };
 
 export default safeColorsExport;
-export { Colors };
-export { safeColors };
+export { Colors, safeColors };
