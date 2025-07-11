@@ -32,7 +32,7 @@ import {
   Search,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors, { Colors } from "@/constants/colors";
+import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
@@ -787,7 +787,7 @@ export default function BookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,

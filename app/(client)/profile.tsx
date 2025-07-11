@@ -29,7 +29,7 @@ import {
   Trash2,
   Eye,
 } from "lucide-react-native";
-import colors from "@/constants/colors";
+import colors, { safeColors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: safeColors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
     alignItems: "center",

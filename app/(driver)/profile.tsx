@@ -36,7 +36,7 @@ import {
   Eye,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors, { Colors } from "@/constants/colors";
+import colors, { safeColors, Colors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -432,7 +432,7 @@ export default function DriverProfileScreen() {
             <SettingsItem
               title="View Error Logs"
               subtitle="Debug information"
-              icon={<Eye size={20} color={Colors.light.textMuted} />}
+              icon={<Eye size={20} color={safeColors.textMuted} />}
               onPress={handleViewErrorLogs}
             />
           </View>
@@ -444,7 +444,7 @@ export default function DriverProfileScreen() {
             <SettingsItem
               title="Delete Account"
               subtitle="Permanently delete your account"
-              icon={<Trash2 size={20} color={Colors.light.error} />}
+              icon={<Trash2 size={20} color={safeColors.error} />}
               onPress={() => setShowDeleteModal(true)}
               destructive
             />
@@ -453,7 +453,7 @@ export default function DriverProfileScreen() {
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LinearGradient
-            colors={[Colors.light.error, "#DC2626"]}
+            colors={[safeColors.error, "#DC2626"]}
             style={styles.logoutGradient}
           >
             <LogOut size={20} color={colors.background} />
@@ -488,7 +488,7 @@ export default function DriverProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: safeColors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: safeColors.text,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     position: "relative",
-    shadowColor: Colors.light.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -663,22 +663,22 @@ const styles = StyleSheet.create({
   achievementTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: safeColors.text,
     textAlign: "center",
     marginBottom: 4,
   },
   achievementTitleLocked: {
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
   },
   achievementDescription: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
     textAlign: "center",
     lineHeight: 16,
     fontWeight: "500",
   },
   achievementDescriptionLocked: {
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
   },
   unlockedBadge: {
     position: "absolute",
@@ -697,7 +697,7 @@ const styles = StyleSheet.create({
   },
   vehicleCard: {
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -729,13 +729,13 @@ const styles = StyleSheet.create({
   },
   vehicleLabel: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "500",
   },
   vehicleValue: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: safeColors.text,
   },
   menuSection: {
     paddingHorizontal: 20,
@@ -749,7 +749,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: Colors.light.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -774,19 +774,19 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.text,
+    color: safeColors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "500",
   },
   logoutButton: {
     marginHorizontal: 20,
     borderRadius: 16,
     marginBottom: 32,
-    shadowColor: Colors.light.error,
+    shadowColor: safeColors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -813,13 +813,13 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: safeColors.textMuted,
     fontWeight: "500",
   },
   settingsContainer: {
     backgroundColor: colors.background,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: safeColors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
