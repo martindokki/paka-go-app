@@ -17,6 +17,11 @@ const t = initTRPC.context<Context>().create({
   transformer: superjson,
 });
 
+// Export router and procedures
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure; // For now, same as public
+
+// Re-export for easier imports
+export { t };
+export type { TRPCRouterRecord } from "@trpc/server";
