@@ -9,12 +9,27 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import MapView, { Marker, Polyline, UrlTile, PROVIDER_DEFAULT } from 'react-native-maps';
 import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import { useMapStore } from '@/stores/map-store';
 import { MapService, Coordinates } from '@/services/map-service';
 import { useLocation } from '@/hooks/useLocation';
 import colors from '@/constants/colors';
+
+// Conditional import for react-native-maps (only on native platforms)
+let MapView: any = null;
+let Marker: any = null;
+let Polyline: any = null;
+let UrlTile: any = null;
+let PROVIDER_DEFAULT: any = null;
+
+if (Platform.OS !== 'web') {
+  const maps = require('react-native-maps');
+  MapView = maps.default;
+  Marker = maps.Marker;
+  Polyline = maps.Polyline;
+  UrlTile = maps.UrlTile;
+  PROVIDER_DEFAULT = maps.PROVIDER_DEFAULT;
+}
 
 interface MapViewComponentProps {
   onLocationSelect?: (location: Coordinates) => void;

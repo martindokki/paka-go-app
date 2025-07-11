@@ -29,7 +29,7 @@ import {
   Trash2,
   Eye,
 } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
@@ -61,7 +61,7 @@ export default function ProfileScreen() {
       title: "Saved Addresses",
       subtitle: "Manage your delivery locations",
       icon: MapPin,
-      color: Colors.light.primary,
+      color: colors.primary,
       onPress: () => console.log("Navigate to addresses"),
     },
     {
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
       title: "Payment Methods",
       subtitle: "Cards, M-Pesa, and more",
       icon: CreditCard,
-      color: Colors.light.accent,
+      color: colors.accent,
       onPress: () => console.log("Navigate to payment methods"),
     },
     {
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
       title: "Payment History",
       subtitle: "View all your transactions",
       icon: Receipt,
-      color: Colors.light.mpesa,
+      color: colors.mpesa,
       onPress: () => router.push("/payment/history"),
     },
     {
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
       title: "Notifications",
       subtitle: "Manage your preferences",
       icon: Bell,
-      color: Colors.light.warning,
+      color: colors.warning,
       onPress: () => console.log("Navigate to notifications"),
     },
     {
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
       title: "Privacy & Security",
       subtitle: "Account security settings",
       icon: Shield,
-      color: Colors.light.info,
+      color: colors.info,
       onPress: () => console.log("Navigate to privacy"),
     },
     {
@@ -101,7 +101,7 @@ export default function ProfileScreen() {
       title: "App Settings",
       subtitle: "Preferences and configuration",
       icon: Settings,
-      color: Colors.light.textMuted,
+      color: colors.textMuted,
       onPress: () => console.log("Navigate to settings"),
     },
     {
@@ -109,7 +109,7 @@ export default function ProfileScreen() {
       title: "Help & Support",
       subtitle: "Get help or contact us",
       icon: HelpCircle,
-      color: Colors.light.primary,
+      color: colors.primary,
       onPress: () => console.log("Navigate to help"),
     },
   ];
@@ -173,19 +173,19 @@ export default function ProfileScreen() {
 
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
-            <User size={32} color={Colors.light.primary} />
+            <User size={32} color={colors.primary} />
           </View>
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{userInfo.name}</Text>
             <Text style={styles.userEmail}>{userInfo.email}</Text>
             <View style={styles.userStats}>
               <View style={styles.statItem}>
-                <Package size={12} color={Colors.light.textMuted} />
+                <Package size={12} color={colors.textMuted} />
                 <Text style={styles.statText}>{userInfo.totalOrders} orders</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
-                <Star size={12} color={Colors.light.warning} fill={Colors.light.warning} />
+                <Star size={12} color={colors.warning} fill={colors.warning} />
                 <Text style={styles.statText}>{userInfo.rating} rating</Text>
               </View>
             </View>
@@ -209,11 +209,11 @@ export default function ProfileScreen() {
 
         <View style={styles.contactInfo}>
           <View style={styles.contactItem}>
-            <Mail size={16} color={Colors.light.textMuted} />
+            <Mail size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{userInfo.email}</Text>
           </View>
           <View style={styles.contactItem}>
-            <Phone size={16} color={Colors.light.textMuted} />
+            <Phone size={16} color={colors.textMuted} />
             <Text style={styles.contactText}>{userInfo.phone}</Text>
           </View>
         </View>
@@ -234,19 +234,19 @@ export default function ProfileScreen() {
           <SettingsItem
             title="Privacy Policy"
             subtitle="How we handle your data"
-            icon={<Shield size={20} color={Colors.light.info} />}
+            icon={<Shield size={20} color={colors.info} />}
             onPress={() => setShowPrivacyModal(true)}
           />
           <SettingsItem
             title="Terms of Service"
             subtitle="Terms and conditions"
-            icon={<FileText size={20} color={Colors.light.info} />}
+            icon={<FileText size={20} color={colors.info} />}
             onPress={() => setShowTermsModal(true)}
           />
           <SettingsItem
             title="View Error Logs"
             subtitle="Debug information"
-            icon={<Eye size={20} color={Colors.light.textMuted} />}
+            icon={<Eye size={20} color={colors.textMuted} />}
             onPress={handleViewErrorLogs}
           />
         </SettingsSection>
@@ -255,14 +255,14 @@ export default function ProfileScreen() {
           <SettingsItem
             title="Delete Account"
             subtitle="Permanently delete your account"
-            icon={<Trash2 size={20} color={Colors.light.error} />}
+            icon={<Trash2 size={20} color={colors.error} />}
             onPress={() => setShowDeleteModal(true)}
             destructive
           />
         </SettingsSection>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <LogOut size={20} color={Colors.light.error} />
+          <LogOut size={20} color={colors.error} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -306,16 +306,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   profileCard: {
     flexDirection: "row",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
     alignItems: "center",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -336,12 +336,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 22,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 12,
   },
   userStats: {
@@ -357,12 +357,12 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.light.textMuted,
+    backgroundColor: colors.textMuted,
     marginHorizontal: 8,
   },
   statText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   statsContainer: {
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
@@ -380,20 +380,20 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
   },
   contactInfo: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -407,14 +407,14 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "500",
   },
   menuSection: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     marginBottom: 24,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   menuItemLast: {
     borderBottomWidth: 0,
@@ -450,25 +450,25 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 2,
   },
   menuSubtitle: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: Colors.light.error + "30",
+    borderColor: colors.error + "30",
     gap: 8,
     marginBottom: 32,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.light.error,
+    color: colors.error,
   },
   footer: {
     alignItems: "center",
@@ -485,11 +485,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   memberSince: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
     marginTop: 4,
   },

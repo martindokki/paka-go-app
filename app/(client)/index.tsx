@@ -12,7 +12,7 @@ import {
 import { router } from "expo-router";
 import { Package, MapPin, Clock, Plus, Bell, Star, Zap, Send, TrendingUp, User } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -46,7 +46,7 @@ export default function ClientHomeScreen() {
       title: "Send Package",
       subtitle: "Quick & reliable delivery",
       icon: Send,
-      gradient: [Colors.light.primary, Colors.light.primaryDark] as const,
+      gradient: [colors.primary, colors.primaryDark] as const,
       onPress: () => router.push("/booking"),
     },
     {
@@ -54,7 +54,7 @@ export default function ClientHomeScreen() {
       title: "Track Order",
       subtitle: "Real-time tracking",
       icon: MapPin,
-      gradient: [Colors.light.accent, Colors.light.accentDark] as const,
+      gradient: [colors.accent, colors.accentDark] as const,
       onPress: () => router.push("/(client)/orders"),
     },
     {
@@ -62,7 +62,7 @@ export default function ClientHomeScreen() {
       title: "Map View",
       subtitle: "Explore delivery areas",
       icon: MapPin,
-      gradient: [Colors.light.success, Colors.light.successDark] as const,
+      gradient: [colors.success, colors.successDark] as const,
       onPress: () => router.push("/map"),
     },
   ];
@@ -70,15 +70,15 @@ export default function ClientHomeScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":
-        return Colors.light.success;
+        return colors.success;
       case "in_transit":
       case "assigned":
       case "picked_up":
-        return Colors.light.primary;
+        return colors.primary;
       case "pending":
-        return Colors.light.warning;
+        return colors.warning;
       default:
-        return Colors.light.textMuted;
+        return colors.textMuted;
     }
   };
 
@@ -108,8 +108,8 @@ export default function ClientHomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[Colors.light.primary]}
-            tintColor={Colors.light.primary}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
       >
@@ -119,29 +119,29 @@ export default function ClientHomeScreen() {
             <Text style={styles.userName}>{user?.name || "User"}</Text>
           </View>
           <TouchableOpacity style={styles.notificationButton}>
-            <Bell size={22} color={Colors.light.text} />
+            <Bell size={22} color={colors.text} />
             <View style={styles.notificationDot} />
           </TouchableOpacity>
         </View>
 
         <LinearGradient
-          colors={[Colors.light.primary, Colors.light.primaryDark]}
+          colors={[colors.primary, colors.primaryDark]}
           style={styles.statsCard}
         >
           <View style={styles.statItem}>
-            <Zap size={24} color={Colors.light.background} />
+            <Zap size={24} color={colors.background} />
             <Text style={styles.statNumber}>{totalOrders}</Text>
             <Text style={styles.statLabel}>Total Orders</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Star size={24} color={Colors.light.background} />
+            <Star size={24} color={colors.background} />
             <Text style={styles.statNumber}>{avgRating}</Text>
             <Text style={styles.statLabel}>Your Rating</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <TrendingUp size={24} color={Colors.light.background} />
+            <TrendingUp size={24} color={colors.background} />
             <Text style={styles.statNumber}>KSh {(totalSpent / 1000).toFixed(1)}K</Text>
             <Text style={styles.statLabel}>Total Spent</Text>
           </View>
@@ -161,14 +161,14 @@ export default function ClientHomeScreen() {
                   style={styles.quickActionGradient}
                 >
                   <View style={styles.quickActionIcon}>
-                    <action.icon size={32} color={Colors.light.background} />
+                    <action.icon size={32} color={colors.background} />
                   </View>
                   <View style={styles.quickActionContent}>
                     <Text style={styles.quickActionTitle}>{action.title}</Text>
                     <Text style={styles.quickActionSubtitle}>{action.subtitle}</Text>
                   </View>
                   <View style={styles.quickActionArrow}>
-                    <Plus size={20} color={Colors.light.background} />
+                    <Plus size={20} color={colors.background} />
                   </View>
                 </LinearGradient>
               </TouchableOpacity>
@@ -228,7 +228,7 @@ export default function ClientHomeScreen() {
                       {new Date(order.createdAt).toLocaleDateString()}
                     </Text>
                     <View style={styles.orderRating}>
-                      <Package size={14} color={Colors.light.textMuted} />
+                      <Package size={14} color={colors.textMuted} />
                       <Text style={styles.packageText}>{order.packageType}</Text>
                     </View>
                   </View>
@@ -238,10 +238,10 @@ export default function ClientHomeScreen() {
           ) : (
             <View style={styles.emptyOrders}>
               <LinearGradient
-                colors={[Colors.light.primaryLight, Colors.light.backgroundSecondary]}
+                colors={[colors.primaryLight, colors.backgroundSecondary]}
                 style={styles.emptyOrdersGradient}
               >
-                <Package size={48} color={Colors.light.primary} />
+                <Package size={48} color={colors.primary} />
                 <Text style={styles.emptyOrdersTitle}>No Orders Yet</Text>
                 <Text style={styles.emptyOrdersSubtitle}>
                   Ready to send your first package? Tap below to get started!
@@ -251,10 +251,10 @@ export default function ClientHomeScreen() {
                   onPress={() => router.push("/booking")}
                 >
                   <LinearGradient
-                    colors={[Colors.light.primary, Colors.light.primaryDark]}
+                    colors={[colors.primary, colors.primaryDark]}
                     style={styles.emptyOrdersButtonGradient}
                   >
-                    <Send size={20} color={Colors.light.background} />
+                    <Send size={20} color={colors.background} />
                     <Text style={styles.emptyOrdersButtonText}>Book First Delivery</Text>
                   </LinearGradient>
                 </TouchableOpacity>
@@ -265,7 +265,7 @@ export default function ClientHomeScreen() {
 
         <View style={styles.mpesaPromo}>
           <LinearGradient
-            colors={[Colors.light.mpesa, "#00B85C"]}
+            colors={[colors.mpesa, "#00B85C"]}
             style={styles.mpesaCard}
           >
             <View style={styles.mpesaContent}>
@@ -286,11 +286,11 @@ export default function ClientHomeScreen() {
             onPress={() => router.push("/(client)/profile")}
           >
             <LinearGradient
-              colors={[Colors.light.accent, Colors.light.accentDark]}
+              colors={[colors.accent, colors.accentDark]}
               style={styles.profileGradient}
             >
               <View style={styles.profileIcon}>
-                <User size={24} color={Colors.light.background} />
+                <User size={24} color={colors.background} />
               </View>
               <View style={styles.profileContent}>
                 <Text style={styles.profileTitle}>Complete Your Profile</Text>
@@ -305,10 +305,10 @@ export default function ClientHomeScreen() {
 
       <TouchableOpacity style={styles.floatingButton} onPress={() => router.push("/booking")}>
         <LinearGradient
-          colors={[Colors.light.primary, Colors.light.primaryDark]}
+          colors={[colors.primary, colors.primaryDark]}
           style={styles.floatingButtonGradient}
         >
-          <Send size={28} color={Colors.light.background} />
+          <Send size={28} color={colors.background} />
         </LinearGradient>
       </TouchableOpacity>
     </SafeAreaView>
@@ -318,7 +318,7 @@ export default function ClientHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -333,13 +333,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 18,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   userName: {
     fontSize: 32,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: 4,
     letterSpacing: -1,
   },
@@ -347,11 +347,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     position: "absolute",
     top: 12,
     right: 12,
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 32,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -385,16 +385,16 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   statDivider: {
     width: 1,
-    backgroundColor: Colors.light.background + "40",
+    backgroundColor: colors.background + "40",
     marginHorizontal: 16,
   },
   quickActionsContainer: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   quickActionCard: {
     borderRadius: 24,
     overflow: "hidden",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
@@ -439,12 +439,12 @@ const styles = StyleSheet.create({
   quickActionTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 6,
   },
   quickActionSubtitle: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   quickActionArrow: {
@@ -466,17 +466,17 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: 16,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: "700",
   },
   recentOrders: {
     gap: 16,
   },
   orderCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -503,21 +503,21 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   routeDotStart: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   routeDotEnd: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.accent,
   },
   routeText: {
     fontSize: 15,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "600",
     flex: 1,
   },
   routeLine: {
     width: 2,
     height: 16,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.border,
     marginLeft: 4,
     marginVertical: 2,
   },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
   orderPrice: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
   },
   orderTime: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   orderRating: {
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
   },
   packageText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "600",
     textTransform: "capitalize",
   },
@@ -574,14 +574,14 @@ const styles = StyleSheet.create({
   emptyOrdersTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: 16,
     marginBottom: 8,
     textAlign: "center",
   },
   emptyOrdersSubtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 24,
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
   },
   emptyOrdersButton: {
     borderRadius: 16,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
   emptyOrdersButtonText: {
     fontSize: 16,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   mpesaPromo: {
     marginBottom: 32,
@@ -616,7 +616,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 20,
     padding: 20,
-    shadowColor: Colors.light.mpesa,
+    shadowColor: colors.mpesa,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -628,12 +628,12 @@ const styles = StyleSheet.create({
   mpesaTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 4,
   },
   mpesaSubtitle: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   mpesaIcon: {
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
   mpesaText: {
     fontSize: 12,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     letterSpacing: 1,
   },
   profileSection: {
@@ -654,7 +654,7 @@ const styles = StyleSheet.create({
   profileCard: {
     borderRadius: 20,
     overflow: "hidden",
-    shadowColor: Colors.light.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -680,12 +680,12 @@ const styles = StyleSheet.create({
   profileTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 4,
   },
   profileSubtitle: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   floatingButton: {
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: 20,
     borderRadius: 32,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,

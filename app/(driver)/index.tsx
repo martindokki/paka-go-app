@@ -30,7 +30,7 @@ import {
   Truck,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 const { width } = Dimensions.get("window");
 
@@ -117,11 +117,11 @@ export default function DriverDashboard() {
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
       case "express":
-        return Colors.light.error;
+        return colors.error;
       case "urgent":
-        return Colors.light.warning;
+        return colors.warning;
       default:
-        return Colors.light.primary;
+        return colors.primary;
     }
   };
 
@@ -141,12 +141,12 @@ export default function DriverDashboard() {
 
     return (
       <LinearGradient
-        colors={[Colors.light.primary, Colors.light.primaryDark]}
+        colors={[colors.primary, colors.primaryDark]}
         style={styles.currentOrderCard}
       >
         <View style={styles.currentOrderHeader}>
           <View style={styles.orderBadge}>
-            <Activity size={16} color={Colors.light.background} />
+            <Activity size={16} color={colors.background} />
             <Text style={styles.orderBadgeText}>ACTIVE ORDER</Text>
           </View>
           <View style={styles.orderStatus}>
@@ -160,14 +160,14 @@ export default function DriverDashboard() {
         <View style={styles.orderRoute}>
           <View style={styles.routePoint}>
             <View style={styles.routeIconContainer}>
-              <MapPin size={16} color={Colors.light.background} />
+              <MapPin size={16} color={colors.background} />
             </View>
             <Text style={styles.routeTextWhite}>{currentOrder.from}</Text>
           </View>
           <View style={styles.routeLineWhite} />
           <View style={styles.routePoint}>
             <View style={styles.routeIconContainer}>
-              <Target size={16} color={Colors.light.background} />
+              <Target size={16} color={colors.background} />
             </View>
             <Text style={styles.routeTextWhite}>{currentOrder.to}</Text>
           </View>
@@ -175,15 +175,15 @@ export default function DriverDashboard() {
 
         <View style={styles.orderDetails}>
           <View style={styles.orderDetailItem}>
-            <MapPin size={16} color={Colors.light.background + "CC"} />
+            <MapPin size={16} color={colors.background + "CC"} />
             <Text style={styles.orderDetailTextWhite}>{currentOrder.distance}</Text>
           </View>
           <View style={styles.orderDetailItem}>
-            <Timer size={16} color={Colors.light.background + "CC"} />
+            <Timer size={16} color={colors.background + "CC"} />
             <Text style={styles.orderDetailTextWhite}>{currentOrder.estimatedTime}</Text>
           </View>
           <View style={styles.orderDetailItem}>
-            <Package size={16} color={Colors.light.background + "CC"} />
+            <Package size={16} color={colors.background + "CC"} />
             <Text style={styles.orderDetailTextWhite}>{currentOrder.packageType}</Text>
           </View>
         </View>
@@ -192,16 +192,16 @@ export default function DriverDashboard() {
           <View style={styles.customerDetails}>
             <Text style={styles.customerNameWhite}>{currentOrder.customerName}</Text>
             <View style={styles.customerRating}>
-              <Star size={12} color={Colors.light.warning} fill={Colors.light.warning} />
+              <Star size={12} color={colors.warning} fill={colors.warning} />
               <Text style={styles.ratingTextWhite}>{currentOrder.customerRating}</Text>
             </View>
           </View>
           <View style={styles.customerActions}>
             <TouchableOpacity style={styles.actionButtonWhite}>
-              <Phone size={16} color={Colors.light.primary} />
+              <Phone size={16} color={colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButtonWhite}>
-              <MessageCircle size={16} color={Colors.light.primary} />
+              <MessageCircle size={16} color={colors.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -209,10 +209,10 @@ export default function DriverDashboard() {
         <View style={styles.currentOrderActions}>
           <TouchableOpacity style={styles.navigationButton}>
             <LinearGradient
-              colors={[Colors.light.background, "#FFFFFF"]}
+              colors={[colors.background, "#FFFFFF"]}
               style={styles.navigationButtonGradient}
             >
-              <Navigation size={20} color={Colors.light.primary} />
+              <Navigation size={20} color={colors.primary} />
               <Text style={styles.navigationButtonText}>Navigate</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -256,16 +256,16 @@ export default function DriverDashboard() {
       <View style={styles.orderMeta}>
         <View style={styles.orderDetails}>
           <View style={styles.orderDetailItem}>
-            <MapPin size={14} color={Colors.light.textMuted} />
+            <MapPin size={14} color={colors.textMuted} />
             <Text style={styles.orderDetailTextSmall}>{order.distance}</Text>
           </View>
           <View style={styles.orderDetailItem}>
-            <Timer size={14} color={Colors.light.textMuted} />
+            <Timer size={14} color={colors.textMuted} />
             <Text style={styles.orderDetailTextSmall}>{order.estimatedTime}</Text>
           </View>
         </View>
         <View style={styles.customerRating}>
-          <Star size={12} color={Colors.light.warning} fill={Colors.light.warning} />
+          <Star size={12} color={colors.warning} fill={colors.warning} />
           <Text style={styles.ratingText}>{order.customerRating}</Text>
         </View>
       </View>
@@ -282,10 +282,10 @@ export default function DriverDashboard() {
           onPress={() => handleAcceptOrder(order.id)}
         >
           <LinearGradient
-            colors={[Colors.light.primary, Colors.light.primaryDark]}
+            colors={[colors.primary, colors.primaryDark]}
             style={styles.acceptButtonGradient}
           >
-            <CheckCircle size={16} color={Colors.light.background} />
+            <CheckCircle size={16} color={colors.background} />
             <Text style={styles.acceptButtonText}>Accept</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -306,51 +306,51 @@ export default function DriverDashboard() {
           </View>
           <View style={styles.headerRight}>
             <View style={styles.onlineToggle}>
-              <View style={[styles.onlineIndicator, { backgroundColor: isOnline ? Colors.light.success : Colors.light.textMuted }]}>
-                <Activity size={12} color={Colors.light.background} />
+              <View style={[styles.onlineIndicator, { backgroundColor: isOnline ? colors.success : colors.textMuted }]}>
+                <Activity size={12} color={colors.background} />
               </View>
-              <Text style={[styles.onlineText, { color: isOnline ? Colors.light.success : Colors.light.textMuted }]}>
+              <Text style={[styles.onlineText, { color: isOnline ? colors.success : colors.textMuted }]}>
                 {isOnline ? "Online" : "Offline"}
               </Text>
               <Switch
                 value={isOnline}
                 onValueChange={setIsOnline}
-                trackColor={{ false: Colors.light.border, true: Colors.light.success + "40" }}
-                thumbColor={isOnline ? Colors.light.success : Colors.light.textMuted}
+                trackColor={{ false: colors.border, true: colors.success + "40" }}
+                thumbColor={isOnline ? colors.success : colors.textMuted}
               />
             </View>
           </View>
         </View>
 
         <LinearGradient
-          colors={[Colors.light.accent, Colors.light.accentDark]}
+          colors={[colors.accent, colors.accentDark]}
           style={styles.statsCard}
         >
           <View style={styles.statsHeader}>
             <View style={styles.statsIconContainer}>
-              <Award size={24} color={Colors.light.background} />
+              <Award size={24} color={colors.background} />
             </View>
             <Text style={styles.statsTitle}>Today's Performance 🚀</Text>
           </View>
           
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
-              <Package size={20} color={Colors.light.background} />
+              <Package size={20} color={colors.background} />
               <Text style={styles.statNumber}>{todayStats.ordersCompleted}</Text>
               <Text style={styles.statLabel}>Orders</Text>
             </View>
             <View style={styles.statItem}>
-              <DollarSign size={20} color={Colors.light.background} />
+              <DollarSign size={20} color={colors.background} />
               <Text style={styles.statNumber}>KSh {todayStats.earnings.toLocaleString()}</Text>
               <Text style={styles.statLabel}>Earnings</Text>
             </View>
             <View style={styles.statItem}>
-              <Star size={20} color={Colors.light.warning} />
+              <Star size={20} color={colors.warning} />
               <Text style={styles.statNumber}>{todayStats.rating}</Text>
               <Text style={styles.statLabel}>Rating</Text>
             </View>
             <View style={styles.statItem}>
-              <Zap size={20} color={Colors.light.background} />
+              <Zap size={20} color={colors.background} />
               <Text style={styles.statNumber}>{todayStats.streak}</Text>
               <Text style={styles.statLabel}>Day Streak</Text>
             </View>
@@ -381,11 +381,11 @@ export default function DriverDashboard() {
         {!isOnline && (
           <View style={styles.offlineMessage}>
             <LinearGradient
-              colors={[Colors.light.backgroundSecondary, Colors.light.borderLight]}
+              colors={[colors.backgroundSecondary, colors.borderLight]}
               style={styles.offlineCard}
             >
               <View style={styles.offlineIcon}>
-                <Truck size={48} color={Colors.light.textMuted} />
+                <Truck size={48} color={colors.textMuted} />
               </View>
               <Text style={styles.offlineTitle}>You're offline 😴</Text>
               <Text style={styles.offlineSubtitle}>
@@ -396,10 +396,10 @@ export default function DriverDashboard() {
                 onPress={() => setIsOnline(true)}
               >
                 <LinearGradient
-                  colors={[Colors.light.success, "#10B981"]}
+                  colors={[colors.success, "#10B981"]}
                   style={styles.goOnlineGradient}
                 >
-                  <Zap size={20} color={Colors.light.background} />
+                  <Zap size={20} color={colors.background} />
                   <Text style={styles.goOnlineText}>Go Online</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -415,10 +415,10 @@ export default function DriverDashboard() {
               onPress={() => router.push("/(driver)/earnings")}
             >
               <LinearGradient
-                colors={[Colors.light.warning, "#F59E0B"]}
+                colors={[colors.warning, "#F59E0B"]}
                 style={styles.quickActionGradient}
               >
-                <TrendingUp size={24} color={Colors.light.background} />
+                <TrendingUp size={24} color={colors.background} />
                 <Text style={styles.quickActionText}>Earnings</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -428,10 +428,10 @@ export default function DriverDashboard() {
               onPress={() => router.push("/(driver)/orders")}
             >
               <LinearGradient
-                colors={[Colors.light.info, "#3B82F6"]}
+                colors={[colors.info, "#3B82F6"]}
                 style={styles.quickActionGradient}
               >
-                <Clock size={24} color={Colors.light.background} />
+                <Clock size={24} color={colors.background} />
                 <Text style={styles.quickActionText}>History</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -445,7 +445,7 @@ export default function DriverDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -465,13 +465,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 18,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   driverName: {
     fontSize: 32,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginTop: 4,
     letterSpacing: -1,
   },
@@ -479,11 +479,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 24,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    shadowColor: Colors.light.accent,
+    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statsGrid: {
     flexDirection: "row",
@@ -541,11 +541,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   efficiencyBar: {
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
   },
   efficiencyLabel: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   progressBar: {
@@ -564,14 +564,14 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: "100%",
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 4,
   },
   currentOrderCard: {
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   },
   orderBadgeText: {
     fontSize: 12,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "800",
     letterSpacing: 0.5,
   },
@@ -615,11 +615,11 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   statusText: {
     fontSize: 14,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   orderRoute: {
@@ -646,27 +646,27 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   routeDotStart: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   routeDotEnd: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.accent,
   },
   routeText: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "600",
     flex: 1,
   },
   routeTextWhite: {
     fontSize: 16,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
     flex: 1,
   },
   routeLine: {
     width: 2,
     height: 16,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.border,
     marginLeft: 4,
     marginVertical: 2,
   },
@@ -689,17 +689,17 @@ const styles = StyleSheet.create({
   },
   orderDetailText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   orderDetailTextWhite: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   orderDetailTextSmall: {
     fontSize: 11,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   customerInfo: {
@@ -716,13 +716,13 @@ const styles = StyleSheet.create({
   },
   customerName: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "600",
     marginBottom: 4,
   },
   customerNameWhite: {
     fontSize: 16,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
     marginBottom: 4,
   },
@@ -733,12 +733,12 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   ratingTextWhite: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
   },
   customerActions: {
@@ -749,7 +749,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -757,7 +757,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   },
   navigationButton: {
     borderRadius: 16,
-    shadowColor: Colors.light.background,
+    shadowColor: colors.background,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -783,7 +783,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   navigationButtonText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: 16,
     fontWeight: "800",
   },
@@ -793,16 +793,16 @@ const styles = StyleSheet.create({
   orderPrice: {
     fontSize: 18,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
   },
   orderPriceWhite: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
   },
   orderPriceLabel: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "600",
     marginTop: 2,
   },
@@ -818,11 +818,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     letterSpacing: -0.5,
   },
   orderCounter: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -832,14 +832,14 @@ const styles = StyleSheet.create({
   orderCountText: {
     fontSize: 14,
     fontWeight: "800",
-    color: Colors.light.background,
+    color: colors.background,
   },
   pendingOrderCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -879,18 +879,18 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: Colors.light.error,
+    borderColor: colors.error,
     alignItems: "center",
   },
   rejectButtonText: {
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: 14,
     fontWeight: "700",
   },
   acceptButton: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -905,7 +905,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   acceptButtonText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: 14,
     fontWeight: "800",
   },
@@ -922,11 +922,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -935,13 +935,13 @@ const styles = StyleSheet.create({
   offlineTitle: {
     fontSize: 24,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
     textAlign: "center",
   },
   offlineSubtitle: {
     fontSize: 16,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 24,
@@ -949,7 +949,7 @@ const styles = StyleSheet.create({
   },
   goOnlineButton: {
     borderRadius: 16,
-    shadowColor: Colors.light.success,
+    shadowColor: colors.success,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -964,7 +964,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   goOnlineText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontSize: 16,
     fontWeight: "800",
   },
@@ -978,7 +978,7 @@ const styles = StyleSheet.create({
   quickActionCard: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -993,6 +993,6 @@ const styles = StyleSheet.create({
   quickActionText: {
     fontSize: 14,
     fontWeight: "700",
-    color: Colors.light.background,
+    color: colors.background,
   },
 });

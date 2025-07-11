@@ -8,7 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import { Package, Calendar, TrendingUp } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 interface HistoryOrder {
   id: string;
@@ -84,7 +84,7 @@ export default function HistoryScreen() {
             key={star}
             style={[
               styles.star,
-              { color: star <= rating ? Colors.light.warning : Colors.light.border },
+              { color: star <= rating ? colors.warning : colors.border },
             ]}
           >
             ★
@@ -119,11 +119,11 @@ export default function HistoryScreen() {
 
       <View style={styles.historyDetails}>
         <View style={styles.packageInfo}>
-          <Package size={14} color={Colors.light.textMuted} />
+          <Package size={14} color={colors.textMuted} />
           <Text style={styles.packageType}>{item.packageType}</Text>
         </View>
         <View style={styles.dateContainer}>
-          <Calendar size={14} color={Colors.light.textMuted} />
+          <Calendar size={14} color={colors.textMuted} />
           <Text style={styles.date}>{item.date}</Text>
         </View>
       </View>
@@ -165,17 +165,17 @@ export default function HistoryScreen() {
 
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
-          <Package size={20} color={Colors.light.primary} />
+          <Package size={20} color={colors.primary} />
           <Text style={styles.statNumber}>{stats.totalOrders}</Text>
           <Text style={styles.statLabel}>Total Orders</Text>
         </View>
         <View style={styles.statCard}>
-          <TrendingUp size={20} color={Colors.light.accent} />
+          <TrendingUp size={20} color={colors.accent} />
           <Text style={styles.statNumber}>KSh {stats.totalSpent.toLocaleString()}</Text>
           <Text style={styles.statLabel}>Total Spent</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: Colors.light.warning }]}>
+          <Text style={[styles.statNumber, { color: colors.warning }]}>
             {stats.averageRating.toFixed(1)}★
           </Text>
           <Text style={styles.statLabel}>Avg Rating</Text>
@@ -196,7 +196,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: 20,
@@ -205,12 +205,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   periodSelector: {
     flexDirection: "row",
     margin: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 4,
   },
@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activePeriodButton: {
-    backgroundColor: Colors.light.background,
-    shadowColor: Colors.light.text,
+    backgroundColor: colors.background,
+    shadowColor: colors.text,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -231,10 +231,10 @@ const styles = StyleSheet.create({
   periodText: {
     fontSize: 12,
     fontWeight: "500",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   activePeriodText: {
-    color: Colors.light.text,
+    color: colors.text,
   },
   statsContainer: {
     flexDirection: "row",
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
@@ -253,11 +253,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
   },
   historyList: {
@@ -265,12 +265,12 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   historyCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
   },
   historyHeader: {
     flexDirection: "row",
@@ -292,21 +292,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   routeDotStart: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   routeDotEnd: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.accent,
   },
   routeText: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "500",
     flex: 1,
   },
   routeLine: {
     width: 1,
     height: 12,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.border,
     marginLeft: 2,
     marginVertical: 2,
   },
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: "bold",
-    color: Colors.light.text,
+    color: colors.text,
   },
   historyDetails: {
     flexDirection: "row",
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   packageType: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   dateContainer: {
     flexDirection: "row",
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   ratingContainer: {
     flexDirection: "row",
@@ -355,6 +355,6 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
 });

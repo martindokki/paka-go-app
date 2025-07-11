@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 const { width } = Dimensions.get("window");
 
@@ -120,8 +120,8 @@ export default function DriverOrdersScreen() {
           <Star
             key={star}
             size={12}
-            color={star <= rating ? Colors.light.warning : Colors.light.border}
-            fill={star <= rating ? Colors.light.warning : "transparent"}
+            color={star <= rating ? colors.warning : colors.border}
+            fill={star <= rating ? colors.warning : "transparent"}
           />
         ))}
       </View>
@@ -159,8 +159,8 @@ export default function DriverOrdersScreen() {
               {
                 backgroundColor:
                   item.status === "completed"
-                    ? Colors.light.success + "20"
-                    : Colors.light.error + "20",
+                    ? colors.success + "20"
+                    : colors.error + "20",
               },
             ]}
           >
@@ -170,8 +170,8 @@ export default function DriverOrdersScreen() {
                 {
                   color:
                     item.status === "completed"
-                      ? Colors.light.success
-                      : Colors.light.error,
+                      ? colors.success
+                      : colors.error,
                 },
               ]}
             >
@@ -189,11 +189,11 @@ export default function DriverOrdersScreen() {
 
       <View style={styles.orderStats}>
         <View style={styles.statItem}>
-          <MapPin size={14} color={Colors.light.textMuted} />
+          <MapPin size={14} color={colors.textMuted} />
           <Text style={styles.statText}>{item.distance}</Text>
         </View>
         <View style={styles.statItem}>
-          <Clock size={14} color={Colors.light.textMuted} />
+          <Clock size={14} color={colors.textMuted} />
           <Text style={styles.statText}>{item.duration}</Text>
         </View>
         {item.rating && (
@@ -209,7 +209,7 @@ export default function DriverOrdersScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={[Colors.light.primary, Colors.light.primaryDark]}
+        colors={[colors.primary, colors.primaryDark]}
         style={styles.headerGradient}
       >
         <View style={styles.header}>
@@ -244,10 +244,10 @@ export default function DriverOrdersScreen() {
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <LinearGradient
-            colors={[Colors.light.success, "#10B981"]}
+            colors={[colors.success, "#10B981"]}
             style={styles.statGradient}
           >
-            <Package size={20} color={Colors.light.background} />
+            <Package size={20} color={colors.background} />
             <Text style={styles.statNumber}>{stats.totalOrders}</Text>
             <Text style={styles.statLabel}>Completed</Text>
           </LinearGradient>
@@ -255,10 +255,10 @@ export default function DriverOrdersScreen() {
         
         <View style={styles.statCard}>
           <LinearGradient
-            colors={[Colors.light.warning, "#F59E0B"]}
+            colors={[colors.warning, "#F59E0B"]}
             style={styles.statGradient}
           >
-            <TrendingUp size={20} color={Colors.light.background} />
+            <TrendingUp size={20} color={colors.background} />
             <Text style={styles.statNumber}>KSh {stats.totalEarnings.toLocaleString()}</Text>
             <Text style={styles.statLabel}>Total Earned</Text>
           </LinearGradient>
@@ -266,10 +266,10 @@ export default function DriverOrdersScreen() {
         
         <View style={styles.statCard}>
           <LinearGradient
-            colors={[Colors.light.accent, Colors.light.accentDark]}
+            colors={[colors.accent, colors.accentDark]}
             style={styles.statGradient}
           >
-            <Star size={20} color={Colors.light.background} />
+            <Star size={20} color={colors.background} />
             <Text style={styles.statNumber}>{stats.averageRating.toFixed(1)}⭐</Text>
             <Text style={styles.statLabel}>Avg Rating</Text>
           </LinearGradient>
@@ -277,10 +277,10 @@ export default function DriverOrdersScreen() {
         
         <View style={styles.statCard}>
           <LinearGradient
-            colors={[Colors.light.info, "#3B82F6"]}
+            colors={[colors.info, "#3B82F6"]}
             style={styles.statGradient}
           >
-            <Award size={20} color={Colors.light.background} />
+            <Award size={20} color={colors.background} />
             <Text style={styles.statNumber}>KSh {stats.totalTips}</Text>
             <Text style={styles.statLabel}>Tips Earned</Text>
           </LinearGradient>
@@ -295,7 +295,7 @@ export default function DriverOrdersScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.listHeader}>
-            <Zap size={20} color={Colors.light.primary} />
+            <Zap size={20} color={colors.primary} />
             <Text style={styles.listHeaderText}>Recent Deliveries</Text>
           </View>
         }
@@ -307,7 +307,7 @@ export default function DriverOrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
   },
   headerGradient: {
     paddingTop: 20,
@@ -321,22 +321,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     marginBottom: 4,
     letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
   },
   periodSelector: {
     flexDirection: "row",
     margin: 20,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 16,
     padding: 4,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   activePeriodButton: {
-    backgroundColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -363,10 +363,10 @@ const styles = StyleSheet.create({
   periodText: {
     fontSize: 12,
     fontWeight: "600",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   activePeriodText: {
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
   },
   statsContainer: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: (width - 56) / 2,
     borderRadius: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -395,11 +395,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 16,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
   },
   statLabel: {
     fontSize: 11,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     textAlign: "center",
     fontWeight: "600",
   },
@@ -412,18 +412,18 @@ const styles = StyleSheet.create({
   listHeaderText: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
   },
   ordersList: {
     padding: 20,
     paddingTop: 0,
   },
   orderCard: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -449,21 +449,21 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   routeDotStart: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: colors.primary,
   },
   routeDotEnd: {
-    backgroundColor: Colors.light.accent,
+    backgroundColor: colors.accent,
   },
   routeText: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "600",
     flex: 1,
   },
   routeLine: {
     width: 2,
     height: 12,
-    backgroundColor: Colors.light.border,
+    backgroundColor: colors.border,
     marginLeft: 3,
     marginVertical: 2,
   },
@@ -474,17 +474,17 @@ const styles = StyleSheet.create({
   orderPrice: {
     fontSize: 18,
     fontWeight: "900",
-    color: Colors.light.text,
+    color: colors.text,
   },
   tipBadge: {
-    backgroundColor: Colors.light.warning + "20",
+    backgroundColor: colors.warning + "20",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
   },
   tipText: {
     fontSize: 10,
-    color: Colors.light.warning,
+    color: colors.warning,
     fontWeight: "700",
   },
   statusBadge: {
@@ -502,17 +502,17 @@ const styles = StyleSheet.create({
   },
   customerName: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: "600",
   },
   packageType: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   orderDate: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   orderStats: {
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.borderLight,
+    borderTopColor: colors.borderLight,
   },
   statItem: {
     flexDirection: "row",
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "500",
   },
   ratingContainer: {
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontWeight: "600",
   },
 });

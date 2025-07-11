@@ -31,7 +31,7 @@ import {
   ArrowRight,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useAuthStore, UserType, LoginRequest, RegisterRequest } from "@/stores/auth-store";
 import { errorLogger } from "@/utils/error-logger";
 
@@ -159,7 +159,7 @@ export default function AuthScreen() {
           onPress={() => setUserType("client")}
         >
           <LinearGradient
-            colors={userType === "client" ? [Colors.light.primary, Colors.light.primaryDark] : ["transparent", "transparent"]}
+            colors={userType === "client" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
             style={styles.userTypeGradient}
           >
             <View style={styles.userTypeIconContainer}>
@@ -169,11 +169,11 @@ export default function AuthScreen() {
               ]}>
                 <Send
                   size={32}
-                  color={userType === "client" ? Colors.light.background : Colors.light.primary}
+                  color={userType === "client" ? colors.background : colors.primary}
                 />
               </View>
               <View style={styles.sparkleContainer}>
-                <Sparkles size={16} color={userType === "client" ? Colors.light.background : Colors.light.primary} />
+                <Sparkles size={16} color={userType === "client" ? colors.background : colors.primary} />
               </View>
             </View>
             <Text
@@ -201,7 +201,7 @@ export default function AuthScreen() {
           onPress={() => setUserType("driver")}
         >
           <LinearGradient
-            colors={userType === "driver" ? [Colors.light.primary, Colors.light.primaryDark] : ["transparent", "transparent"]}
+            colors={userType === "driver" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
             style={styles.userTypeGradient}
           >
             <View style={styles.userTypeIconContainer}>
@@ -211,11 +211,11 @@ export default function AuthScreen() {
               ]}>
                 <Truck
                   size={32}
-                  color={userType === "driver" ? Colors.light.background : Colors.light.primary}
+                  color={userType === "driver" ? colors.background : colors.primary}
                 />
               </View>
               <View style={styles.sparkleContainer}>
-                <Star size={16} color={userType === "driver" ? Colors.light.background : Colors.light.warning} />
+                <Star size={16} color={userType === "driver" ? colors.background : colors.warning} />
               </View>
             </View>
             <Text
@@ -244,7 +244,7 @@ export default function AuthScreen() {
             onPress={() => setUserType("admin")}
           >
             <LinearGradient
-              colors={userType === "admin" ? [Colors.light.accent, Colors.light.accentDark] : ["transparent", "transparent"]}
+              colors={userType === "admin" ? [colors.accent, colors.accentDark] : ["transparent", "transparent"]}
               style={styles.userTypeGradient}
             >
               <View style={styles.userTypeIconContainer}>
@@ -254,11 +254,11 @@ export default function AuthScreen() {
                 ]}>
                   <Shield
                     size={32}
-                    color={userType === "admin" ? Colors.light.background : Colors.light.accent}
+                    color={userType === "admin" ? colors.background : colors.accent}
                   />
                 </View>
                 <View style={styles.sparkleContainer}>
-                  <UserCheck size={16} color={userType === "admin" ? Colors.light.background : Colors.light.accent} />
+                  <UserCheck size={16} color={userType === "admin" ? colors.background : colors.accent} />
                 </View>
               </View>
               <Text
@@ -285,7 +285,7 @@ export default function AuthScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={[Colors.light.primary, Colors.light.primaryDark, "#E55A2B"]}
+        colors={[colors.primary, colors.primaryDark, "#E55A2B"]}
         style={styles.backgroundGradient}
       >
         <KeyboardAvoidingView
@@ -299,17 +299,17 @@ export default function AuthScreen() {
             <View style={styles.header}>
               <View style={styles.logoContainer}>
                 <LinearGradient
-                  colors={[Colors.light.background, "#FFFFFF"]}
+                  colors={[colors.background, "#FFFFFF"]}
                   style={styles.logoIcon}
                 >
-                  <Zap size={48} color={Colors.light.primary} />
+                  <Zap size={48} color={colors.primary} />
                 </LinearGradient>
                 <View style={styles.logoTextContainer}>
                   <Text style={styles.logo}>PAKA Go</Text>
                   <View style={styles.taglineContainer}>
-                    <Sparkles size={16} color={Colors.light.background} />
+                    <Sparkles size={16} color={colors.background} />
                     <Text style={styles.tagline}>Lightning Fast Delivery</Text>
-                    <Sparkles size={16} color={Colors.light.background} />
+                    <Sparkles size={16} color={colors.background} />
                   </View>
                 </View>
               </View>
@@ -326,15 +326,15 @@ export default function AuthScreen() {
                 
                 <View style={styles.featuresContainer}>
                   <View style={styles.featureItem}>
-                    <Package size={16} color={Colors.light.background} />
+                    <Package size={16} color={colors.background} />
                     <Text style={styles.featureText}>Instant Booking</Text>
                   </View>
                   <View style={styles.featureItem}>
-                    <Zap size={16} color={Colors.light.background} />
+                    <Zap size={16} color={colors.background} />
                     <Text style={styles.featureText}>Real-time Tracking</Text>
                   </View>
                   <View style={styles.featureItem}>
-                    <Shield size={16} color={Colors.light.background} />
+                    <Shield size={16} color={colors.background} />
                     <Text style={styles.featureText}>Secure Payments</Text>
                   </View>
                 </View>
@@ -391,7 +391,7 @@ export default function AuthScreen() {
                 {authMode === "register" && (
                   <View style={styles.inputContainer}>
                     <View style={styles.inputIcon}>
-                      <User size={22} color={Colors.light.primary} />
+                      <User size={22} color={colors.primary} />
                     </View>
                     <TextInput
                       style={[
@@ -406,7 +406,7 @@ export default function AuthScreen() {
                           setValidationErrors(prev => ({ ...prev, name: '' }));
                         }
                       }}
-                      placeholderTextColor={Colors.light.textMuted}
+                      placeholderTextColor={colors.textMuted}
                     />
                     {validationErrors.name && (
                       <Text style={styles.errorText}>{validationErrors.name}</Text>
@@ -416,7 +416,7 @@ export default function AuthScreen() {
 
                 <View style={styles.inputContainer}>
                   <View style={styles.inputIcon}>
-                    <Mail size={22} color={Colors.light.primary} />
+                    <Mail size={22} color={colors.primary} />
                   </View>
                   <TextInput
                     style={[
@@ -433,7 +433,7 @@ export default function AuthScreen() {
                     }}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    placeholderTextColor={Colors.light.textMuted}
+                    placeholderTextColor={colors.textMuted}
                   />
                   {validationErrors.email && (
                     <Text style={styles.errorText}>{validationErrors.email}</Text>
@@ -443,7 +443,7 @@ export default function AuthScreen() {
                 {authMode === "register" && (
                   <View style={styles.inputContainer}>
                     <View style={styles.inputIcon}>
-                      <Phone size={22} color={Colors.light.primary} />
+                      <Phone size={22} color={colors.primary} />
                     </View>
                     <TextInput
                       style={[
@@ -459,7 +459,7 @@ export default function AuthScreen() {
                         }
                       }}
                       keyboardType="phone-pad"
-                      placeholderTextColor={Colors.light.textMuted}
+                      placeholderTextColor={colors.textMuted}
                     />
                     {validationErrors.phone && (
                       <Text style={styles.errorText}>{validationErrors.phone}</Text>
@@ -469,7 +469,7 @@ export default function AuthScreen() {
 
                 <View style={styles.inputContainer}>
                   <View style={styles.inputIcon}>
-                    <Lock size={22} color={Colors.light.primary} />
+                    <Lock size={22} color={colors.primary} />
                   </View>
                   <TextInput
                     style={[
@@ -485,7 +485,7 @@ export default function AuthScreen() {
                       }
                     }}
                     secureTextEntry={!showPassword}
-                    placeholderTextColor={Colors.light.textMuted}
+                    placeholderTextColor={colors.textMuted}
                   />
                   {validationErrors.password && (
                     <Text style={styles.errorText}>{validationErrors.password}</Text>
@@ -495,9 +495,9 @@ export default function AuthScreen() {
                     style={styles.eyeButton}
                   >
                     {showPassword ? (
-                      <EyeOff size={22} color={Colors.light.textMuted} />
+                      <EyeOff size={22} color={colors.textMuted} />
                     ) : (
-                      <Eye size={22} color={Colors.light.textMuted} />
+                      <Eye size={22} color={colors.textMuted} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -564,7 +564,7 @@ export default function AuthScreen() {
                   disabled={authLoading}
                 >
                   <LinearGradient
-                    colors={[Colors.light.background, "#FFFFFF"]}
+                    colors={[colors.background, "#FFFFFF"]}
                     style={styles.authButtonGradient}
                   >
                     <View style={styles.authButtonContent}>
@@ -577,7 +577,7 @@ export default function AuthScreen() {
                           <Text style={styles.authButtonText}>
                             {authMode === "login" ? "Let's Go! 🚀" : "Join PAKA Go! 🎉"}
                           </Text>
-                          <ArrowRight size={20} color={Colors.light.primary} />
+                          <ArrowRight size={20} color={colors.primary} />
                         </>
                       )}
                     </View>
@@ -649,7 +649,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
-    shadowColor: Colors.light.background,
+    shadowColor: colors.background,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 42,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     letterSpacing: -2,
     textShadowColor: "rgba(0, 0, 0, 0.3)",
     textShadowOffset: { width: 0, height: 2 },
@@ -676,7 +676,7 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.background,
+    color: colors.background,
     letterSpacing: 0.5,
   },
   heroSection: {
@@ -686,14 +686,14 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 28,
     fontWeight: "900",
-    color: Colors.light.background,
+    color: colors.background,
     textAlign: "center",
     marginBottom: 12,
     letterSpacing: -1,
   },
   heroSubtitle: {
     fontSize: 16,
-    color: Colors.light.background + "E6",
+    color: colors.background + "E6",
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 20,
@@ -716,11 +716,11 @@ const styles = StyleSheet.create({
   },
   featureText: {
     fontSize: 12,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "600",
   },
   formContainer: {
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 32,
     padding: 24,
     marginBottom: 24,
@@ -732,7 +732,7 @@ const styles = StyleSheet.create({
   },
   authModeContainer: {
     flexDirection: "row",
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 20,
     padding: 6,
     marginBottom: 24,
@@ -744,8 +744,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   authModeButtonActive: {
-    backgroundColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -754,10 +754,10 @@ const styles = StyleSheet.create({
   authModeText: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
   },
   authModeTextActive: {
-    color: Colors.light.background,
+    color: colors.background,
   },
   userTypeContainer: {
     marginBottom: 24,
@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
   userTypeTitle: {
     fontSize: 20,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 16,
     textAlign: "center",
   },
@@ -776,16 +776,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: Colors.light.border,
-    shadowColor: Colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
   userTypeButtonActive: {
-    borderColor: Colors.light.primary,
-    shadowColor: Colors.light.primary,
+    borderColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOpacity: 0.2,
   },
   userTypeGradient: {
@@ -801,7 +801,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -815,28 +815,28 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.light.warning,
+    backgroundColor: colors.warning,
     justifyContent: "center",
     alignItems: "center",
   },
   userTypeText: {
     fontSize: 18,
     fontWeight: "800",
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   userTypeTextActive: {
-    color: Colors.light.background,
+    color: colors.background,
   },
   userTypeSubtext: {
     fontSize: 14,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 20,
     fontWeight: "500",
   },
   userTypeSubtextActive: {
-    color: Colors.light.background + "E6",
+    color: colors.background + "E6",
   },
   form: {
     gap: 16,
@@ -846,24 +846,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 18,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
     gap: 16,
   },
   inputIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: "center",
     alignItems: "center",
   },
   input: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: "500",
   },
   eyeButton: {
@@ -875,13 +875,13 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: "600",
   },
   authButton: {
     borderRadius: 20,
     marginTop: 8,
-    shadowColor: Colors.light.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -901,7 +901,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   authButtonText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0.5,
@@ -912,12 +912,12 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: "center",
     lineHeight: 18,
   },
   termsLink: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: "600",
   },
   footer: {
@@ -926,35 +926,35 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "600",
   },
   footerSubtext: {
     fontSize: 12,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     textAlign: "center",
     fontWeight: "500",
   },
   inputError: {
-    borderColor: Colors.light.error,
+    borderColor: colors.error,
     borderWidth: 2,
   },
   errorContainer: {
-    backgroundColor: Colors.light.error + "20",
+    backgroundColor: colors.error + "20",
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.light.error,
+    borderLeftColor: colors.error,
   },
   errorText: {
-    color: Colors.light.error,
+    color: colors.error,
     fontSize: 12,
     fontWeight: "600",
     marginTop: 4,
   },
   errorHelpText: {
-    color: Colors.light.textMuted,
+    color: colors.textMuted,
     fontSize: 11,
     fontWeight: "500",
     marginTop: 8,
@@ -970,11 +970,11 @@ const styles = StyleSheet.create({
   switchModeButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.primary + "20",
+    backgroundColor: colors.primary + "20",
     borderRadius: 12,
   },
   switchModeText: {
-    color: Colors.light.primary,
+    color: colors.primary,
     fontSize: 12,
     fontWeight: "700",
     textAlign: "center",
@@ -982,11 +982,11 @@ const styles = StyleSheet.create({
   clearEmailButton: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.warning + "20",
+    backgroundColor: colors.warning + "20",
     borderRadius: 12,
   },
   clearEmailText: {
-    color: Colors.light.warning,
+    color: colors.warning,
     fontSize: 12,
     fontWeight: "700",
     textAlign: "center",
@@ -1001,7 +1001,7 @@ const styles = StyleSheet.create({
   },
   testAccountsTitle: {
     fontSize: 12,
-    color: Colors.light.background,
+    color: colors.background,
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 8,
@@ -1011,7 +1011,7 @@ const styles = StyleSheet.create({
   },
   testAccount: {
     fontSize: 10,
-    color: Colors.light.background + "CC",
+    color: colors.background + "CC",
     fontWeight: "500",
     textAlign: "center",
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',

@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Home, Package, Clock, User } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
   return <Icon size={24} color={color} />;
@@ -11,12 +11,12 @@ export default function ClientTabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.light.primary,
-        tabBarInactiveTintColor: Colors.light.tabIconDefault,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.tabIconDefault,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.light.background,
-          borderTopColor: Colors.light.borderLight,
+          backgroundColor: colors.background,
+          borderTopColor: colors.borderLight,
           paddingTop: 8,
           paddingBottom: 8,
           height: 88,
