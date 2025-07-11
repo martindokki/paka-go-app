@@ -70,7 +70,7 @@ export default function MapScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={Colors.light.text} />
+          <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         
         <View style={styles.headerInfo}>
@@ -85,7 +85,7 @@ export default function MapScreen() {
         </View>
 
         <TouchableOpacity style={styles.centerButton}>
-          <Navigation size={20} color={Colors.light.primary} />
+          <Navigation size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -103,20 +103,20 @@ export default function MapScreen() {
       {(userLocation && destination) && (
         <View style={styles.bottomPanel}>
           <LinearGradient
-            colors={[Colors.light.background, Colors.light.backgroundSecondary]}
+            colors={[colors.background, colors.backgroundSecondary]}
             style={styles.panelGradient}
           >
             <View style={styles.routeInfo}>
               <View style={styles.routeStats}>
                 <View style={styles.statItem}>
-                  <MapPin size={16} color={Colors.light.primary} />
+                  <MapPin size={16} color={colors.primary} />
                   <Text style={styles.statLabel}>Distance</Text>
                   <Text style={styles.statValue}>{getDistance()} km</Text>
                 </View>
                 
                 {routePoints.length > 0 && (
                   <View style={styles.statItem}>
-                    <Package size={16} color={Colors.light.accent} />
+                    <Package size={16} color={colors.accent} />
                     <Text style={styles.statLabel}>Route</Text>
                     <Text style={styles.statValue}>Calculated</Text>
                   </View>
@@ -141,17 +141,17 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-    shadowColor: Colors.light.shadow,
+    borderBottomColor: colors.borderLight,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '500',
     marginTop: 2,
   },
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     overflow: 'hidden',
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   statValue: {
     fontSize: 16,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '700',
   },
   orderInfo: {
@@ -238,23 +238,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     borderRadius: 12,
   },
   orderLabel: {
     fontSize: 14,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   orderValue: {
     fontSize: 14,
-    color: Colors.light.text,
+    color: colors.text,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   orderPrice: {
     fontSize: 16,
-    color: Colors.light.primary,
+    color: colors.primary,
     fontWeight: '800',
   },
 });

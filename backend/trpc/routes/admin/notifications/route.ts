@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../create-context';
+import { publicProcedure } from '../../../create-context';
 
 export const sendNotificationProcedure = publicProcedure
   .input(z.object({
@@ -7,7 +7,7 @@ export const sendNotificationProcedure = publicProcedure
     message: z.string(),
     userIds: z.array(z.string()).optional(),
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { type: 'all_users' | 'all_drivers' | 'specific'; message: string; userIds?: string[] } }) => {
     // Mock implementation - replace with actual push notification service
     console.log('Sending notification:', {
       type: input.type,

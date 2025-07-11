@@ -36,13 +36,13 @@ interface OrderCardProps {
 function OrderCard({ order, onAssignDriver, onCancelOrder, onSendSTKPush }: OrderCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return colors.light.warning;
-      case 'assigned': return colors.light.info;
-      case 'picked_up': return colors.light.secondary;
-      case 'in_transit': return colors.light.info;
-      case 'delivered': return colors.light.success;
-      case 'cancelled': return colors.light.error;
-      default: return colors.light.textMuted;
+      case 'pending': return colors.warning;
+      case 'assigned': return colors.info;
+      case 'picked_up': return colors.secondary;
+      case 'in_transit': return colors.info;
+      case 'delivered': return colors.success;
+      case 'cancelled': return colors.error;
+      default: return colors.textMuted;
     }
   };
 
@@ -69,35 +69,35 @@ function OrderCard({ order, onAssignDriver, onCancelOrder, onSendSTKPush }: Orde
       <View style={styles.orderDetails}>
         <View style={styles.locationInfo}>
           <View style={styles.locationRow}>
-            <MapPin size={16} color={colors.light.success} />
+            <MapPin size={16} color={colors.success} />
             <Text style={styles.locationText}>From: {order.from}</Text>
           </View>
           <View style={styles.locationRow}>
-            <MapPin size={16} color={colors.light.error} />
+            <MapPin size={16} color={colors.error} />
             <Text style={styles.locationText}>To: {order.to}</Text>
           </View>
         </View>
 
         <View style={styles.orderMeta}>
           <View style={styles.metaRow}>
-            <User size={16} color={colors.light.textMuted} />
+            <User size={16} color={colors.textMuted} />
             <Text style={styles.metaText}>{order.recipientName}</Text>
           </View>
           <View style={styles.metaRow}>
-            <Phone size={16} color={colors.light.textMuted} />
+            <Phone size={16} color={colors.textMuted} />
             <Text style={styles.metaText}>{order.recipientPhone}</Text>
           </View>
           <View style={styles.metaRow}>
-            <Package size={16} color={colors.light.textMuted} />
+            <Package size={16} color={colors.textMuted} />
             <Text style={styles.metaText}>{order.packageType}</Text>
           </View>
           <View style={styles.metaRow}>
-            <DollarSign size={16} color={colors.light.textMuted} />
+            <DollarSign size={16} color={colors.textMuted} />
             <Text style={styles.metaText}>KES {order.price}</Text>
           </View>
           {order.driverInfo?.name && (
             <View style={styles.metaRow}>
-              <Truck size={16} color={colors.light.textMuted} />
+              <Truck size={16} color={colors.textMuted} />
               <Text style={styles.metaText}>Driver: {order.driverInfo.name}</Text>
             </View>
           )}
@@ -222,13 +222,13 @@ export function OrdersManagement() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.light.textMuted} />
+          <Search size={20} color={colors.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search orders..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor={colors.light.textMuted}
+            placeholderTextColor={colors.textMuted}
           />
         </View>
         
@@ -236,7 +236,7 @@ export function OrdersManagement() {
           style={styles.filterButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color={colors.light.primary} />
+          <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -267,7 +267,7 @@ export function OrdersManagement() {
       <ScrollView style={styles.ordersList} showsVerticalScrollIndicator={false}>
         {filteredOrders.length === 0 ? (
           <View style={styles.emptyState}>
-            <Package size={48} color={colors.light.textMuted} />
+            <Package size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No orders found</Text>
             <Text style={styles.emptyStateSubtext}>
               {searchQuery || statusFilter !== 'all' 
@@ -306,25 +306,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   searchInput: {
     flex: 1,
     marginLeft: 8,
     fontSize: 16,
-    color: colors.light.text,
+    color: colors.text,
   },
   filterButton: {
     padding: 12,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filtersContainer: {
     marginBottom: 16,
@@ -332,35 +332,35 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: colors.light.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: colors.light.primary,
-    borderColor: colors.light.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterChipText: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   filterChipTextActive: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
   },
   ordersList: {
     flex: 1,
   },
   orderCard: {
-    backgroundColor: colors.light.background,
+    backgroundColor: colors.background,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: colors.light.border,
-    shadowColor: colors.light.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   orderId: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.light.text,
+    color: colors.text,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   },
   orderDate: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   orderDetails: {
     marginBottom: 16,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   locationText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.text,
+    color: colors.text,
     flex: 1,
   },
   orderMeta: {
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
   metaText: {
     marginLeft: 8,
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
   },
   orderActions: {
     flexDirection: 'row',
@@ -437,26 +437,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   assignButton: {
-    backgroundColor: colors.light.primary,
+    backgroundColor: colors.primary,
   },
   assignButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   stkButton: {
-    backgroundColor: colors.light.success,
+    backgroundColor: colors.success,
   },
   stkButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
   cancelButton: {
-    backgroundColor: colors.light.error,
+    backgroundColor: colors.error,
   },
   cancelButtonText: {
-    color: colors.light.background,
+    color: colors.background,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -468,12 +468,12 @@ const styles = StyleSheet.create({
   emptyStateText: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.light.text,
+    color: colors.text,
     marginTop: 16,
   },
   emptyStateSubtext: {
     fontSize: 14,
-    color: colors.light.textMuted,
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
