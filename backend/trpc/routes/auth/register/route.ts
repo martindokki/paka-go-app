@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "@/backend/trpc/create-context";
+import { publicProcedure } from "../../create-context";
 
 // Mock users storage (in real app, this would be a database)
 const MOCK_USERS = [
@@ -37,7 +37,7 @@ export const registerProcedure = publicProcedure
     password: z.string().min(6),
     userType: z.enum(['client', 'driver', 'admin'])
   }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ input }: { input: { name: string; email: string; password: string; phone: string; userType: 'client' | 'driver' | 'admin' } }) => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     

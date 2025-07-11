@@ -10,18 +10,13 @@ interface MapViewComponentProps {
   height?: number;
 }
 
-// Platform-specific component loading
-let MapViewComponent: React.FC<MapViewComponentProps>;
-
+// For web, use the web implementation
 if (Platform.OS === 'web') {
-  // Import web version
-  const WebMapView = require('./MapView.web').MapViewComponent;
-  MapViewComponent = WebMapView;
+  const { MapViewComponent: WebMapView } = require('./MapView.web');
+  export const MapViewComponent: React.FC<MapViewComponentProps> = WebMapView;
 } else {
-  // Import native version
-  const NativeMapView = require('./MapView.native').MapViewComponent;
-  MapViewComponent = NativeMapView;
+  // For native, use the native implementation
+  const { MapViewComponent: NativeMapView } = require('./MapView.native');
+  export const MapViewComponent: React.FC<MapViewComponentProps> = NativeMapView;
 }
-
-export { MapViewComponent };
 export type { MapViewComponentProps };
