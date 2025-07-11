@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { X, DollarSign, Info, Shield, Clock, Calendar, Timer } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Colors from '@/constants/colors';
+import colors from '@/constants/colors';
 import { PriceBreakdown } from '@/constants/pricing';
 
 interface PriceBreakdownModalProps {
@@ -62,7 +62,7 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
         <View style={styles.header}>
           <Text style={styles.title}>Price Breakdown</Text>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <X size={24} color={Colors.light.text} />
+            <X size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
@@ -72,18 +72,18 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
             <Text style={styles.sectionTitle}>Base Charges</Text>
             <View style={styles.sectionContent}>
               {renderBredownItem(
-                <DollarSign size={16} color={Colors.light.primary} />,
+                <DollarSign size={16} color={colors.primary} />,
                 'Base Fare',
                 breakdown.baseFare
               )}
               {renderBredownItem(
-                <DollarSign size={16} color={Colors.light.primary} />,
+                <DollarSign size={16} color={colors.primary} />,
                 `Distance (${distance.toFixed(1)} km)`,
                 breakdown.distanceFee
               )}
               <View style={styles.divider} />
               {renderBredownItem(
-                <DollarSign size={16} color={Colors.light.text} />,
+                <DollarSign size={16} color={colors.text} />,
                 'Subtotal',
                 breakdown.subtotal
               )}
@@ -98,31 +98,31 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
               <Text style={styles.sectionTitle}>Add-ons</Text>
               <View style={styles.sectionContent}>
                 {renderBredownItem(
-                  <Shield size={16} color={Colors.light.accent} />,
+                  <Shield size={16} color={colors.accent} />,
                   'Fragile Handling (20%)',
                   breakdown.fragileCharge,
                   true
                 )}
                 {renderBredownItem(
-                  <Shield size={16} color={Colors.light.accent} />,
+                  <Shield size={16} color={colors.accent} />,
                   'Insurance Cover (20%)',
                   breakdown.insuranceCharge,
                   true
                 )}
                 {renderBredownItem(
-                  <Clock size={16} color={Colors.light.accent} />,
+                  <Clock size={16} color={colors.accent} />,
                   'After-hours Delivery (10%)',
                   breakdown.afterHoursCharge,
                   true
                 )}
                 {renderBredownItem(
-                  <Calendar size={16} color={Colors.light.accent} />,
+                  <Calendar size={16} color={colors.accent} />,
                   'Weekend Delivery (10%)',
                   breakdown.weekendCharge,
                   true
                 )}
                 {renderBredownItem(
-                  <Timer size={16} color={Colors.light.accent} />,
+                  <Timer size={16} color={colors.accent} />,
                   'Wait Time',
                   breakdown.waitTimeCharge,
                   true
@@ -133,7 +133,7 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
 
           {/* Total */}
           <LinearGradient
-            colors={[Colors.light.primary, Colors.light.primaryDark]}
+            colors={[colors.primary, colors.primaryDark]}
             style={styles.totalCard}
           >
             <View style={styles.totalContent}>
@@ -145,13 +145,13 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
           {/* Driver Info */}
           <View style={styles.driverInfo}>
             <View style={styles.infoItem}>
-              <Info size={16} color={Colors.light.textSecondary} />
+              <Info size={16} color={colors.textSecondary} />
               <Text style={styles.infoText}>
                 Driver earns KSh {breakdown.driverEarnings} (85% of total)
               </Text>
             </View>
             <View style={styles.infoItem}>
-              <Info size={16} color={Colors.light.textSecondary} />
+              <Info size={16} color={colors.textSecondary} />
               <Text style={styles.infoText}>
                 PAKA-Go commission: KSh {breakdown.companyCommission} (15%)
               </Text>
@@ -178,7 +178,7 @@ export const PriceBreakdownModal: React.FC<PriceBreakdownModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -187,18 +187,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   title: {
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.light.text,
+    color: colors.text,
   },
   closeButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -212,11 +212,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 12,
   },
   sectionContent: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
   },
@@ -235,34 +235,34 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   addOnIcon: {
-    backgroundColor: Colors.light.accentLight,
+    backgroundColor: colors.accentLight,
   },
   breakdownLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text,
+    color: colors.text,
     flex: 1,
   },
   addOnLabel: {
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
   },
   breakdownAmount: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
   },
   addOnAmount: {
-    color: Colors.light.accent,
+    color: colors.accent,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.borderLight,
+    backgroundColor: colors.borderLight,
     marginVertical: 8,
   },
   totalCard: {
@@ -278,15 +278,15 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.background,
+    color: colors.background,
   },
   totalAmount: {
     fontSize: 24,
     fontWeight: '900',
-    color: Colors.light.background,
+    color: colors.background,
   },
   driverInfo: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
@@ -299,24 +299,24 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '500',
     flex: 1,
   },
   notesSection: {
-    backgroundColor: Colors.light.backgroundSecondary,
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     padding: 16,
   },
   notesTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.text,
+    color: colors.text,
     marginBottom: 8,
   },
   notesText: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 18,
     fontWeight: '500',
   },

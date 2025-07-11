@@ -47,7 +47,7 @@ export default function ClientHomeScreen() {
       subtitle: "Quick & reliable delivery",
       icon: Send,
       gradient: [colors.primary, colors.primaryDark] as const,
-      onPress: () => router.push("/booking/"),
+      onPress: () => router.push("/booking"),
     },
     {
       id: "track",
@@ -248,7 +248,7 @@ export default function ClientHomeScreen() {
                 </Text>
                 <TouchableOpacity 
                   style={styles.emptyOrdersButton}
-                  onPress={() => router.push("/booking/")}
+                  onPress={() => router.push("/booking")
                 >
                   <LinearGradient
                     colors={[colors.primary, colors.primaryDark]}
@@ -303,7 +303,7 @@ export default function ClientHomeScreen() {
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.floatingButton} onPress={() => router.push("/booking/")}>
+      <TouchableOpacity style={styles.floatingButton} onPress={() => router.push("/booking")}>
         <LinearGradient
           colors={[colors.primary, colors.primaryDark]}
           style={styles.floatingButtonGradient}
