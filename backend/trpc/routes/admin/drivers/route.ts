@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { protectedProcedure } from '../../create-context';
 
 const driverSchema = z.object({
   id: z.string(),
@@ -19,7 +19,7 @@ const driverSchema = z.object({
   updatedAt: z.string(),
 });
 
-export const getDriversProcedure = publicProcedure
+export const getDriversProcedure = protectedProcedure
   .query(async () => {
     // Mock data - replace with actual database queries
     const drivers = [
@@ -57,7 +57,7 @@ export const getDriversProcedure = publicProcedure
     };
   });
 
-export const approveDriverProcedure = publicProcedure
+export const approveDriverProcedure = protectedProcedure
   .input(z.object({
     driverId: z.string(),
   }))
@@ -71,7 +71,7 @@ export const approveDriverProcedure = publicProcedure
     };
   });
 
-export const suspendDriverProcedure = publicProcedure
+export const suspendDriverProcedure = protectedProcedure
   .input(z.object({
     driverId: z.string(),
   }))
@@ -85,7 +85,7 @@ export const suspendDriverProcedure = publicProcedure
     };
   });
 
-export const assignVehicleProcedure = publicProcedure
+export const assignVehicleProcedure = protectedProcedure
   .input(z.object({
     driverId: z.string(),
     vehicleId: z.string(),

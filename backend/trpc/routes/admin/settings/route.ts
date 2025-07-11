@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { protectedProcedure } from '../../create-context';
 
 const settingsSchema = z.object({
   baseFare: z.number().min(0),
@@ -14,7 +14,7 @@ const settingsSchema = z.object({
   maintenanceMode: z.boolean(),
 });
 
-export const getSettingsProcedure = publicProcedure
+export const getSettingsProcedure = protectedProcedure
   .query(async () => {
     // Mock data - replace with actual database queries
     const settings = {
@@ -36,7 +36,7 @@ export const getSettingsProcedure = publicProcedure
     };
   });
 
-export const updateSettingsProcedure = publicProcedure
+export const updateSettingsProcedure = protectedProcedure
   .input(settingsSchema.partial())
   .mutation(async ({ input }: { input: Partial<{ baseFare: number; perKmRate: number; minimumCharge: number; fragileItemSurcharge: number; insuranceSurcharge: number; afterHoursSurcharge: number; weekendSurcharge: number; waitTimeRate: number; commissionRate: number; maintenanceMode: boolean }> }) => {
     // Mock implementation - replace with actual database update

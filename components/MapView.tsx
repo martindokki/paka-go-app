@@ -19,7 +19,7 @@ if (Platform.OS === 'web') {
   MapViewComponent = WebMapView.MapViewComponent || WebMapView.default;
 } else {
   // For native, use the native implementation
-  const NativeMapView = require('./MapView.native');
+  const NativeMapView = require('./MapView.native.tsx');
   MapViewComponent = NativeMapView.MapViewComponent || NativeMapView.default;
 }
 

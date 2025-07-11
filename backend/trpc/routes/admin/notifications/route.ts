@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { protectedProcedure } from '../../create-context';
 
-export const sendNotificationProcedure = publicProcedure
+export const sendNotificationProcedure = protectedProcedure
   .input(z.object({
     type: z.enum(['all_users', 'all_drivers', 'specific']),
     message: z.string(),

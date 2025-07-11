@@ -131,14 +131,6 @@ const Colors = {
 export default colors;
 export { Colors };
 
-// Ensure colors are available for runtime
-if (typeof colors.backgroundSecondary === 'undefined') {
-  console.error('Colors not properly initialized');
-}
-if (typeof colors.text === 'undefined') {
-  console.error('Text color not properly initialized');
-}
-
 // Create a safe colors object that provides fallbacks
 export const safeColors = {
   ...colors,

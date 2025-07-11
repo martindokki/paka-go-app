@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { protectedProcedure } from '../../create-context';
 
-export const getOrdersProcedure = publicProcedure
+export const getOrdersProcedure = protectedProcedure
   .query(async () => {
     // Mock data - replace with actual database queries
     const orders = [
@@ -41,7 +41,7 @@ export const getOrdersProcedure = publicProcedure
     };
   });
 
-export const assignOrderProcedure = publicProcedure
+export const assignOrderProcedure = protectedProcedure
   .input(z.object({
     orderId: z.string(),
     driverId: z.string(),
@@ -57,7 +57,7 @@ export const assignOrderProcedure = publicProcedure
     };
   });
 
-export const cancelOrderProcedure = publicProcedure
+export const cancelOrderProcedure = protectedProcedure
   .input(z.object({
     orderId: z.string(),
     reason: z.string(),
@@ -72,7 +72,7 @@ export const cancelOrderProcedure = publicProcedure
     };
   });
 
-export const sendSTKPushProcedure = publicProcedure
+export const sendSTKPushProcedure = protectedProcedure
   .input(z.object({
     orderId: z.string(),
   }))

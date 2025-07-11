@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { publicProcedure } from '../../../create-context';
+import { protectedProcedure } from '../../create-context';
 
-export const dashboardProcedure = publicProcedure
+export const dashboardProcedure = protectedProcedure
   .query(async () => {
     // Mock data - replace with actual database queries
     const stats = {
