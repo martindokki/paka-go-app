@@ -25,7 +25,7 @@ import {
   RefreshCw,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import colors, { Colors } from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
 import { usePaymentStore } from "@/stores/payment-store";
 import mpesaService, { MpesaPaymentRequest } from "@/services/mpesa";
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 24,
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -738,7 +738,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 24,
     overflow: "hidden",
-    shadowColor: Colors.light.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
+    borderBottomColor: colors.borderLight,
   },
   formTitle: {
     fontSize: 20,
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
   },
   countryCode: {
     fontSize: 16,
@@ -832,7 +832,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderRightWidth: 1,
-    borderRightColor: Colors.light.borderLight,
+    borderRightColor: colors.borderLight,
   },
   phoneInput: {
     flex: 1,
@@ -850,7 +850,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     borderWidth: 2,
-    borderColor: Colors.light.borderLight,
+    borderColor: colors.borderLight,
     fontWeight: "500",
   },
   cardRow: {
