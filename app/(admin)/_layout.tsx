@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { BarChart3, Package, Users, Settings } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
   return <Icon size={24} color={color} />;

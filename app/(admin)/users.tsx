@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { Search, Filter, User, Truck, Star, Phone, Mail } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 type UserType = "client" | "driver";
 

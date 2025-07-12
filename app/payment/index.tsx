@@ -25,7 +25,7 @@ import {
   RefreshCw,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors, { Colors } from "@/constants/colors";
+import colors from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
 import { usePaymentStore } from "@/stores/payment-store";
 import mpesaService, { MpesaPaymentRequest } from "@/services/mpesa";

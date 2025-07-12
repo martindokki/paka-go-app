@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { DollarSign, TrendingUp, Clock, Package, Award, Zap, Target, Calendar } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 const { width } = Dimensions.get("window");
 

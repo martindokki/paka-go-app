@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { Search, Filter, Package, MapPin, User, Truck } from "lucide-react-native";
-import Colors from "@/constants/colors";
+import colors from "@/constants/colors";
 
 type OrderStatus = "pending" | "assigned" | "picked_up" | "in_transit" | "delivered" | "cancelled";
 
