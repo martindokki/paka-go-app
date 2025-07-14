@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { DriversService } from "../../services/drivers-service";
+import { DriversService } from "../../../services/drivers-service";
 
 export const getAllDriversProcedure = publicProcedure
   .input(z.object({
