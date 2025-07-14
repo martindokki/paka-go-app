@@ -1022,5 +1022,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
+  debugButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+  },
+  debugButtonText: {
+    fontSize: 12,
+    color: colors.background,
+    fontWeight: "600",
+    textAlign: "center",
+  },
 
 });
