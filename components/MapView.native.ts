@@ -1,3 +1,3 @@
-// Redirect to the actual implementation to avoid circular imports
-export * from './MapView.native.tsx';
-export { default } from './MapView.native.tsx';
+// Re-export from the actual implementation
+export { MapViewComponent } from './MapView.native.impl';
+export { default } from './MapView.native.impl';
