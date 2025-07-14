@@ -78,16 +78,25 @@ export const trpcClient = trpc.createClient({
 export async function checkBackendHealth(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout for health check
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for health check
+    
+    console.log('Checking backend health at:', `${getBaseUrl()}/api/`);
     
     const response = await fetch(`${getBaseUrl()}/api/`, {
       signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
     });
     
     clearTimeout(timeoutId);
     
+    console.log('Health check response status:', response.status);
+    
     if (response.ok) {
       const data = await response.json();
+      console.log('Health check response data:', data);
       return data.status === 'ok';
     }
     
@@ -95,5 +104,18 @@ export async function checkBackendHealth(): Promise<boolean> {
   } catch (error: unknown) {
     console.warn('Backend health check failed:', error);
     return false;
+  }
+}
+
+// Test tRPC connection
+export async function testTrpcConnection() {
+  try {
+    console.log('Testing tRPC connection...');
+    const result = await trpcClient.example.hi.query();
+    console.log('tRPC test result:', result);
+    return { success: true, data: result };
+  } catch (error) {
+    console.error('tRPC test failed:', error);
+    return { success: false, error };
   }
 }

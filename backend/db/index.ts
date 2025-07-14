@@ -6,8 +6,13 @@ import * as schema from './schema';
 import path from 'path';
 
 // Create database connection
-const sqlite = new Database(path.join(process.cwd(), 'backend/db/paka-go.db'));
+const dbPath = path.join(process.cwd(), 'backend/db/paka-go.db');
+console.log('Database path:', dbPath);
+const sqlite = new Database(dbPath);
 sqlite.pragma('journal_mode = WAL');
+
+// Enable foreign keys
+sqlite.pragma('foreign_keys = ON');
 
 // Create drizzle instance
 export const db = drizzle(sqlite, { schema });
@@ -41,9 +46,42 @@ export async function initializeDatabase() {
 }
 
 async function createTables() {
-  // The tables are created automatically by Drizzle when we use them
-  // But we can run some initial setup here if needed
-  console.log('Tables will be created automatically by Drizzle ORM');
+  try {
+    console.log('Creating database tables...');
+    
+    // Create tables by running a simple query on each table
+    // This forces Drizzle to create the tables if they don't exist
+    const tableQueries = [
+      'CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, phone TEXT NOT NULL, password TEXT NOT NULL, user_type TEXT NOT NULL, status TEXT DEFAULT "active", profile_image TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS customers (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, total_orders INTEGER DEFAULT 0, total_spent REAL DEFAULT 0, preferred_payment_method TEXT, loyalty_points INTEGER DEFAULT 0, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS drivers (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, license_number TEXT, license_expiry TEXT, rating REAL DEFAULT 0, total_deliveries INTEGER DEFAULT 0, earnings REAL DEFAULT 0, vehicle_id TEXT, is_online INTEGER DEFAULT 0, current_latitude REAL, current_longitude REAL, last_location_update TEXT, approved_at TEXT, approved_by TEXT REFERENCES users(id), created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS vehicles (id TEXT PRIMARY KEY, plate_number TEXT NOT NULL UNIQUE, type TEXT NOT NULL, brand TEXT, model TEXT, year INTEGER, color TEXT, load_capacity INTEGER NOT NULL, status TEXT DEFAULT "available", driver_id TEXT REFERENCES drivers(id), insurance_number TEXT, insurance_expiry TEXT, registration_expiry TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, customer_id TEXT NOT NULL REFERENCES customers(id), driver_id TEXT REFERENCES drivers(id), pickup_address TEXT NOT NULL, pickup_latitude REAL, pickup_longitude REAL, pickup_contact_name TEXT, pickup_contact_phone TEXT, delivery_address TEXT NOT NULL, delivery_latitude REAL, delivery_longitude REAL, recipient_name TEXT NOT NULL, recipient_phone TEXT NOT NULL, package_type TEXT NOT NULL, package_description TEXT, package_weight REAL, package_value REAL, special_instructions TEXT, status TEXT DEFAULT "pending", priority TEXT DEFAULT "normal", base_fare REAL NOT NULL, distance_fare REAL NOT NULL, surcharges REAL DEFAULT 0, total_amount REAL NOT NULL, payment_method TEXT NOT NULL, payment_term TEXT NOT NULL, payment_status TEXT DEFAULT "pending", payment_reference TEXT, estimated_distance REAL, estimated_duration INTEGER, scheduled_pickup_time TEXT, actual_pickup_time TEXT, actual_delivery_time TEXT, tracking_code TEXT UNIQUE, customer_rating INTEGER, driver_rating INTEGER, customer_feedback TEXT, driver_feedback TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP, completed_at TEXT, cancelled_at TEXT, cancellation_reason TEXT)',
+      'CREATE TABLE IF NOT EXISTS order_timeline (id TEXT PRIMARY KEY, order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE, status TEXT NOT NULL, description TEXT NOT NULL, latitude REAL, longitude REAL, created_by TEXT REFERENCES users(id), created_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS support_queries (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), order_id TEXT REFERENCES orders(id), subject TEXT NOT NULL, message TEXT NOT NULL, category TEXT NOT NULL, status TEXT DEFAULT "open", priority TEXT DEFAULT "medium", assigned_to TEXT REFERENCES users(id), response TEXT, response_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS notifications (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), title TEXT NOT NULL, message TEXT NOT NULL, type TEXT NOT NULL, is_read INTEGER DEFAULT 0, data TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS settings (id TEXT PRIMARY KEY, key TEXT NOT NULL UNIQUE, value TEXT NOT NULL, type TEXT DEFAULT "string", description TEXT, category TEXT NOT NULL, updated_by TEXT REFERENCES users(id), created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS activity_logs (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), action TEXT NOT NULL, resource TEXT NOT NULL, resource_id TEXT, details TEXT, ip_address TEXT, user_agent TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS payments (id TEXT PRIMARY KEY, order_id TEXT NOT NULL REFERENCES orders(id), customer_id TEXT NOT NULL REFERENCES customers(id), amount REAL NOT NULL, method TEXT NOT NULL, status TEXT DEFAULT "pending", reference TEXT UNIQUE, external_reference TEXT, metadata TEXT, processed_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS driver_earnings (id TEXT PRIMARY KEY, driver_id TEXT NOT NULL REFERENCES drivers(id), order_id TEXT NOT NULL REFERENCES orders(id), gross_amount REAL NOT NULL, commission REAL NOT NULL, net_amount REAL NOT NULL, status TEXT DEFAULT "pending", paid_at TEXT, payment_method TEXT, payment_reference TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS promotions (id TEXT PRIMARY KEY, code TEXT NOT NULL UNIQUE, title TEXT NOT NULL, description TEXT, type TEXT NOT NULL, value REAL NOT NULL, minimum_order_amount REAL, max_discount_amount REAL, usage_limit INTEGER, used_count INTEGER DEFAULT 0, valid_from TEXT NOT NULL, valid_until TEXT NOT NULL, is_active INTEGER DEFAULT 1, created_by TEXT REFERENCES users(id), created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP)',
+      'CREATE TABLE IF NOT EXISTS promotion_usage (id TEXT PRIMARY KEY, promotion_id TEXT NOT NULL REFERENCES promotions(id), customer_id TEXT NOT NULL REFERENCES customers(id), order_id TEXT NOT NULL REFERENCES orders(id), discount_amount REAL NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)'
+    ];
+    
+    // Execute each table creation query
+    for (const query of tableQueries) {
+      try {
+        sqlite.exec(query);
+      } catch (error) {
+        console.log(`Table creation query executed (may already exist): ${error}`);
+      }
+    }
+    
+    console.log('Database tables created successfully');
+  } catch (error) {
+    console.error('Error creating tables:', error);
+    throw error;
+  }
 }
 
 async function insertSampleData() {
@@ -463,5 +501,5 @@ async function insertSampleData() {
 }
 
 // Export the database instance and schema
-export { schema };
+export { schema, sqlite };
 export default db;

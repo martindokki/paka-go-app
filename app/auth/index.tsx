@@ -608,6 +608,12 @@ export default function AuthScreen() {
                     <Text style={styles.testAccount}>Driver: driver@test.com / password123</Text>
                     <Text style={styles.testAccount}>Admin: admin@test.com / password123</Text>
                   </View>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={() => router.push('/debug-backend')}
+                  >
+                    <Text style={styles.debugButtonText}>🔧 Debug Backend</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
