@@ -9,18 +9,17 @@ export const getOrdersByCustomerProcedure = publicProcedure
     offset: z.number().default(0),
   }))
   .query(async ({ input }) => {
-    // Mock orders for now
-    const result = {
-      success: true,
-      orders: [],
-      total: 0
-    };
+    const result = await OrdersService.getOrdersByCustomer(input.customerId, input.limit, input.offset);
     
     if (!result.success) {
-      throw new Error('Failed to get orders');
+      throw new Error(result.error || 'Failed to get orders');
     }
     
-    return result;
+    return {
+      success: true,
+      orders: result.data || [],
+      total: result.data?.length || 0
+    };
   });
 
 export const getOrdersByDriverProcedure = publicProcedure
@@ -30,18 +29,17 @@ export const getOrdersByDriverProcedure = publicProcedure
     offset: z.number().default(0),
   }))
   .query(async ({ input }) => {
-    // Mock orders for now
-    const result = {
-      success: true,
-      orders: [],
-      total: 0
-    };
+    const result = await OrdersService.getOrdersByDriver(input.driverId, input.limit, input.offset);
     
     if (!result.success) {
-      throw new Error('Failed to get orders');
+      throw new Error(result.error || 'Failed to get orders');
     }
     
-    return result;
+    return {
+      success: true,
+      orders: result.data || [],
+      total: result.data?.length || 0
+    };
   });
 
 export const getPendingOrdersProcedure = publicProcedure
@@ -49,17 +47,16 @@ export const getPendingOrdersProcedure = publicProcedure
     limit: z.number().default(50),
   }))
   .query(async ({ input }) => {
-    // Mock orders for now
-    const result = {
-      success: true,
-      orders: []
-    };
+    const result = await OrdersService.getPendingOrders(input.limit);
     
     if (!result.success) {
-      throw new Error('Failed to get pending orders');
+      throw new Error(result.error || 'Failed to get pending orders');
     }
     
-    return result;
+    return {
+      success: true,
+      orders: result.data || []
+    };
   });
 
 export const getOrderByIdProcedure = publicProcedure
@@ -67,17 +64,16 @@ export const getOrderByIdProcedure = publicProcedure
     orderId: z.string(),
   }))
   .query(async ({ input }) => {
-    // Mock order for now
-    const result = {
-      success: true,
-      order: null
-    };
+    const result = await OrdersService.getOrderById(input.orderId);
     
     if (!result.success) {
-      throw new Error('Failed to get order');
+      throw new Error(result.error || 'Failed to get order');
     }
     
-    return result;
+    return {
+      success: true,
+      order: result.data || null
+    };
   });
 
 export const getOrderByTrackingCodeProcedure = publicProcedure
@@ -85,17 +81,16 @@ export const getOrderByTrackingCodeProcedure = publicProcedure
     trackingCode: z.string(),
   }))
   .query(async ({ input }) => {
-    // Mock order for now
-    const result = {
-      success: true,
-      order: null
-    };
+    const result = await OrdersService.getOrderByTrackingCode(input.trackingCode);
     
     if (!result.success) {
-      throw new Error('Failed to get order');
+      throw new Error(result.error || 'Failed to get order');
     }
     
-    return result;
+    return {
+      success: true,
+      order: result.data || null
+    };
   });
 
 export const assignDriverProcedure = publicProcedure
@@ -105,11 +100,10 @@ export const assignDriverProcedure = publicProcedure
     adminId: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    // Mock assignment for now
-    const result = { success: true };
+    const result = await OrdersService.assignDriver(input.orderId, input.driverId, input.adminId);
     
     if (!result.success) {
-      throw new Error('Failed to assign driver');
+      throw new Error(result.error || 'Failed to assign driver');
     }
     
     return result;
@@ -125,11 +119,17 @@ export const updateOrderStatusProcedure = publicProcedure
     longitude: z.number().optional(),
   }))
   .mutation(async ({ input }) => {
-    // Mock status update for now
-    const result = { success: true };
+    const result = await OrdersService.updateOrderStatus(
+      input.orderId,
+      input.status,
+      input.updatedBy,
+      input.description,
+      input.latitude,
+      input.longitude
+    );
     
     if (!result.success) {
-      throw new Error('Failed to update order status');
+      throw new Error(result.error || 'Failed to update order status');
     }
     
     return result;
@@ -142,11 +142,10 @@ export const cancelOrderProcedure = publicProcedure
     cancelledBy: z.string(),
   }))
   .mutation(async ({ input }) => {
-    // Mock cancellation for now
-    const result = { success: true };
+    const result = await OrdersService.cancelOrder(input.orderId, input.reason, input.cancelledBy);
     
     if (!result.success) {
-      throw new Error('Failed to cancel order');
+      throw new Error(result.error || 'Failed to cancel order');
     }
     
     return result;
@@ -157,17 +156,16 @@ export const getOrderTimelineProcedure = publicProcedure
     orderId: z.string(),
   }))
   .query(async ({ input }) => {
-    // Mock timeline for now
-    const result = {
-      success: true,
-      timeline: []
-    };
+    const result = await OrdersService.getOrderTimeline(input.orderId);
     
     if (!result.success) {
-      throw new Error('Failed to get order timeline');
+      throw new Error(result.error || 'Failed to get order timeline');
     }
     
-    return result;
+    return {
+      success: true,
+      timeline: result.data || []
+    };
   });
 
 export const updatePaymentStatusProcedure = publicProcedure
@@ -177,11 +175,14 @@ export const updatePaymentStatusProcedure = publicProcedure
     paymentReference: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    // Mock payment update for now
-    const result = { success: true };
+    const result = await OrdersService.updatePaymentStatus(
+      input.orderId,
+      input.paymentStatus,
+      input.paymentReference
+    );
     
     if (!result.success) {
-      throw new Error('Failed to update payment status');
+      throw new Error(result.error || 'Failed to update payment status');
     }
     
     return result;
@@ -195,11 +196,15 @@ export const addRatingAndFeedbackProcedure = publicProcedure
     feedback: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    // Mock rating for now
-    const result = { success: true };
+    const result = await OrdersService.addRatingAndFeedback(
+      input.orderId,
+      input.ratingType,
+      input.rating,
+      input.feedback
+    );
     
     if (!result.success) {
-      throw new Error('Failed to add rating and feedback');
+      throw new Error(result.error || 'Failed to add rating and feedback');
     }
     
     return result;
@@ -217,16 +222,15 @@ export const getAllOrdersProcedure = publicProcedure
     offset: z.number().default(0),
   }))
   .query(async ({ input }) => {
-    // Mock orders for now
-    const result = {
-      success: true,
-      orders: [],
-      total: 0
-    };
+    const result = await OrdersService.getAllOrders(input.filters, input.limit, input.offset);
     
     if (!result.success) {
-      throw new Error('Failed to get orders');
+      throw new Error(result.error || 'Failed to get orders');
     }
     
-    return result;
+    return {
+      success: true,
+      orders: result.data || [],
+      total: result.data?.length || 0
+    };
   });

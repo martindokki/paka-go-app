@@ -1,5 +1,5 @@
 import { eq, and, desc, asc, sql, or } from 'drizzle-orm';
-import { db, schema } from '../db';
+import { db, schema } from '../db/index';
 import type { Order, NewOrder, NewOrderTimeline, OrderTimeline } from '../db/schema';
 
 export class OrdersService {
