@@ -8,21 +8,23 @@ export const trpc = createTRPCReact<AppRouter>();
 
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_RORK_API_BASE_URL) {
+    console.log('Using EXPO_PUBLIC_RORK_API_BASE_URL:', process.env.EXPO_PUBLIC_RORK_API_BASE_URL);
     return process.env.EXPO_PUBLIC_RORK_API_BASE_URL;
   }
   
   // For web development
   if (typeof window !== 'undefined') {
-    // Use the current origin for web
+    console.log('Using window.location.origin:', window.location.origin);
     return window.location.origin;
   }
   
   // For mobile development - use the Expo dev server URL
   if (Platform.OS !== 'web') {
-    // This will be the Expo dev server URL
+    console.log('Using mobile localhost for Platform.OS:', Platform.OS);
     return 'http://localhost:8081';
   }
   
+  console.log('Fallback to localhost:8081');
   return 'http://localhost:8081';
 };
 
@@ -33,7 +35,14 @@ export const trpcClient = trpc.createClient({
       transformer: superjson,
       fetch: async (url, options) => {
         try {
+          const baseUrl = getBaseUrl();
           console.log('tRPC request to:', url);
+          console.log('Base URL:', baseUrl);
+          console.log('Request options:', {
+            method: options?.method || 'GET',
+            headers: options?.headers,
+            body: options?.body ? 'Present' : 'None'
+          });
           
           // Add timeout to prevent hanging - shorter timeout for faster feedback
           const timeoutDuration = Platform.OS === 'web' ? 10000 : 15000;
@@ -45,11 +54,15 @@ export const trpcClient = trpc.createClient({
             signal: controller.signal,
             headers: {
               'Content-Type': 'application/json',
+              'Accept': 'application/json',
               ...options?.headers,
             },
           });
           
           clearTimeout(timeoutId);
+          
+          console.log('Response status:', response.status);
+          console.log('Response headers:', Object.fromEntries(response.headers.entries()));
           
           // Check if response is HTML (likely an error page)
           const contentType = response.headers.get('content-type');
@@ -64,7 +77,7 @@ export const trpcClient = trpc.createClient({
             console.error('tRPC response not ok:', response.status, response.statusText);
             const text = await response.text();
             console.error('Error response body:', text);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${text}`);
           }
           
           return response;
@@ -123,6 +136,33 @@ export async function testTrpcConnection() {
     return { success: true, data: result };
   } catch (error) {
     console.error('tRPC test failed:', error);
-    return { success: false, error };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+// Simple ping test
+export async function pingBackend(): Promise<{ success: boolean; data?: any; error?: string }> {
+  try {
+    const baseUrl = getBaseUrl();
+    console.log('Pinging backend at:', `${baseUrl}/api/ping`);
+    
+    const response = await fetch(`${baseUrl}/api/ping`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Ping successful:', data);
+    return { success: true, data };
+  } catch (error) {
+    console.error('Ping failed:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

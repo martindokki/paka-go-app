@@ -27,22 +27,35 @@ export const createOrderProcedure = publicProcedure
     scheduledPickupTime: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    // Mock order creation for now
-    const result = {
-      success: true,
-      order: {
-        id: Math.random().toString(36).substr(2, 9),
+    try {
+      console.log('Creating order with input:', input);
+      
+      // Mock order creation for now
+      const orderId = `order_${Math.random().toString(36).substr(2, 9)}`;
+      const trackingCode = Math.random().toString(36).substr(2, 8).toUpperCase();
+      
+      const order = {
+        id: orderId,
         ...input,
         status: 'pending' as const,
-        trackingCode: Math.random().toString(36).substr(2, 8).toUpperCase(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    };
-    
-    if (!result.success) {
-      throw new Error(result.error || 'Failed to create order');
+        trackingCode,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      console.log('Order created successfully:', order);
+      
+      return {
+        success: true,
+        data: {
+          orderId,
+          trackingCode,
+          order
+        },
+        message: 'Order created successfully'
+      };
+    } catch (error) {
+      console.error('Error creating order:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to create order');
     }
-    
-    return result;
   });
