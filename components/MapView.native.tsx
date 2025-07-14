@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import { useMapStore } from '@/stores/map-store';
-import { MapService, Coordinates } from '@/services/map-service';
+import { MapService, Coordinates, MAPTILER_TILE_URL } from '@/services/map-service';
 import { useLocation } from '@/hooks/useLocation';
 import colors from '@/constants/colors';
 import MapView, { Marker, Polyline, UrlTile, PROVIDER_DEFAULT } from 'react-native-maps';
@@ -63,8 +63,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       setMapRegion({
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
       });
     }
   }, [currentLocation]);
@@ -76,8 +76,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       setMapRegion({
         latitude: initialLocation.latitude,
         longitude: initialLocation.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
       });
     }
   }, [initialLocation]);
@@ -99,8 +99,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         mapRef.current.animateToRegion({
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
         }, 1000);
       }
     } finally {
@@ -126,8 +126,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
           mapRef.current.animateToRegion({
             latitude: coordinates.latitude,
             longitude: coordinates.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
           }, 1000);
         }
 
@@ -199,8 +199,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       mapRef.current.animateToRegion({
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
       }, 1000);
     }
   };
@@ -247,10 +247,10 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         style={styles.map}
         provider={Platform.OS === 'android' ? PROVIDER_DEFAULT : undefined}
         initialRegion={mapRegion || {
-          latitude: -1.2921, // Nairobi default
+          latitude: -1.2921, // Nairobi, Kenya
           longitude: 36.8219,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: 0.05, // City-level zoom
+          longitudeDelta: 0.05,
         }}
         showsUserLocation={false} // We'll use custom marker
         showsMyLocationButton={false}
@@ -258,9 +258,9 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         showsScale={true}
         loadingEnabled={true}
       >
-        {/* OpenStreetMap Tiles */}
+        {/* MapTiler Tiles */}
         <UrlTile
-          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          urlTemplate={MAPTILER_TILE_URL}
           maximumZ={19}
           flipY={false}
         />
@@ -297,9 +297,11 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         {showRoute && routePoints.length > 0 && (
           <Polyline
             coordinates={routePoints}
-            strokeColor={colors.primary}
-            strokeWidth={4}
+            strokeColor="#007AFF" // Blue color as requested
+            strokeWidth={5}
             lineDashPattern={[0]}
+            lineJoin="round"
+            lineCap="round"
           />
         )}
       </MapView>

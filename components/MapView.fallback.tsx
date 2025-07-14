@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import { MapPin, Search, Navigation } from 'lucide-react-native';
+import { MapPin, Search, Navigation, X } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { Coordinates } from '@/services/map-service';
+import { Coordinates, MapService } from '@/services/map-service';
 
 interface MapViewComponentProps {
   onLocationSelect?: (location: Coordinates) => void;
@@ -27,48 +28,35 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   height = 400,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [lastSearchResult, setLastSearchResult] = React.useState<Coordinates | null>(null);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
-    // Mock coordinates for common Nairobi locations
-    const mockLocations: { [key: string]: Coordinates } = {
-      'westlands': { latitude: -1.2676, longitude: 36.8108 },
-      'karen': { latitude: -1.3197, longitude: 36.6859 },
-      'cbd': { latitude: -1.2921, longitude: 36.8219 },
-      'kilimani': { latitude: -1.2921, longitude: 36.7833 },
-      'lavington': { latitude: -1.2833, longitude: 36.7667 },
-      'gigiri': { latitude: -1.2333, longitude: 36.8167 },
-      'sarit': { latitude: -1.2676, longitude: 36.8108 },
-      'yaya': { latitude: -1.2921, longitude: 36.7833 },
-      'kencom': { latitude: -1.2921, longitude: 36.8219 },
-      'nakumatt junction': { latitude: -1.2676, longitude: 36.8108 },
-    };
 
-    const searchLower = searchQuery.toLowerCase();
-    let foundLocation: Coordinates | null = null;
-
-    // Find matching location
-    for (const [key, coords] of Object.entries(mockLocations)) {
-      if (searchLower.includes(key) || key.includes(searchLower)) {
-        foundLocation = coords;
-        break;
+    try {
+      setIsSearching(true);
+      const coordinates = await MapService.geocodeAddress(searchQuery);
+      
+      if (coordinates) {
+        setLastSearchResult(coordinates);
+        if (onLocationSelect) {
+          onLocationSelect(coordinates);
+        }
+        Alert.alert('Location Found', `Found: ${searchQuery}\nLat: ${coordinates.latitude.toFixed(6)}\nLng: ${coordinates.longitude.toFixed(6)}`);
+      } else {
+        Alert.alert('Not found', 'Could not find the specified location. Please try a different search term.');
       }
+    } catch (error) {
+      Alert.alert('Search Error', 'Failed to search for location. Please check your internet connection and try again.');
+    } finally {
+      setIsSearching(false);
     }
+  };
 
-    if (foundLocation) {
-      if (onLocationSelect) {
-        onLocationSelect(foundLocation);
-      }
-      Alert.alert('Location Found', `Found coordinates for: ${searchQuery}`);
-    } else {
-      // Default to Nairobi CBD
-      const defaultLocation = { latitude: -1.2921, longitude: 36.8219 };
-      if (onLocationSelect) {
-        onLocationSelect(defaultLocation);
-      }
-      Alert.alert('Location Set', `Set location to Nairobi CBD for: ${searchQuery}`);
-    }
+  const clearSearch = () => {
+    setSearchQuery('');
+    setLastSearchResult(null);
   };
 
   return (
@@ -87,6 +75,14 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
               onSubmitEditing={handleSearch}
               returnKeyType="search"
             />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+                <X size={16} color={colors.textSecondary} />
+              </TouchableOpacity>
+            )}
+            {isSearching && (
+              <ActivityIndicator size="small" color={colors.primary} style={styles.searchLoader} />
+            )}
           </View>
           
           {searchQuery.length > 0 && (
@@ -103,18 +99,25 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
           <MapPin size={48} color={colors.primary} />
           <Text style={styles.mapTitle}>Map View</Text>
           <Text style={styles.mapSubtitle}>
-            Interactive map is temporarily unavailable
+            Map with MapTiler tiles, GPS location, and GraphHopper routing
           </Text>
           <Text style={styles.mapDescription}>
-            You can still search for locations using the search bar above.
-            Common areas like Westlands, Karen, CBD, and Kilimani are supported.
+            Search for any location in Kenya using LocationIQ geocoding.
+            The mobile app provides full interactive maps with real-time GPS and route calculation.
           </Text>
           
-          {initialLocation && (
+          {(initialLocation || lastSearchResult) && (
             <View style={styles.locationInfo}>
-              <Text style={styles.locationText}>
-                Current Location: {initialLocation.latitude.toFixed(4)}, {initialLocation.longitude.toFixed(4)}
-              </Text>
+              {initialLocation && (
+                <Text style={styles.locationText}>
+                  Initial: {initialLocation.latitude.toFixed(4)}, {initialLocation.longitude.toFixed(4)}
+                </Text>
+              )}
+              {lastSearchResult && (
+                <Text style={styles.locationText}>
+                  Search Result: {lastSearchResult.latitude.toFixed(4)}, {lastSearchResult.longitude.toFixed(4)}
+                </Text>
+              )}
             </View>
           )}
         </View>
@@ -174,6 +177,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: colors.text,
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  searchLoader: {
+    marginLeft: 8,
   },
   searchButton: {
     backgroundColor: colors.primary,

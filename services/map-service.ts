@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// LocationIQ API key
-const LOCATIONIQ_API_KEY = 'pk.0e39d7686fcf7ca097e380c078f3a753';
+// API Keys
+const LOCATIONIQ_API_KEY = 'pk.b516b63f4459bb73c4c29e889e0e9111';
+const GRAPHHOPPER_API_KEY = '5b34b9bb-bd31-4c3f-9451-0927a3fadd7d';
+const MAPTILER_API_KEY = '91fasGbYRNLzEMRrvG8M';
 
 // Mock locations for common addresses (fallback when API fails)
 const MOCK_LOCATIONS: { [key: string]: Coordinates } = {
@@ -17,7 +19,8 @@ const MOCK_LOCATIONS: { [key: string]: Coordinates } = {
   'south c': { latitude: -1.3333, longitude: 36.8333 },
 };
 
-// No API key needed for basic routing
+// MapTiler tile URL template
+export const MAPTILER_TILE_URL = `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`;
 
 export interface Coordinates {
   latitude: number;
@@ -80,7 +83,7 @@ export class MapService {
         }
       }
 
-      // Try the API call
+      // Try the API call with updated endpoint
       const response = await axios.get(
         `https://us1.locationiq.com/v1/search.php`,
         {
@@ -89,8 +92,9 @@ export class MapService {
             q: address,
             format: 'json',
             limit: 1,
+            countrycodes: 'ke', // Focus on Kenya
           },
-          timeout: 5000, // 5 second timeout
+          timeout: 10000, // 10 second timeout
         }
       );
 
@@ -114,7 +118,7 @@ export class MapService {
   }
 
   /**
-   * Get driving route between two points using local route generation
+   * Get driving route between two points using GraphHopper API
    */
   static async getRoute(
     start: Coordinates,
@@ -123,18 +127,46 @@ export class MapService {
     try {
       console.log('Calculating route from:', start, 'to:', end);
       
-      // Create a simple curved route between two points
-      // This simulates a realistic driving route without needing external APIs
-      const route = this.generateSimpleRoute(start, end);
+      // Try GraphHopper API first
+      const response = await axios.get(
+        'https://graphhopper.com/api/1/route',
+        {
+          params: {
+            point: [`${start.latitude},${start.longitude}`, `${end.latitude},${end.longitude}`],
+            vehicle: 'car',
+            points_encoded: false,
+            key: GRAPHHOPPER_API_KEY,
+            locale: 'en',
+            instructions: false,
+          },
+          timeout: 15000, // 15 second timeout
+        }
+      );
+
+      if (response.data && response.data.paths && response.data.paths.length > 0) {
+        const path = response.data.paths[0];
+        if (path.points && path.points.coordinates) {
+          // Convert GraphHopper coordinates to our format
+          const routePoints: RoutePoint[] = path.points.coordinates.map((coord: number[]) => ({
+            latitude: coord[1], // GraphHopper returns [lng, lat]
+            longitude: coord[0],
+          }));
+          
+          console.log('GraphHopper route calculated successfully with', routePoints.length, 'points');
+          return routePoints;
+        }
+      }
       
+      // Fallback to simple route generation
+      console.log('GraphHopper API failed, using fallback route generation');
+      const route = this.generateSimpleRoute(start, end);
       return route;
     } catch (error) {
-      console.error('Routing error:', error);
-      // Return straight line as fallback
-      return [
-        { latitude: start.latitude, longitude: start.longitude },
-        { latitude: end.latitude, longitude: end.longitude }
-      ];
+      console.error('GraphHopper routing error:', error);
+      // Return simple curved route as fallback
+      console.log('Using fallback route generation');
+      const route = this.generateSimpleRoute(start, end);
+      return route;
     }
   }
 
@@ -200,8 +232,9 @@ export class MapService {
             lat: coordinates.latitude,
             lon: coordinates.longitude,
             format: 'json',
+            zoom: 18,
           },
-          timeout: 5000, // 5 second timeout
+          timeout: 10000, // 10 second timeout
         }
       );
 

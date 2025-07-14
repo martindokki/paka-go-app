@@ -54,7 +54,12 @@ export const useMapStore = create<MapState>((set) => ({
   isLoadingRoute: false,
   isGeocoding: false,
   searchQuery: '',
-  mapRegion: null,
+  mapRegion: {
+    latitude: -1.2921, // Nairobi, Kenya
+    longitude: 36.8219,
+    latitudeDelta: 0.05, // City-level view
+    longitudeDelta: 0.05,
+  },
   
   // Actions
   setUserLocation: (location) => set({ userLocation: location }),
@@ -74,6 +79,11 @@ export const useMapStore = create<MapState>((set) => ({
     isLoadingRoute: false,
     isGeocoding: false,
     searchQuery: '',
-    mapRegion: null,
+    mapRegion: {
+      latitude: -1.2921, // Nairobi, Kenya
+      longitude: 36.8219,
+      latitudeDelta: 0.05, // City-level view
+      longitudeDelta: 0.05,
+    },
   }),
 }));

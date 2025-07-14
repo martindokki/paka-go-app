@@ -65,6 +65,14 @@ export default function ClientHomeScreen() {
       gradient: [colors.success, colors.successDark] as const,
       onPress: () => router.push("/map"),
     },
+    {
+      id: "test-map",
+      title: "Test Map",
+      subtitle: "MapTiler + LocationIQ + GraphHopper",
+      icon: Zap,
+      gradient: [colors.warning, '#F59E0B'] as const,
+      onPress: () => router.push("/test-map"),
+    },
   ];
 
   const getStatusColor = (status: string) => {

@@ -1,3 +1,3 @@
-// This file is intentionally empty to avoid circular import issues
-// The actual native MapView implementation is in MapView.native.tsx
-export {};
+// Re-export the native MapView component
+export { MapViewComponent } from './MapView.native.tsx';
+export { MapViewComponent as default } from './MapView.native.tsx';

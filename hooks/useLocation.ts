@@ -23,6 +23,8 @@ export const useLocation = (): UseLocationReturn => {
 
   useEffect(() => {
     checkPermissions();
+    // Automatically request location on initialization
+    requestLocation();
   }, []);
 
   const checkPermissions = async () => {
@@ -75,9 +77,10 @@ export const useLocation = (): UseLocationReturn => {
         }
       }
 
-      // Get current position
+      // Get current position with timeout
       const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Balanced, // Use balanced for better performance
+        maximumAge: 60000, // Accept cached location up to 1 minute old
       });
 
       const locationData: LocationData = {

@@ -20,7 +20,7 @@ try {
     MapViewComponent = WebMapView.MapViewComponent || WebMapView.default;
   } else {
     // For native, use the native implementation
-    const NativeMapView = require('./MapView.native.tsx');
+    const NativeMapView = require('./MapView.native');
     MapViewComponent = NativeMapView.MapViewComponent || NativeMapView.default;
   }
 } catch (error) {

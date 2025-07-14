@@ -15,12 +15,14 @@ import { MapViewComponent } from '@/components/MapView';
 import { useMapStore } from '@/stores/map-store';
 import { useOrdersStore, Order } from '@/stores/orders-store';
 import { MapService, Coordinates } from '@/services/map-service';
+import { useLocation } from '@/hooks/useLocation';
 
 export default function MapScreen() {
   const { orderId, mode } = useLocalSearchParams<{ orderId?: string; mode?: string }>();
   const { getOrderById } = useOrdersStore();
-  const { userLocation, destination, routePoints } = useMapStore();
+  const { userLocation, destination, routePoints, setUserLocation } = useMapStore();
   const [order, setOrder] = useState<Order | null>(null);
+  const { location: currentLocation, requestLocation } = useLocation();
 
   useEffect(() => {
     if (orderId) {
@@ -32,6 +34,13 @@ export default function MapScreen() {
       }
     }
   }, [orderId]);
+
+  // Update user location when current location changes
+  useEffect(() => {
+    if (currentLocation) {
+      setUserLocation(currentLocation);
+    }
+  }, [currentLocation, setUserLocation]);
 
   const geocodeOrderAddresses = async (orderData: any) => {
     try {
@@ -84,7 +93,7 @@ export default function MapScreen() {
           )}
         </View>
 
-        <TouchableOpacity style={styles.centerButton}>
+        <TouchableOpacity style={styles.centerButton} onPress={requestLocation}>
           <Navigation size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
