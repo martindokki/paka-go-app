@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { trpcClient } from '@/lib/trpc';
 import { errorLogger } from '@/utils/error-logger';
 
@@ -239,6 +240,23 @@ export const useAuthStore = create<AuthState>()(
         
         try {
           await errorLogger.info('User logged out');
+          
+          // Clear storage on web and mobile
+          if (Platform.OS === 'web') {
+            // Clear localStorage on web
+            try {
+              localStorage.removeItem('auth-storage');
+            } catch (e) {
+              console.warn('Failed to clear localStorage:', e);
+            }
+          } else {
+            // Clear AsyncStorage on mobile
+            try {
+              await AsyncStorage.removeItem('auth-storage');
+            } catch (e) {
+              console.warn('Failed to clear AsyncStorage:', e);
+            }
+          }
         } catch (error) {
           await errorLogger.error(error as Error, { action: 'logout' });
         } finally {
@@ -327,7 +345,35 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => {
+        if (Platform.OS === 'web') {
+          // Use localStorage for web
+          return {
+            getItem: (name: string) => {
+              try {
+                return localStorage.getItem(name);
+              } catch {
+                return null;
+              }
+            },
+            setItem: (name: string, value: string) => {
+              try {
+                localStorage.setItem(name, value);
+              } catch {
+                // Ignore storage errors on web
+              }
+            },
+            removeItem: (name: string) => {
+              try {
+                localStorage.removeItem(name);
+              } catch {
+                // Ignore storage errors on web
+              }
+            },
+          };
+        }
+        return AsyncStorage;
+      }),
       partialize: (state) => ({
         user: state.user,
         token: state.token,

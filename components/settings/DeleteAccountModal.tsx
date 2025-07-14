@@ -8,11 +8,13 @@ import {
   Modal,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { AlertTriangle, X } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/colors';
 import { useAuthStore } from '@/stores/auth-store';
+import { showAlert } from '@/utils/platform-utils';
 import { router } from 'expo-router';
 
 interface DeleteAccountModalProps {
@@ -30,11 +32,44 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 
   const handleDeleteAccount = async () => {
     if (confirmText.toLowerCase() !== 'delete') {
-      Alert.alert('Invalid Confirmation', 'Please type "DELETE" to confirm account deletion.');
+      showAlert('Invalid Confirmation', 'Please type "DELETE" to confirm account deletion.');
       return;
     }
 
-    Alert.alert(
+    const performDelete = async () => {
+      setIsDeleting(true);
+      
+      try {
+        const success = await deleteAccount();
+        
+        if (success) {
+          showAlert(
+            'Account Deleted',
+            'Your account has been permanently deleted. We are sorry to see you go!',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  onClose();
+                  // Add a small delay to ensure modal closes before navigation
+                  setTimeout(() => {
+                    router.replace('/auth');
+                  }, 100);
+                },
+              },
+            ]
+          );
+        } else {
+          showAlert('Error', 'Failed to delete account. Please try again.');
+        }
+      } catch (error) {
+        showAlert('Error', 'An unexpected error occurred. Please try again.');
+      } finally {
+        setIsDeleting(false);
+      }
+    };
+
+    showAlert(
       'Final Confirmation',
       'This action cannot be undone. Are you absolutely sure you want to delete your account?',
       [
@@ -45,35 +80,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
         {
           text: 'Delete Forever',
           style: 'destructive',
-          onPress: async () => {
-            setIsDeleting(true);
-            
-            try {
-              const success = await deleteAccount();
-              
-              if (success) {
-                Alert.alert(
-                  'Account Deleted',
-                  'Your account has been permanently deleted. We are sorry to see you go!',
-                  [
-                    {
-                      text: 'OK',
-                      onPress: () => {
-                        onClose();
-                        router.replace('/auth');
-                      },
-                    },
-                  ]
-                );
-              } else {
-                Alert.alert('Error', 'Failed to delete account. Please try again.');
-              }
-            } catch (error) {
-              Alert.alert('Error', 'An unexpected error occurred. Please try again.');
-            } finally {
-              setIsDeleting(false);
-            }
-          },
+          onPress: performDelete,
         },
       ]
     );

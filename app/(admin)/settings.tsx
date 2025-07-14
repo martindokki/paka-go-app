@@ -9,6 +9,7 @@ import {
   Switch,
   TextInput,
   Alert,
+  Platform,
 } from "react-native";
 import {
   CreditCard,
@@ -30,6 +31,7 @@ import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
 import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
 import { errorLogger } from "@/utils/error-logger";
+import { showConfirm } from "@/utils/platform-utils";
 import { router } from "expo-router";
 
 export default function AdminSettingsScreen() {
@@ -89,25 +91,23 @@ export default function AdminSettingsScreen() {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
+    const performLogout = async () => {
+      try {
+        await logout();
+        // Add a small delay to ensure state is cleared
+        setTimeout(() => {
+          router.replace("/auth");
+        }, 100);
+      } catch (error) {
+        await errorLogger.error(error as Error, { action: 'logout' });
+        Alert.alert("Error", "Failed to logout. Please try again.");
+      }
+    };
+
+    showConfirm(
       "Logout",
-      "Are you sure you want to logout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-              router.replace("/auth");
-            } catch (error) {
-              await errorLogger.error(error as Error, { action: 'logout' });
-              Alert.alert("Error", "Failed to logout. Please try again.");
-            }
-          },
-        },
-      ]
+      "Are you sure you want to logout from admin panel?",
+      performLogout
     );
   };
 

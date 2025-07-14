@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Dimensions,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import {
@@ -35,7 +36,10 @@ import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSec
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
 import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { EditProfileModal } from "@/components/settings/EditProfileModal";
+import { NotificationSettingsModal } from "@/components/settings/NotificationSettingsModal";
 import { errorLogger } from "@/utils/error-logger";
+import { showConfirm } from "@/utils/platform-utils";
 
 const { width } = Dimensions.get("window");
 
@@ -44,6 +48,8 @@ export default function ProfileScreen() {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const userInfo = {
     name: user?.name || "John Doe",
@@ -57,11 +63,19 @@ export default function ProfileScreen() {
 
   const menuItems = [
     {
+      id: "edit-profile",
+      title: "Edit Profile",
+      subtitle: "Update your personal information",
+      icon: User,
+      color: colors.primary,
+      onPress: () => setShowEditProfileModal(true),
+    },
+    {
       id: "addresses",
       title: "Saved Addresses",
       subtitle: "Manage your delivery locations",
       icon: MapPin,
-      color: colors.primary,
+      color: colors.accent,
       onPress: () => console.log("Navigate to addresses"),
     },
     {
@@ -86,7 +100,7 @@ export default function ProfileScreen() {
       subtitle: "Manage your preferences",
       icon: Bell,
       color: colors.warning,
-      onPress: () => console.log("Navigate to notifications"),
+      onPress: () => setShowNotificationModal(true),
     },
     {
       id: "privacy",
@@ -115,25 +129,23 @@ export default function ProfileScreen() {
   ];
 
   const handleLogout = async () => {
-    Alert.alert(
+    const performLogout = async () => {
+      try {
+        await logout();
+        // Add a small delay to ensure state is cleared
+        setTimeout(() => {
+          router.replace("/auth");
+        }, 100);
+      } catch (error) {
+        await errorLogger.error(error as Error, { action: 'logout' });
+        Alert.alert("Error", "Failed to logout. Please try again.");
+      }
+    };
+
+    showConfirm(
       "Logout",
       "Are you sure you want to logout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await logout();
-              router.replace("/auth");
-            } catch (error) {
-              await errorLogger.error(error as Error, { action: 'logout' });
-              Alert.alert("Error", "Failed to logout. Please try again.");
-            }
-          },
-        },
-      ]
+      performLogout
     );
   };
 
@@ -286,6 +298,16 @@ export default function ProfileScreen() {
       <DeleteAccountModal
         visible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+      
+      <EditProfileModal
+        visible={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+      />
+      
+      <NotificationSettingsModal
+        visible={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
       />
     </SafeAreaView>
   );

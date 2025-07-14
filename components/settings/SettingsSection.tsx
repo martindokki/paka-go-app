@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import colors from '@/constants/colors';
@@ -32,9 +33,14 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({
       style={[
         styles.settingsItem,
         disabled && styles.settingsItemDisabled,
+        Platform.OS === 'web' && styles.webSettingsItem,
       ]}
       onPress={onPress}
       disabled={disabled}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityHint={subtitle}
     >
       <View style={styles.settingsItemContent}>
         {icon && (
@@ -154,5 +160,9 @@ const styles = StyleSheet.create({
   },
   disabledText: {
     color: colors.textMuted,
+  },
+  webSettingsItem: {
+    cursor: 'pointer',
+    transition: 'background-color 0.2s ease',
   },
 });

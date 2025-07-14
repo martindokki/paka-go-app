@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import colors from '@/constants/colors';
@@ -24,9 +25,10 @@ export const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="pageSheet"
+      presentationStyle={Platform.OS === 'web' ? 'overFullScreen' : 'pageSheet'}
+      transparent={Platform.OS === 'web'}
     >
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, Platform.OS === 'web' && styles.webContainer]}>
         <View style={styles.header}>
           <Text style={styles.title}>Terms of Service</Text>
           <TouchableOpacity
@@ -148,6 +150,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  webContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   header: {
     flexDirection: 'row',
