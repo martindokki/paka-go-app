@@ -28,14 +28,18 @@ export const trpcClient = trpc.createClient({
         try {
           console.log('tRPC request to:', url);
           
-          // Add timeout to prevent hanging - shorter for web
-          const timeoutDuration = Platform.OS === 'web' ? 5000 : 10000;
+          // Add timeout to prevent hanging - longer timeout for initial requests
+          const timeoutDuration = Platform.OS === 'web' ? 15000 : 20000;
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
           
           const response = await fetch(url, {
             ...options,
             signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              ...options?.headers,
+            },
           });
           
           clearTimeout(timeoutId);
@@ -44,11 +48,15 @@ export const trpcClient = trpc.createClient({
           const contentType = response.headers.get('content-type');
           if (contentType && contentType.includes('text/html')) {
             console.warn('Server returned HTML instead of JSON. Backend may not be available.');
+            const text = await response.text();
+            console.log('HTML response:', text.substring(0, 500));
             throw new Error('Server returned HTML instead of JSON. Check if the API server is running.');
           }
           
           if (!response.ok) {
             console.error('tRPC response not ok:', response.status, response.statusText);
+            const text = await response.text();
+            console.error('Error response body:', text);
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
           
@@ -56,7 +64,7 @@ export const trpcClient = trpc.createClient({
         } catch (error: unknown) {
           if (error instanceof Error && error.name === 'AbortError') {
             console.error('tRPC request timed out');
-            throw new Error('Request timed out. Please check your connection.');
+            throw new Error('Request timed out. Please check your connection and try again.');
           }
           console.error('tRPC fetch error:', error);
           throw error instanceof Error ? error : new Error('Unknown error occurred');

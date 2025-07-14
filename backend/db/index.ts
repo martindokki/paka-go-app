@@ -17,6 +17,14 @@ export async function initializeDatabase() {
   try {
     console.log('Initializing database...');
     
+    // Test database connection first
+    try {
+      await db.select().from(schema.users).limit(1);
+      console.log('Database connection successful');
+    } catch (dbError) {
+      console.log('Database tables may not exist yet, will create them');
+    }
+    
     // Create tables if they don't exist
     await createTables();
     

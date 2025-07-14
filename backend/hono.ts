@@ -5,17 +5,19 @@ import { appRouter } from "./trpc/app-router";
 import { createContext } from "./trpc/create-context";
 import { initializeDatabase } from "./db";
 
-// Initialize database asynchronously without blocking startup
-setTimeout(() => {
-  Promise.race([
-    initializeDatabase(),
-    new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Database initialization timeout')), 5000)
-    )
-  ]).catch((error) => {
+// Initialize database synchronously to ensure it's ready before handling requests
+let dbInitialized = false;
+
+// Initialize database immediately
+initializeDatabase()
+  .then(() => {
+    dbInitialized = true;
+    console.log('Database initialized successfully');
+  })
+  .catch((error) => {
     console.error('Database initialization failed:', error);
+    dbInitialized = false;
   });
-}, 100);
 
 // app will be mounted at /api
 const app = new Hono();
@@ -26,6 +28,14 @@ app.use("*", cors({
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Add middleware to check database initialization
+app.use("/trpc/*", async (c, next) => {
+  if (!dbInitialized) {
+    return c.json({ error: 'Database not initialized' }, 503);
+  }
+  await next();
+});
 
 // Mount tRPC router at /trpc
 app.use(
