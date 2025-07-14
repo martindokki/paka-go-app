@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { eq } from 'drizzle-orm';
 import * as schema from './schema';
 import path from 'path';
 
@@ -221,11 +222,11 @@ async function insertSampleData() {
     // Update drivers with vehicle assignments
     await db.update(schema.drivers)
       .set({ vehicleId: 'vehicle_1' })
-      .where(schema.drivers.id.eq('driver_2'));
+      .where(eq(schema.drivers.id, 'driver_2'));
 
     await db.update(schema.drivers)
       .set({ vehicleId: 'vehicle_2' })
-      .where(schema.drivers.id.eq('driver_3'));
+      .where(eq(schema.drivers.id, 'driver_3'));
 
     // Insert sample orders
     const sampleOrders = [

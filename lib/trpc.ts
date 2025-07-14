@@ -53,8 +53,8 @@ export const trpcClient = trpc.createClient({
           }
           
           return response;
-        } catch (error) {
-          if (error.name === 'AbortError') {
+        } catch (error: unknown) {
+          if (error instanceof Error && error.name === 'AbortError') {
             console.error('tRPC request timed out');
             throw new Error('Request timed out. Please check your connection.');
           }
@@ -84,7 +84,7 @@ export async function checkBackendHealth(): Promise<boolean> {
     }
     
     return false;
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn('Backend health check failed:', error);
     return false;
   }
