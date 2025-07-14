@@ -18,7 +18,7 @@ export const loginProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Login failed');
+      throw new Error('Login failed');
     }
     
     return result;

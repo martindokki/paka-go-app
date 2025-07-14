@@ -20,7 +20,7 @@ export const registerProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Registration failed');
+      throw new Error('Registration failed');
     }
     
     return result;

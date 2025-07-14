@@ -17,7 +17,7 @@ export const getAllDriversProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get drivers');
+      throw new Error('Failed to get drivers');
     }
     
     return result;
@@ -35,7 +35,7 @@ export const getDriverByIdProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get driver');
+      throw new Error('Failed to get driver');
     }
     
     return result;
@@ -53,7 +53,7 @@ export const getDriverByUserIdProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get driver');
+      throw new Error('Failed to get driver');
     }
     
     return result;
@@ -69,7 +69,7 @@ export const approveDriverProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to approve driver');
+      throw new Error('Failed to approve driver');
     }
     
     return result;
@@ -85,7 +85,7 @@ export const suspendDriverProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to suspend driver');
+      throw new Error('Failed to suspend driver');
     }
     
     return result;
@@ -101,7 +101,7 @@ export const assignVehicleProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to assign vehicle');
+      throw new Error('Failed to assign vehicle');
     }
     
     return result;
@@ -118,7 +118,7 @@ export const updateDriverLocationProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update location');
+      throw new Error('Failed to update location');
     }
     
     return result;
@@ -134,7 +134,7 @@ export const setDriverOnlineStatusProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update online status');
+      throw new Error('Failed to update online status');
     }
     
     return result;
@@ -152,7 +152,7 @@ export const updateDriverProfileProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update driver profile');
+      throw new Error('Failed to update driver profile');
     }
     
     return result;
@@ -172,7 +172,7 @@ export const getAvailableDriversProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get available drivers');
+      throw new Error('Failed to get available drivers');
     }
     
     return result;
@@ -188,7 +188,7 @@ export const updateDriverEarningsProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update earnings');
+      throw new Error('Failed to update earnings');
     }
     
     return result;
@@ -204,7 +204,7 @@ export const updateDriverRatingProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update rating');
+      throw new Error('Failed to update rating');
     }
     
     return result;
@@ -227,7 +227,7 @@ export const getDriverStatsProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get driver stats');
+      throw new Error('Failed to get driver stats');
     }
     
     return result;

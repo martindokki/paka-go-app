@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-// Temporarily disable orders service import until it's properly implemented
-// import { OrdersService } from "../../../services/orders-service";
+import { OrdersService } from "../../../services/orders-service";
 
 export const getOrdersByCustomerProcedure = publicProcedure
   .input(z.object({
@@ -18,7 +17,7 @@ export const getOrdersByCustomerProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get orders');
+      throw new Error('Failed to get orders');
     }
     
     return result;
@@ -39,7 +38,7 @@ export const getOrdersByDriverProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get orders');
+      throw new Error('Failed to get orders');
     }
     
     return result;
@@ -57,7 +56,7 @@ export const getPendingOrdersProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get pending orders');
+      throw new Error('Failed to get pending orders');
     }
     
     return result;
@@ -75,7 +74,7 @@ export const getOrderByIdProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get order');
+      throw new Error('Failed to get order');
     }
     
     return result;
@@ -93,7 +92,7 @@ export const getOrderByTrackingCodeProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get order');
+      throw new Error('Failed to get order');
     }
     
     return result;
@@ -110,7 +109,7 @@ export const assignDriverProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to assign driver');
+      throw new Error('Failed to assign driver');
     }
     
     return result;
@@ -130,7 +129,7 @@ export const updateOrderStatusProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update order status');
+      throw new Error('Failed to update order status');
     }
     
     return result;
@@ -147,7 +146,7 @@ export const cancelOrderProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to cancel order');
+      throw new Error('Failed to cancel order');
     }
     
     return result;
@@ -165,7 +164,7 @@ export const getOrderTimelineProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get order timeline');
+      throw new Error('Failed to get order timeline');
     }
     
     return result;
@@ -182,7 +181,7 @@ export const updatePaymentStatusProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update payment status');
+      throw new Error('Failed to update payment status');
     }
     
     return result;
@@ -200,7 +199,7 @@ export const addRatingAndFeedbackProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to add rating and feedback');
+      throw new Error('Failed to add rating and feedback');
     }
     
     return result;
@@ -226,7 +225,7 @@ export const getAllOrdersProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get orders');
+      throw new Error('Failed to get orders');
     }
     
     return result;

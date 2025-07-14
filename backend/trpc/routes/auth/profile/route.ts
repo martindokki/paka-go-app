@@ -21,7 +21,7 @@ export const getProfileProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to get profile');
+      throw new Error('Failed to get profile');
     }
     
     return result;
@@ -43,7 +43,7 @@ export const updateProfileProcedure = publicProcedure
     };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to update profile');
+      throw new Error('Failed to update profile');
     }
     
     return result;
@@ -60,7 +60,7 @@ export const changePasswordProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to change password');
+      throw new Error('Failed to change password');
     }
     
     return result;
@@ -75,7 +75,7 @@ export const deleteAccountProcedure = publicProcedure
     const result = { success: true };
     
     if (!result.success) {
-      throw new Error(result.error || 'Failed to delete account');
+      throw new Error('Failed to delete account');
     }
     
     return result;
