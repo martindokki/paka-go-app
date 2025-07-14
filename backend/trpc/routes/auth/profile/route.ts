@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
 // Temporarily disable auth service import until it's properly implemented
-// import { AuthService } from "../../services/auth-service";
+// import { AuthService } from "../../../services/auth-service";
 
 export const getProfileProcedure = publicProcedure
   .input(z.object({

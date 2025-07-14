@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-// Temporarily disable orders service import until it's properly implemented
-// import { OrdersService } from "../../services/orders-service";
+import { OrdersService } from "../../../services/orders-service";
 
 export const createOrderProcedure = publicProcedure
   .input(z.object({
@@ -30,28 +29,17 @@ export const createOrderProcedure = publicProcedure
     try {
       console.log('Creating order with input:', input);
       
-      // Mock order creation for now
-      const orderId = `order_${Math.random().toString(36).substr(2, 9)}`;
-      const trackingCode = Math.random().toString(36).substr(2, 8).toUpperCase();
+      const result = await OrdersService.createOrder(input);
       
-      const order = {
-        id: orderId,
-        ...input,
-        status: 'pending' as const,
-        trackingCode,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       
-      console.log('Order created successfully:', order);
+      console.log('Order created successfully:', result.data);
       
       return {
         success: true,
-        data: {
-          orderId,
-          trackingCode,
-          order
-        },
+        data: result.data,
         message: 'Order created successfully'
       };
     } catch (error) {

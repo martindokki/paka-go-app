@@ -28,6 +28,45 @@ const getBaseUrl = () => {
   return 'http://localhost:8081';
 };
 
+// Add a simple function to test if backend is reachable
+export async function testBackendConnection(): Promise<{ success: boolean; message: string; details?: any }> {
+  try {
+    const baseUrl = getBaseUrl();
+    console.log('Testing backend connection to:', baseUrl);
+    
+    // First test if we can reach the base URL at all
+    const response = await fetch(`${baseUrl}/api/`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      return {
+        success: false,
+        message: `Backend returned ${response.status}: ${response.statusText}`,
+        details: { status: response.status, statusText: response.statusText }
+      };
+    }
+    
+    const data = await response.json();
+    return {
+      success: true,
+      message: 'Backend is reachable',
+      details: data
+    };
+  } catch (error) {
+    console.error('Backend connection test failed:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown connection error',
+      details: { error: error instanceof Error ? error.message : String(error) }
+    };
+  }
+}
+
 export const trpcClient = trpc.createClient({
   links: [
     httpLink({

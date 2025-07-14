@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
 // Temporarily disable orders service import until it's properly implemented
-// import { OrdersService } from "../../services/orders-service";
+// import { OrdersService } from "../../../services/orders-service";
 
 export const getOrdersByCustomerProcedure = publicProcedure
   .input(z.object({
