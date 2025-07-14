@@ -258,3 +258,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background + '80',
   },
 });
+
+// Default export for compatibility
+export default MapViewComponent;

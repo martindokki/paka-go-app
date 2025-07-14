@@ -462,3 +462,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+// Default export for compatibility
+export default MapViewComponent;

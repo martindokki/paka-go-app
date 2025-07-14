@@ -285,4 +285,5 @@ const styles = StyleSheet.create({
   },
 });
 
+// Default export for compatibility
 export default MapViewComponent;
