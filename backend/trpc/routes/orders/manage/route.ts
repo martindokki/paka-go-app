@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { OrdersService } from "../../services/orders-service";
+import { OrdersService } from "../../../../services/orders-service";
 
 export const getOrdersByCustomerProcedure = publicProcedure
   .input(z.object({
