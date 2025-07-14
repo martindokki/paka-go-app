@@ -25,8 +25,10 @@ export async function initializeDatabase() {
     console.log('Database initialized successfully');
   } catch (error) {
     console.error('Failed to initialize database:', error);
-    throw error;
+    // Don't throw error to prevent app crash
+    return false;
   }
+  return true;
 }
 
 async function createTables() {
@@ -38,7 +40,14 @@ async function createTables() {
 async function insertSampleData() {
   try {
     // Check if we already have data
-    const existingUsers = await db.select().from(schema.users).limit(1);
+    let existingUsers;
+    try {
+      existingUsers = await db.select().from(schema.users).limit(1);
+    } catch (error) {
+      console.log('Users table does not exist yet, will create with sample data');
+      existingUsers = [];
+    }
+    
     if (existingUsers.length > 0) {
       console.log('Sample data already exists, skipping insertion');
       return;

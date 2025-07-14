@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { trpc, trpcClient } from '@/lib/trpc';
 import { useOrdersStore } from '@/stores/orders-store';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import colors from '@/constants/colors';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -24,12 +25,19 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// Create a client
+// Create a client with timeout settings
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry: 1,
       staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      networkMode: 'offlineFirst',
+    },
+    mutations: {
+      retry: 1,
+      networkMode: 'offlineFirst',
     },
   },
 });
@@ -48,9 +56,17 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
-      // Initialize sample data when app loads
-      initializeSampleData();
+      // Simple initialization without blocking
+      SplashScreen.hideAsync().catch(console.error);
+      
+      // Initialize sample data asynchronously
+      setTimeout(() => {
+        try {
+          initializeSampleData();
+        } catch (error) {
+          console.error('Failed to initialize sample data:', error);
+        }
+      }, 100);
     }
   }, [loaded, initializeSampleData]);
 

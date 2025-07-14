@@ -5,8 +5,17 @@ import { appRouter } from "./trpc/app-router";
 import { createContext } from "./trpc/create-context";
 import { initializeDatabase } from "./db";
 
-// Initialize database
-initializeDatabase().catch(console.error);
+// Initialize database asynchronously without blocking startup
+setTimeout(() => {
+  Promise.race([
+    initializeDatabase(),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database initialization timeout')), 5000)
+    )
+  ]).catch((error) => {
+    console.error('Database initialization failed:', error);
+  });
+}, 100);
 
 // app will be mounted at /api
 const app = new Hono();
