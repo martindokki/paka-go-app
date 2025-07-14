@@ -59,7 +59,7 @@ export const trpcClient = trpc.createClient({
             throw new Error('Request timed out. Please check your connection.');
           }
           console.error('tRPC fetch error:', error);
-          throw error;
+          throw error instanceof Error ? error : new Error('Unknown error occurred');
         }
       },
     }),

@@ -11,6 +11,8 @@ import {
 import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
+import { trpc } from "@/lib/trpc";
+import { useAuthStore } from "@/stores/auth-store";
 
 const { width } = Dimensions.get("window");
 
@@ -33,8 +35,21 @@ interface DriverOrder {
 
 export default function DriverOrdersScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<"today" | "week" | "month">("today");
-
-  const orders: DriverOrder[] = [
+  const { user } = useAuthStore();
+  
+  // Get driver ID from user
+  const driverId = user ? `driver_${user.id}` : null;
+  
+  // Fetch orders from backend
+  const { data: ordersData, isLoading } = trpc.orders.getByDriver.useQuery(
+    { driverId: driverId! },
+    { enabled: !!driverId }
+  );
+  
+  const orders = ordersData?.data || [];
+  
+  // Mock data for fallback (remove this once backend is fully working)
+  const mockOrders: DriverOrder[] = [
     {
       id: "1",
       from: "Westlands Mall",
@@ -89,6 +104,21 @@ export default function DriverOrdersScreen() {
       packageType: "Clothing",
     },
   ];
+  
+  // Use real orders if available, otherwise use mock data
+  const displayOrders = orders.length > 0 ? orders.map(order => ({
+    id: order.id,
+    from: order.pickupAddress,
+    to: order.deliveryAddress,
+    status: order.status === 'delivered' ? 'completed' as OrderStatus : 'cancelled' as OrderStatus,
+    customerName: order.recipientName,
+    price: `KSh ${order.totalAmount}`,
+    date: new Date(order.createdAt).toLocaleDateString(),
+    rating: order.customerRating || undefined,
+    distance: `${order.estimatedDistance || 0} km`,
+    duration: `${order.estimatedDuration || 0} mins`,
+    packageType: order.packageType,
+  })) : mockOrders;
 
   const periods = [
     { key: "today", label: "Today", emoji: "📅" },
@@ -97,18 +127,18 @@ export default function DriverOrdersScreen() {
   ];
 
   const stats = {
-    totalOrders: orders.filter(o => o.status === "completed").length,
-    totalEarnings: orders
+    totalOrders: displayOrders.filter(o => o.status === "completed").length,
+    totalEarnings: displayOrders
       .filter(o => o.status === "completed")
       .reduce((sum, order) => {
         const price = parseInt(order.price.replace("KSh ", ""));
         const tip = order.tip ? parseInt(order.tip.replace("KSh ", "")) : 0;
         return sum + price + tip;
       }, 0),
-    averageRating: orders
+    averageRating: displayOrders
       .filter(o => o.rating)
-      .reduce((sum, order) => sum + (order.rating || 0), 0) / orders.filter(o => o.rating).length,
-    totalTips: orders
+      .reduce((sum, order) => sum + (order.rating || 0), 0) / displayOrders.filter(o => o.rating).length || 0,
+    totalTips: displayOrders
       .filter(o => o.tip)
       .reduce((sum, order) => sum + parseInt(order.tip?.replace("KSh ", "") || "0"), 0),
   };
@@ -288,7 +318,7 @@ export default function DriverOrdersScreen() {
       </View>
 
       <FlatList
-        data={orders}
+        data={displayOrders}
         renderItem={renderOrderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.ordersList}

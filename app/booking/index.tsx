@@ -35,6 +35,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { trpc } from "@/lib/trpc";
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
@@ -45,6 +46,7 @@ import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/const
 export default function BookingScreen() {
   const { user } = useAuthStore();
   const { createOrder } = useOrdersStore();
+  const createOrderMutation = trpc.orders.create.useMutation();
   const { userLocation, destination, routePoints, clearRoute } = useMapStore();
   
   const [bookingData, setBookingData] = useState({
@@ -230,7 +232,7 @@ export default function BookingScreen() {
     );
   };
 
-  const handleBookDelivery = () => {
+  const handleBookDelivery = async () => {
     if (!bookingData.pickupLocation || !bookingData.dropoffLocation) {
       Alert.alert("Missing Information", "Please fill in pickup and dropoff locations");
       return;
@@ -247,33 +249,41 @@ export default function BookingScreen() {
     }
 
     try {
-      // Create the order
-      const orderId = createOrder({
-        clientId: user.id,
-        from: bookingData.pickupLocation,
-        to: bookingData.dropoffLocation,
-        packageType: bookingData.packageType,
-        packageDescription: bookingData.packageDescription,
+      // Get customer ID from user
+      const customerId = `customer_${user.id}`;
+      
+      // Create the order via tRPC
+      const result = await createOrderMutation.mutateAsync({
+        customerId,
+        pickupAddress: bookingData.pickupLocation,
+        pickupLatitude: bookingData.pickupCoords?.latitude,
+        pickupLongitude: bookingData.pickupCoords?.longitude,
+        deliveryAddress: bookingData.dropoffLocation,
+        deliveryLatitude: bookingData.dropoffCoords?.latitude,
+        deliveryLongitude: bookingData.dropoffCoords?.longitude,
         recipientName: bookingData.recipientName,
         recipientPhone: bookingData.recipientPhone,
+        packageType: bookingData.packageType,
+        packageDescription: bookingData.packageDescription,
         specialInstructions: bookingData.specialInstructions,
-        status: "pending",
         paymentMethod: bookingData.paymentMethod,
         paymentTerm: bookingData.paymentTerm,
-        price: priceBreakdown?.total || 0,
-        distance: bookingData.pickupCoords && bookingData.dropoffCoords 
-          ? `${MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords).toFixed(1)} km`
-          : "0 km",
-        estimatedTime: estimatedTime,
+        estimatedDistance: bookingData.pickupCoords && bookingData.dropoffCoords 
+          ? MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords)
+          : undefined,
+        estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
       });
 
-      console.log("Order created:", orderId, bookingData);
+      const orderId = result.data?.orderId;
+      const trackingCode = result.data?.trackingCode;
+      
+      console.log("Order created:", orderId, trackingCode, bookingData);
       
       // Navigate based on payment term
       if (bookingData.paymentTerm === "pay_now" && bookingData.paymentMethod !== "cash") {
         Alert.alert(
           "Booking Confirmed! 🎉",
-          `Your delivery has been booked successfully. Order ID: ${orderId}. Proceed to payment.`,
+          `Your delivery has been booked successfully. Tracking Code: ${trackingCode}. Proceed to payment.`,
           [
             {
               text: "Pay Now",
@@ -283,10 +293,10 @@ export default function BookingScreen() {
               },
             },
             {
-              text: "View Order",
+              text: "Track Order",
               onPress: () => {
                 router.dismiss();
-                router.push(`/tracking?orderId=${orderId}`);
+                router.push(`/tracking?trackingCode=${trackingCode}`);
               },
             },
           ]
@@ -294,7 +304,7 @@ export default function BookingScreen() {
       } else {
         Alert.alert(
           "Booking Confirmed! 🎉",
-          `Your delivery has been booked successfully. Order ID: ${orderId}. ${
+          `Your delivery has been booked successfully. Tracking Code: ${trackingCode}. ${
             bookingData.paymentTerm === "pay_on_delivery" 
               ? "You will pay when the package is delivered." 
               : ""
@@ -311,15 +321,15 @@ export default function BookingScreen() {
               text: "Track Order",
               onPress: () => {
                 router.dismiss();
-                router.push(`/tracking?orderId=${orderId}`);
+                router.push(`/tracking?trackingCode=${trackingCode}`);
               },
             },
           ]
         );
       }
     } catch (error) {
-      Alert.alert("Booking Error", "Failed to create order. Please try again.");
       console.error("Booking error:", error);
+      Alert.alert("Booking Error", "Failed to create order. Please try again.");
     }
   };
 

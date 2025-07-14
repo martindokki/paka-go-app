@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { AuthService } from "../../../../services/auth-service";
+import { AuthService } from "../../../services/auth-service";
 
 export const getProfileProcedure = publicProcedure
   .input(z.object({
