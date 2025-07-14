@@ -106,7 +106,7 @@ export default function DriverOrdersScreen() {
   ];
   
   // Use real orders if available, otherwise use mock data
-  const displayOrders = orders.length > 0 ? orders.map(order => ({
+  const displayOrders = orders.length > 0 ? orders.map((order: any) => ({
     id: order.id,
     from: order.pickupAddress,
     to: order.deliveryAddress,
@@ -127,20 +127,20 @@ export default function DriverOrdersScreen() {
   ];
 
   const stats = {
-    totalOrders: displayOrders.filter(o => o.status === "completed").length,
+    totalOrders: displayOrders.filter((o: DriverOrder) => o.status === "completed").length,
     totalEarnings: displayOrders
-      .filter(o => o.status === "completed")
-      .reduce((sum, order) => {
+      .filter((o: DriverOrder) => o.status === "completed")
+      .reduce((sum: number, order: DriverOrder) => {
         const price = parseInt(order.price.replace("KSh ", ""));
         const tip = order.tip ? parseInt(order.tip.replace("KSh ", "")) : 0;
         return sum + price + tip;
       }, 0),
     averageRating: displayOrders
-      .filter(o => o.rating)
-      .reduce((sum, order) => sum + (order.rating || 0), 0) / displayOrders.filter(o => o.rating).length || 0,
+      .filter((o: DriverOrder) => o.rating)
+      .reduce((sum: number, order: DriverOrder) => sum + (order.rating || 0), 0) / displayOrders.filter((o: DriverOrder) => o.rating).length || 0,
     totalTips: displayOrders
-      .filter(o => o.tip)
-      .reduce((sum, order) => sum + parseInt(order.tip?.replace("KSh ", "") || "0"), 0),
+      .filter((o: DriverOrder) => o.tip)
+      .reduce((sum: number, order: DriverOrder) => sum + parseInt(order.tip?.replace("KSh ", "") || "0"), 0),
   };
 
   const renderStarRating = (rating: number) => {
