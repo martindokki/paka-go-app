@@ -80,7 +80,6 @@ export const useLocation = (): UseLocationReturn => {
       // Get current position with timeout
       const position = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced, // Use balanced for better performance
-        maximumAge: 60000, // Accept cached location up to 1 minute old
       });
 
       const locationData: LocationData = {
