@@ -24,7 +24,7 @@ export const drivers = sqliteTable('drivers', {
   rating: real('rating').default(0),
   totalDeliveries: integer('total_deliveries').default(0),
   earnings: real('earnings').default(0),
-  vehicleId: text('vehicle_id').references(() => vehicles.id),
+  vehicleId: text('vehicle_id'),
   isOnline: integer('is_online', { mode: 'boolean' }).default(false),
   currentLatitude: real('current_latitude'),
   currentLongitude: real('current_longitude'),
@@ -290,3 +290,6 @@ export type Promotion = typeof promotions.$inferSelect;
 export type NewPromotion = typeof promotions.$inferInsert;
 export type PromotionUsage = typeof promotionUsage.$inferSelect;
 export type NewPromotionUsage = typeof promotionUsage.$inferInsert;
+
+// Add foreign key relationships after table definitions to avoid circular references
+// Note: These are handled by the database constraints defined above

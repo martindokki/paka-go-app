@@ -16,7 +16,7 @@ import {
   getOrderByTrackingCodeProcedure,
   assignDriverProcedure,
   updateOrderStatusProcedure,
-  cancelOrderProcedure,
+  cancelOrderProcedure as ordersCancelOrderProcedure,
   getOrderTimelineProcedure,
   updatePaymentStatusProcedure,
   addRatingAndFeedbackProcedure,
@@ -43,7 +43,7 @@ import {
 // Admin routes (keeping existing ones for now)
 import { dashboardProcedure } from "./routes/admin/dashboard/route";
 import { getDriversProcedure, assignVehicleProcedure as adminAssignVehicleProcedure } from "./routes/admin/drivers/route";
-import { getOrdersProcedure, assignOrderProcedure, cancelOrderProcedure, sendSTKPushProcedure } from "./routes/admin/orders/route";
+import { getOrdersProcedure, assignOrderProcedure, cancelOrderProcedure as adminCancelOrderProcedure, sendSTKPushProcedure } from "./routes/admin/orders/route";
 import { sendNotificationProcedure } from "./routes/admin/notifications/route";
 import { getSettingsProcedure, updateSettingsProcedure } from "./routes/admin/settings/route";
 
@@ -70,7 +70,7 @@ export const appRouter = createTRPCRouter({
     getByTrackingCode: getOrderByTrackingCodeProcedure,
     assignDriver: assignDriverProcedure,
     updateStatus: updateOrderStatusProcedure,
-    cancel: cancelOrderProcedure,
+    cancel: ordersCancelOrderProcedure,
     getTimeline: getOrderTimelineProcedure,
     updatePaymentStatus: updatePaymentStatusProcedure,
     addRatingAndFeedback: addRatingAndFeedbackProcedure,
@@ -100,7 +100,7 @@ export const appRouter = createTRPCRouter({
     orders: createTRPCRouter({
       getAll: getOrdersProcedure,
       assign: assignOrderProcedure,
-      cancel: cancelOrderProcedure,
+      cancel: adminCancelOrderProcedure,
       sendSTKPush: sendSTKPushProcedure,
     }),
     notifications: createTRPCRouter({

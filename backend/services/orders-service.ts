@@ -395,7 +395,7 @@ export class OrdersService {
       }
 
       if (conditions.length > 0) {
-        query = query.where(and(...conditions));
+        query = query.where(and(...conditions)) as any;
       }
 
       const orders = await query
