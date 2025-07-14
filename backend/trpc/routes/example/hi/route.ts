@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { db, schema } from "../../../db";
+import { db, schema } from "../../../db/index";
 
 export const hiProcedure = publicProcedure
   .query(async () => {
