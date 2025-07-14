@@ -32,7 +32,7 @@ export const createOrderProcedure = publicProcedure
       const result = await OrdersService.createOrder(input);
       
       if (!result.success) {
-        throw new Error(result.error);
+        throw new Error(result.error || 'Failed to create order');
       }
       
       console.log('Order created successfully:', result.data);
