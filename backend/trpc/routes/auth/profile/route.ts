@@ -1,13 +1,24 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { AuthService } from "../../services/auth-service";
+// Temporarily disable auth service import until it's properly implemented
+// import { AuthService } from "../../services/auth-service";
 
 export const getProfileProcedure = publicProcedure
   .input(z.object({
     userId: z.string(),
   }))
   .query(async ({ input }) => {
-    const result = await AuthService.getUserById(input.userId);
+    // Mock profile for now
+    const result = {
+      success: true,
+      user: {
+        id: input.userId,
+        email: 'test@example.com',
+        name: 'Test User',
+        phone: '+254712345678',
+        role: 'customer' as const
+      }
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get profile');
@@ -25,7 +36,11 @@ export const updateProfileProcedure = publicProcedure
   }))
   .mutation(async ({ input }) => {
     const { userId, ...updates } = input;
-    const result = await AuthService.updateProfile(userId, updates);
+    // Mock profile update for now
+    const result = {
+      success: true,
+      user: { id: userId, ...updates }
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update profile');
@@ -41,11 +56,8 @@ export const changePasswordProcedure = publicProcedure
     newPassword: z.string().min(6),
   }))
   .mutation(async ({ input }) => {
-    const result = await AuthService.changePassword(
-      input.userId,
-      input.currentPassword,
-      input.newPassword
-    );
+    // Mock password change for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to change password');
@@ -59,7 +71,8 @@ export const deleteAccountProcedure = publicProcedure
     userId: z.string(),
   }))
   .mutation(async ({ input }) => {
-    const result = await AuthService.deleteAccount(input.userId);
+    // Mock account deletion for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to delete account');

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { DriversService } from "../../services/drivers-service";
+// Temporarily disable drivers service import until it's properly implemented
+// import { DriversService } from "../../services/drivers-service";
 
 export const getAllDriversProcedure = publicProcedure
   .input(z.object({
@@ -8,7 +9,12 @@ export const getAllDriversProcedure = publicProcedure
     offset: z.number().default(0),
   }))
   .query(async ({ input }) => {
-    const result = await DriversService.getAllDrivers(input.limit, input.offset);
+    // Mock drivers for now
+    const result = {
+      success: true,
+      drivers: [],
+      total: 0
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get drivers');
@@ -22,7 +28,11 @@ export const getDriverByIdProcedure = publicProcedure
     driverId: z.string(),
   }))
   .query(async ({ input }) => {
-    const result = await DriversService.getDriverById(input.driverId);
+    // Mock driver for now
+    const result = {
+      success: true,
+      driver: null
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get driver');
@@ -36,7 +46,11 @@ export const getDriverByUserIdProcedure = publicProcedure
     userId: z.string(),
   }))
   .query(async ({ input }) => {
-    const result = await DriversService.getDriverByUserId(input.userId);
+    // Mock driver for now
+    const result = {
+      success: true,
+      driver: null
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get driver');
@@ -51,7 +65,8 @@ export const approveDriverProcedure = publicProcedure
     approvedBy: z.string(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.approveDriver(input.driverId, input.approvedBy);
+    // Mock approval for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to approve driver');
@@ -66,7 +81,8 @@ export const suspendDriverProcedure = publicProcedure
     reason: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.suspendDriver(input.driverId, input.reason);
+    // Mock suspension for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to suspend driver');
@@ -81,7 +97,8 @@ export const assignVehicleProcedure = publicProcedure
     vehicleId: z.string(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.assignVehicle(input.driverId, input.vehicleId);
+    // Mock vehicle assignment for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to assign vehicle');
@@ -97,11 +114,8 @@ export const updateDriverLocationProcedure = publicProcedure
     longitude: z.number(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.updateLocation(
-      input.driverId,
-      input.latitude,
-      input.longitude
-    );
+    // Mock location update for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update location');
@@ -116,7 +130,8 @@ export const setDriverOnlineStatusProcedure = publicProcedure
     isOnline: z.boolean(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.setOnlineStatus(input.driverId, input.isOnline);
+    // Mock status update for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update online status');
@@ -133,7 +148,8 @@ export const updateDriverProfileProcedure = publicProcedure
   }))
   .mutation(async ({ input }) => {
     const { driverId, ...updates } = input;
-    const result = await DriversService.updateProfile(driverId, updates);
+    // Mock profile update for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update driver profile');
@@ -149,11 +165,11 @@ export const getAvailableDriversProcedure = publicProcedure
     radius: z.number().default(10),
   }))
   .query(async ({ input }) => {
-    const result = await DriversService.getAvailableDrivers(
-      input.latitude,
-      input.longitude,
-      input.radius
-    );
+    // Mock available drivers for now
+    const result = {
+      success: true,
+      drivers: []
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get available drivers');
@@ -168,7 +184,8 @@ export const updateDriverEarningsProcedure = publicProcedure
     amount: z.number().positive(),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.updateEarnings(input.driverId, input.amount);
+    // Mock earnings update for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update earnings');
@@ -183,7 +200,8 @@ export const updateDriverRatingProcedure = publicProcedure
     rating: z.number().min(1).max(5),
   }))
   .mutation(async ({ input }) => {
-    const result = await DriversService.updateRating(input.driverId, input.rating);
+    // Mock rating update for now
+    const result = { success: true };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update rating');
@@ -197,7 +215,16 @@ export const getDriverStatsProcedure = publicProcedure
     driverId: z.string(),
   }))
   .query(async ({ input }) => {
-    const result = await DriversService.getDriverStats(input.driverId);
+    // Mock stats for now
+    const result = {
+      success: true,
+      stats: {
+        totalOrders: 0,
+        totalEarnings: 0,
+        averageRating: 0,
+        completionRate: 0
+      }
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to get driver stats');

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-import { OrdersService } from "../../services/orders-service";
+// Temporarily disable orders service import until it's properly implemented
+// import { OrdersService } from "../../services/orders-service";
 
 export const createOrderProcedure = publicProcedure
   .input(z.object({
@@ -26,7 +27,18 @@ export const createOrderProcedure = publicProcedure
     scheduledPickupTime: z.string().optional(),
   }))
   .mutation(async ({ input }) => {
-    const result = await OrdersService.createOrder(input);
+    // Mock order creation for now
+    const result = {
+      success: true,
+      order: {
+        id: Math.random().toString(36).substr(2, 9),
+        ...input,
+        status: 'pending' as const,
+        trackingCode: Math.random().toString(36).substr(2, 8).toUpperCase(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    };
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to create order');

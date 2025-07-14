@@ -11,9 +11,16 @@ const getBaseUrl = () => {
     return process.env.EXPO_PUBLIC_RORK_API_BASE_URL;
   }
   
-  // Fallback for development
+  // For web development
   if (typeof window !== 'undefined') {
+    // Use the current origin for web
     return window.location.origin;
+  }
+  
+  // For mobile development - use the Expo dev server URL
+  if (Platform.OS !== 'web') {
+    // This will be the Expo dev server URL
+    return 'http://localhost:8081';
   }
   
   return 'http://localhost:8081';
@@ -28,8 +35,8 @@ export const trpcClient = trpc.createClient({
         try {
           console.log('tRPC request to:', url);
           
-          // Add timeout to prevent hanging - longer timeout for initial requests
-          const timeoutDuration = Platform.OS === 'web' ? 15000 : 20000;
+          // Add timeout to prevent hanging - shorter timeout for faster feedback
+          const timeoutDuration = Platform.OS === 'web' ? 10000 : 15000;
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
           
@@ -49,8 +56,8 @@ export const trpcClient = trpc.createClient({
           if (contentType && contentType.includes('text/html')) {
             console.warn('Server returned HTML instead of JSON. Backend may not be available.');
             const text = await response.text();
-            console.log('HTML response:', text.substring(0, 500));
-            throw new Error('Server returned HTML instead of JSON. Check if the API server is running.');
+            console.log('HTML response preview:', text.substring(0, 200));
+            throw new Error('Backend not available. The API server may not be running or the URL may be incorrect.');
           }
           
           if (!response.ok) {
