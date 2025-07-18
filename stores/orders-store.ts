@@ -10,6 +10,7 @@ export type PackageType = 'documents' | 'small' | 'medium' | 'electronics' | 'cl
 
 export interface Order {
   id: string;
+  trackingCode?: string;
   clientId: string;
   driverId?: string;
   customerName?: string;
@@ -59,6 +60,7 @@ interface OrdersState {
   getOrdersByDriver: (driverId: string) => Order[];
   getPendingOrders: () => Order[];
   getOrderById: (orderId: string) => Order | undefined;
+  getOrderByTrackingCode: (trackingCode: string) => Order | undefined;
   initializeSampleData: () => void;
 }
 
@@ -132,6 +134,7 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
 const sampleOrders: Order[] = [
   {
     id: 'ORD-001',
+    trackingCode: 'TRK12345ABC',
     clientId: '1',
     driverId: '2',
     from: 'Westlands Shopping Mall',
@@ -160,6 +163,7 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-002',
+    trackingCode: 'TRK67890DEF',
     clientId: '1',
     from: 'CBD - Kencom House',
     to: 'Kilimani - Yaya Centre',
@@ -186,6 +190,7 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-003',
+    trackingCode: 'TRKABCDE123',
     clientId: '1',
     from: 'Sarit Centre',
     to: 'Lavington Mall',
@@ -207,6 +212,7 @@ const sampleOrders: Order[] = [
   },
   {
     id: 'ORD-004',
+    trackingCode: 'TRKFGH456IJK',
     clientId: '2',
     driverId: '2',
     from: 'Nakumatt Junction',
@@ -255,6 +261,7 @@ export const useOrdersStore = create<OrdersState>()(
           
           const order: Order = {
             id: orderId,
+            trackingCode: orderData.trackingCode,
             clientId: orderData.customerId || orderData.clientId || 'unknown_user',
             from: orderData.pickupAddress || orderData.from || '',
             to: orderData.deliveryAddress || orderData.to || '',
@@ -360,6 +367,10 @@ export const useOrdersStore = create<OrdersState>()(
       
       getOrderById: (orderId) => {
         return get().orders.find((order) => order.id === orderId);
+      },
+      
+      getOrderByTrackingCode: (trackingCode) => {
+        return get().orders.find((order) => order.trackingCode === trackingCode);
       },
       
       cancelOrder: (orderId, reason) => {

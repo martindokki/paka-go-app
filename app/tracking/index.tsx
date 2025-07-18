@@ -33,13 +33,28 @@ import { MapViewComponent } from "@/components/MapView";
 import { MapService, Coordinates } from "@/services/map-service";
 
 export default function TrackingScreen() {
-  const { orderId } = useLocalSearchParams<{ orderId: string }>();
-  const { getOrderById, updateOrderStatus } = useOrdersStore();
+  const { orderId, trackingCode } = useLocalSearchParams<{ orderId?: string; trackingCode?: string }>();
+  const { getOrderById, getOrderByTrackingCode, updateOrderStatus } = useOrdersStore();
   const [refreshing, setRefreshing] = useState(false);
   const [pickupCoords, setPickupCoords] = useState<Coordinates | null>(null);
   const [deliveryCoords, setDeliveryCoords] = useState<Coordinates | null>(null);
   
-  const order = orderId ? getOrderById(orderId) : null;
+  // Find order by orderId or trackingCode
+  let order = orderId 
+    ? getOrderById(orderId) 
+    : trackingCode 
+    ? getOrderByTrackingCode(trackingCode)
+    : null;
+
+  // Fallback: if trackingCode didn't work, try to find by orderId that contains the tracking code
+  if (!order && trackingCode) {
+    const { orders } = useOrdersStore();
+    order = orders.find(o => o.id.includes(trackingCode) || o.id === trackingCode) || null;
+  }
+
+  // Debug logging
+  console.log('Tracking screen params:', { orderId, trackingCode });
+  console.log('Found order:', order ? `${order.id} - ${order.trackingCode}` : 'null');
 
   useEffect(() => {
     if (!order) {
@@ -252,6 +267,9 @@ export default function TrackingScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Track Order</Text>
           <Text style={styles.orderId}>Order #{order.id}</Text>
+          {order.trackingCode && (
+            <Text style={styles.trackingCode}>Tracking: {order.trackingCode}</Text>
+          )}
         </View>
 
         <LinearGradient
@@ -496,6 +514,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.textSecondary,
     fontWeight: "500",
+  },
+  trackingCode: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: "600",
+    marginTop: 4,
   },
   statusCard: {
     borderRadius: 20,
