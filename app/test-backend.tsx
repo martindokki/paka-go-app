@@ -238,7 +238,10 @@ export default function TestBackendScreen() {
       const { data: assignData, error: assignError } = await ParcelService.assignDriverToParcel(parcelId, authData.user.id);
       
       if (assignError) {
-        addResult(`❌ Driver assignment failed: ${assignError?.message || 'Unknown error'}`);
+        const errorMessage = assignError && typeof assignError === 'object' && 'message' in assignError 
+          ? (assignError as any).message 
+          : 'Unknown error';
+        addResult(`❌ Driver assignment failed: ${errorMessage}`);
         return false;
       }
 
@@ -285,7 +288,10 @@ export default function TestBackendScreen() {
       const { data: updateData, error: updateError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'picked');
       
       if (updateError) {
-        addResult(`❌ Delivery status update failed: ${updateError?.message || 'Unknown error'}`);
+        const errorMessage = updateError && typeof updateError === 'object' && 'message' in updateError 
+          ? (updateError as any).message 
+          : 'Unknown error';
+        addResult(`❌ Delivery status update failed: ${errorMessage}`);
         return false;
       }
 
@@ -295,7 +301,10 @@ export default function TestBackendScreen() {
       const { data: deliveredData, error: deliveredError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'delivered');
       
       if (deliveredError) {
-        addResult(`❌ Delivery completion failed: ${deliveredError?.message || 'Unknown error'}`);
+        const errorMessage = deliveredError && typeof deliveredError === 'object' && 'message' in deliveredError 
+          ? (deliveredError as any).message 
+          : 'Unknown error';
+        addResult(`❌ Delivery completion failed: ${errorMessage}`);
         return false;
       }
 
@@ -334,7 +343,10 @@ export default function TestBackendScreen() {
       const { data: drivers, error: driversError } = await ParcelService.getDrivers();
       
       if (driversError) {
-        addResult(`❌ Admin: Failed to fetch drivers: ${driversError?.message || 'Unknown error'}`);
+        const errorMessage = driversError && typeof driversError === 'object' && 'message' in driversError 
+          ? (driversError as any).message 
+          : 'Unknown error';
+        addResult(`❌ Admin: Failed to fetch drivers: ${errorMessage}`);
         return false;
       }
 
