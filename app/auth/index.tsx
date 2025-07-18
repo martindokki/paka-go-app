@@ -608,6 +608,8 @@ export default function AuthScreen() {
                     <Text style={styles.testAccount}>Driver: driver@test.com / password123</Text>
                     <Text style={styles.testAccount}>Admin: admin@test.com / password123</Text>
                   </View>
+                  <Text style={styles.testAccountsTitle}>✨ Real Registration Active</Text>
+                  <Text style={styles.testAccount}>Create new accounts with real data!</Text>
                   <TouchableOpacity 
                     style={styles.debugButton}
                     onPress={() => router.push('/debug-backend')}
@@ -1037,5 +1039,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
-
+  debugButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+  },
 });

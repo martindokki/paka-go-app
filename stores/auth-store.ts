@@ -99,71 +99,32 @@ export const useAuthStore = create<AuthState>()(
             return false;
           }
         } catch (error: any) {
-          // Fallback to mock authentication when backend is not available
-          console.log('Backend not available, using mock authentication');
+          let errorMsg = 'Login failed. Please check your credentials.';
           
-          // Mock users for fallback
-          const mockUsers = [
-            {
-              id: '1',
-              name: 'John Client',
-              email: 'client@test.com',
-              phone: '+254712345678',
-              userType: 'client' as const,
-              password: 'password123',
-            },
-            {
-              id: '2',
-              name: 'Jane Driver',
-              email: 'driver@test.com',
-              phone: '+254712345679',
-              userType: 'driver' as const,
-              password: 'password123',
-            },
-            {
-              id: '3',
-              name: 'Admin User',
-              email: 'admin@test.com',
-              phone: '+254712345680',
-              userType: 'admin' as const,
-              password: 'password123',
-            },
-          ];
-          
-          const user = mockUsers.find(
-            u => u.email === credentials.email && 
-                 u.password === credentials.password &&
-                 u.userType === credentials.userType
-          );
-          
-          if (user) {
-            const { password, ...userWithoutPassword } = user;
-            const token = `mock_token_${user.id}_${Date.now()}`;
-            
-            set({
-              user: { ...userWithoutPassword, token },
-              token,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            
-            await errorLogger.info('Mock login successful', { userType: user.userType });
-            return true;
-          } else {
-            set({ 
-              error: 'Invalid email, password, or user type', 
-              isLoading: false,
-              isAuthenticated: false,
-              user: null,
-              token: null,
-            });
-            
-            await errorLogger.error('Mock login failed', { 
-              credentials: { email: credentials.email, userType: credentials.userType }
-            });
-            return false;
+          // Handle specific error messages from the backend
+          if (error.message) {
+            if (error.message.includes('Invalid credentials')) {
+              errorMsg = 'Invalid email, password, or user type. Please check your information and try again.';
+            } else if (error.message.includes('not found')) {
+              errorMsg = 'No account found with this email and user type. Please check your information or sign up.';
+            } else {
+              errorMsg = error.message;
+            }
           }
+          
+          set({ 
+            error: errorMsg, 
+            isLoading: false,
+            isAuthenticated: false,
+            user: null,
+            token: null,
+          });
+          
+          await errorLogger.error('Login failed', { 
+            error: error.message || 'Unknown error',
+            credentials: { email: credentials.email, userType: credentials.userType }
+          });
+          return false;
         }
       },
       
@@ -203,35 +164,32 @@ export const useAuthStore = create<AuthState>()(
             return false;
           }
         } catch (error: any) {
-          // Fallback to mock registration when backend is not available
-          console.log('Backend not available, using mock registration');
+          let errorMsg = 'Registration failed. Please try again.';
           
-          // Simulate network delay
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Handle specific error messages from the backend
+          if (error.message) {
+            if (error.message.includes('already exists')) {
+              errorMsg = 'An account with this email already exists. Please try signing in instead.';
+            } else if (error.message.includes('invalid')) {
+              errorMsg = 'Please check your information and try again.';
+            } else {
+              errorMsg = error.message;
+            }
+          }
           
-          // Create new user
-          const newUser = {
-            id: Date.now().toString(),
-            name: userData.name,
-            email: userData.email,
-            phone: userData.phone,
-            userType: userData.userType,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          
-          const token = `mock_token_${newUser.id}_${Date.now()}`;
-          
-          set({
-            user: { ...newUser, token },
-            token,
-            isAuthenticated: true,
+          set({ 
+            error: errorMsg, 
             isLoading: false,
-            error: null,
+            isAuthenticated: false,
+            user: null,
+            token: null,
           });
           
-          await errorLogger.info('Mock registration successful', { userType: newUser.userType });
-          return true;
+          await errorLogger.error('Registration failed', { 
+            error: error.message || 'Unknown error',
+            userData: { email: userData.email, userType: userData.userType }
+          });
+          return false;
         }
       },
       

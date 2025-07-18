@@ -6,6 +6,8 @@ export class AuthService {
   // User authentication
   static async login(email: string, password: string, userType: 'client' | 'driver' | 'admin') {
     try {
+      console.log('AuthService.login called with:', { email, userType });
+      
       const user = await db
         .select()
         .from(schema.users)
@@ -20,11 +22,13 @@ export class AuthService {
         .limit(1);
 
       if (user.length === 0) {
+        console.log('Login failed: Invalid credentials or user type');
         return { success: false, error: 'Invalid credentials or user type' };
       }
 
       const userData = user[0];
       const token = `token_${userData.id}_${Date.now()}`;
+      console.log('Login successful for:', email);
 
       // Update last login time
       await db
@@ -51,7 +55,14 @@ export class AuthService {
       };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'Login failed' };
+      
+      // Provide more specific error messages
+      let errorMessage = 'Login failed';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 
@@ -64,6 +75,8 @@ export class AuthService {
     userType: 'client' | 'driver' | 'admin';
   }) {
     try {
+      console.log('AuthService.register called with:', { email: userData.email, userType: userData.userType });
+      
       // Check if user already exists
       const existingUser = await db
         .select()
@@ -72,6 +85,7 @@ export class AuthService {
         .limit(1);
 
       if (existingUser.length > 0) {
+        console.log('User already exists:', userData.email);
         return { success: false, error: 'User with this email already exists' };
       }
 
@@ -88,7 +102,9 @@ export class AuthService {
         status: userData.userType === 'driver' ? 'pending' : 'active',
       };
 
+      console.log('Creating new user:', { userId, email: userData.email });
       await db.insert(schema.users).values(newUser);
+      console.log('User created successfully');
 
       // Create additional records based on user type
       if (userData.userType === 'client') {
@@ -97,6 +113,7 @@ export class AuthService {
           id: customerId,
           userId: userId,
         };
+        console.log('Creating customer record:', customerId);
         await db.insert(schema.customers).values(newCustomer);
       } else if (userData.userType === 'driver') {
         const driverId = `driver_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -104,10 +121,12 @@ export class AuthService {
           id: driverId,
           userId: userId,
         };
+        console.log('Creating driver record:', driverId);
         await db.insert(schema.drivers).values(newDriver);
       }
 
       const token = `token_${userId}_${Date.now()}`;
+      console.log('Registration successful for:', userData.email);
 
       return {
         success: true,
@@ -127,7 +146,20 @@ export class AuthService {
       };
     } catch (error) {
       console.error('Registration error:', error);
-      return { success: false, error: 'Registration failed' };
+      
+      // Provide more specific error messages
+      let errorMessage = 'Registration failed';
+      if (error instanceof Error) {
+        if (error.message.includes('UNIQUE constraint failed')) {
+          errorMessage = 'An account with this email already exists';
+        } else if (error.message.includes('NOT NULL constraint failed')) {
+          errorMessage = 'Missing required information';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { publicProcedure } from "../../../create-context";
-// Temporarily disable auth service import until it's properly implemented
-// import { AuthService } from "../../../services/auth-service";
+import { AuthService } from "../../../services/auth-service";
 
 export const registerProcedure = publicProcedure
   .input(z.object({
@@ -12,16 +11,20 @@ export const registerProcedure = publicProcedure
     userType: z.enum(['client', 'driver', 'admin'])
   }))
   .mutation(async ({ input }) => {
-    // Mock registration for now
-    const result = {
-      success: true,
-      user: { id: '1', email: input.email, name: input.name, phone: input.phone, role: input.userType },
-      token: 'mock-jwt-token'
-    };
+    const result = await AuthService.register({
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      password: input.password,
+      userType: input.userType
+    });
     
     if (!result.success) {
-      throw new Error('Registration failed');
+      throw new Error(result.error || 'Registration failed');
     }
     
-    return result;
+    return {
+      success: true,
+      data: result.data
+    };
   });
