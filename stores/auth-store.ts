@@ -71,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
           const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
           
           if (error || !authUser) {
-            throw new Error((error as any)?.message || 'Login failed');
+            throw new Error(error?.message || 'Login failed');
           }
 
           // Get user profile
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>()(
             email: profile.email,
             phone: profile.phone_number || '',
             userType: profile.role as UserType,
-            token: (authUser as any).access_token || 'authenticated',
+            token: 'authenticated',
             createdAt: profile.created_at,
             updatedAt: profile.created_at,
           };
@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthState>()(
           
           set({
             user: userData,
-            token: (authUser as any).access_token || 'authenticated',
+            token: 'authenticated',
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -131,11 +131,11 @@ export const useAuthStore = create<AuthState>()(
             userData.password, 
             userData.name, 
             userData.phone, 
-            userData.userType as 'customer' | 'driver'
+            userData.userType === 'admin' ? 'customer' : userData.userType as 'customer' | 'driver'
           );
           
           if (error || !authUser) {
-            throw new Error((error as any)?.message || 'Registration failed');
+            throw new Error(error?.message || 'Registration failed');
           }
 
           // Get updated user profile
@@ -151,7 +151,7 @@ export const useAuthStore = create<AuthState>()(
             email: profile.email,
             phone: profile.phone_number || '',
             userType: profile.role as UserType,
-            token: (authUser as any).access_token || 'authenticated',
+            token: 'authenticated',
             createdAt: profile.created_at,
             updatedAt: profile.created_at,
           };
@@ -160,7 +160,7 @@ export const useAuthStore = create<AuthState>()(
           
           set({
             user: userDataForStore,
-            token: (authUser as any).access_token || 'authenticated',
+            token: 'authenticated',
             isAuthenticated: true,
             isLoading: false,
             error: null,
