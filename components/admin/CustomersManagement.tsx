@@ -35,7 +35,7 @@ interface Customer {
   rating: number;
   status: 'active' | 'inactive' | 'suspended';
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   lastOrderDate?: string;
 }
 

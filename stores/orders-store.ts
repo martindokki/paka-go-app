@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 export type OrderStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'mpesa' | 'card' | 'cash';
@@ -390,7 +391,34 @@ export const useOrdersStore = create<OrdersState>()(
     }),
     {
       name: 'orders-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => {
+        if (Platform.OS === 'web') {
+          return {
+            getItem: (name: string) => {
+              try {
+                return localStorage.getItem(name);
+              } catch {
+                return null;
+              }
+            },
+            setItem: (name: string, value: string) => {
+              try {
+                localStorage.setItem(name, value);
+              } catch {
+                // Ignore storage errors on web
+              }
+            },
+            removeItem: (name: string) => {
+              try {
+                localStorage.removeItem(name);
+              } catch {
+                // Ignore storage errors on web
+              }
+            },
+          };
+        }
+        return AsyncStorage;
+      }),
     }
   )
 );
