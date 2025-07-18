@@ -31,9 +31,36 @@ import {
   ArrowRight,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
-import { useAuthStore, UserType, LoginRequest, RegisterRequest } from "@/stores/auth-store";
-import { errorLogger } from "@/utils/error-logger";
+// Simple colors object
+const colors = {
+  primary: '#FF6A00',
+  primaryDark: '#E55A00',
+  background: '#FFFFFF',
+  backgroundSecondary: '#F8F9FA',
+  text: '#1A1A1A',
+  textMuted: '#6B7280',
+  error: '#EF4444',
+  warning: '#F59E0B',
+  accent: '#2563EB',
+  accentDark: '#1D4ED8',
+  border: '#E5E7EB',
+  borderLight: '#F3F4F6',
+  primaryLight: '#FFF4F0',
+  shadow: 'rgba(0, 0, 0, 0.1)',
+};
+
+type UserType = 'client' | 'driver' | 'admin';
+
+interface LoginRequest {
+  email: string;
+  password: string;
+  userType: UserType;
+}
+
+interface RegisterRequest extends LoginRequest {
+  name: string;
+  phone: string;
+}
 
 const { width, height } = Dimensions.get("window");
 
@@ -51,7 +78,25 @@ export default function AuthScreen() {
     password: "",
   });
 
-  const { login, register, isLoading: authLoading, error: authError, clearError } = useAuthStore();
+  // Mock auth functions for now
+  const [authLoading, setAuthLoading] = React.useState(false);
+  const [authError, setAuthError] = React.useState<string | null>(null);
+  
+  const clearError = () => setAuthError(null);
+  
+  const login = async (credentials: LoginRequest): Promise<boolean> => {
+    setAuthLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setAuthLoading(false);
+    return true;
+  };
+  
+  const register = async (userData: RegisterRequest): Promise<boolean> => {
+    setAuthLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setAuthLoading(false);
+    return true;
+  };
 
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
@@ -139,7 +184,7 @@ export default function AuthScreen() {
         }
       }
     } catch (error) {
-      console.error('Auth error:', error, { action: 'handleAuth', authMode, userType });
+      console.error('Auth error:', error);
       Alert.alert(
         "Authentication Error", 
         "Something went wrong. Please try again."

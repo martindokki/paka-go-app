@@ -39,25 +39,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      // Simple initialization without blocking
       SplashScreen.hideAsync().catch(console.error);
-      
-      // Initialize sample data asynchronously
-      setTimeout(() => {
-        try {
-          // Initialize stores after layout is ready
-          const { useOrdersStore } = require('@/stores/orders-store');
-          const { useLocalDataStore } = require('@/stores/local-data-store');
-          
-          const ordersStore = useOrdersStore.getState();
-          const localDataStore = useLocalDataStore.getState();
-          
-          ordersStore.initializeSampleData();
-          localDataStore.initializeData();
-        } catch (error) {
-          console.error('Failed to initialize sample data:', error);
-        }
-      }, 100);
     }
   }, [loaded]);
 

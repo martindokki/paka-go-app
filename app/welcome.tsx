@@ -10,9 +10,18 @@ import {
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Send, Truck, Shield, Users } from 'lucide-react-native';
-import colors from '@/constants/colors';
 
 const { width } = Dimensions.get('window');
+
+// Simple colors object
+const colors = {
+  primary: '#FF6A00',
+  primaryDark: '#E55A00',
+  background: '#FFFFFF',
+  text: '#1A1A1A',
+  textMuted: '#6B7280',
+  warning: '#F59E0B',
+};
 
 export default function WelcomeScreen() {
   const features = [

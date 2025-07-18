@@ -1,8 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
-import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store";
+// Simple colors object
+const colors = {
+  primary: '#FF6A00',
+  background: '#FFFFFF',
+  backgroundSecondary: '#F8F9FA',
+  text: '#1A1A1A',
+  textMuted: '#6B7280',
+};
 
 export default function ClientHomeScreen() {
   const { user } = useAuthStore();
