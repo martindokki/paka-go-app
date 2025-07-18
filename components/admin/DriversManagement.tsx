@@ -73,7 +73,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
           </View>
         </View>
         <Text style={styles.joinDate}>
-          Status: {driver.status}
+          Joined: {new Date(driver.createdAt).toLocaleDateString()}
         </Text>
       </View>
 

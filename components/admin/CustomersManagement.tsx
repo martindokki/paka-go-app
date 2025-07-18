@@ -35,7 +35,7 @@ interface Customer {
   rating: number;
   status: 'active' | 'inactive' | 'suspended';
   createdAt: string;
-  updatedAt?: string;
+  updatedAt: string;
   lastOrderDate?: string;
 }
 
@@ -220,7 +220,7 @@ function CustomerDetailsModal({ visible, customer, onClose }: CustomerDetailsMod
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Last Updated:</Text>
                 <Text style={styles.detailValue}>
-                  {new Date(customer.createdAt).toLocaleDateString('en-US', {
+                  {new Date(customer.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
