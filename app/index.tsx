@@ -1,19 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 
 export default function Index() {
-  // Simple redirect to welcome for now
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace('/welcome');
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Loading...</Text>
+      <Text style={styles.title}>Swift Delivery</Text>
+      <Text style={styles.subtitle}>Your trusted delivery partner</Text>
+      
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => router.push('/welcome')}
+      >
+        <Text style={styles.buttonText}>Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -24,9 +24,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+    padding: 20,
   },
-  text: {
-    fontSize: 18,
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FF6A00',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 40,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#FF6A00',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

@@ -30,7 +30,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react-native";
-import { LinearGradient } from "expo-linear-gradient";
+// import { LinearGradient } from "expo-linear-gradient";
 // Simple colors object
 const colors = {
   primary: '#FF6A00',
@@ -203,10 +203,10 @@ export default function AuthScreen() {
           ]}
           onPress={() => setUserType("client")}
         >
-          <LinearGradient
-            colors={userType === "client" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
-            style={styles.userTypeGradient}
-          >
+          <View style={[
+            styles.userTypeGradient,
+            userType === "client" && { backgroundColor: colors.primary }
+          ]}>
             <View style={styles.userTypeIconContainer}>
               <View style={[
                 styles.userTypeIcon,
@@ -329,10 +329,7 @@ export default function AuthScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[colors.primary, colors.primaryDark, "#E55A2B"]}
-        style={styles.backgroundGradient}
-      >
+      <View style={styles.backgroundGradient}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardView}
@@ -343,12 +340,9 @@ export default function AuthScreen() {
           >
             <View style={styles.header}>
               <View style={styles.logoContainer}>
-                <LinearGradient
-                  colors={[colors.background, "#FFFFFF"]}
-                  style={styles.logoIcon}
-                >
+                <View style={styles.logoIcon}>
                   <Zap size={48} color={colors.primary} />
-                </LinearGradient>
+                </View>
                 <View style={styles.logoTextContainer}>
                   <Text style={styles.logo}>PAKA Go</Text>
                   <View style={styles.taglineContainer}>
@@ -666,7 +660,7 @@ export default function AuthScreen() {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 }
@@ -677,6 +671,7 @@ const styles = StyleSheet.create({
   },
   backgroundGradient: {
     flex: 1,
+    backgroundColor: colors.primary,
   },
   keyboardView: {
     flex: 1,
@@ -702,6 +697,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
+    backgroundColor: colors.background,
     shadowColor: colors.background,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
