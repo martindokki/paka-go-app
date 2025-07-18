@@ -7,8 +7,6 @@ import { Parcel, Delivery } from '@/services/supabase';
 
 export type OrderStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled';
 export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
-export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
-export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'mpesa' | 'card' | 'cash';
 export type PaymentTerm = 'pay_now' | 'pay_on_delivery';
 export type PackageType = 'documents' | 'small' | 'medium' | 'electronics' | 'clothing' | 'food';
