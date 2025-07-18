@@ -11,6 +11,7 @@ import {
   Platform,
   StatusBar,
   Animated,
+  ScrollView,
 } from "react-native";
 import { router } from "expo-router";
 import { 
