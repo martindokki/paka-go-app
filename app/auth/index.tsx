@@ -123,7 +123,7 @@ export default function AuthScreen() {
       }
       
       if (success) {
-        await errorLogger.info(`${authMode} successful`, { userType, email: formData.email });
+        console.log(`${authMode} successful`, { userType, email: formData.email });
         
         // Navigate based on user type
         switch (userType) {
@@ -139,7 +139,7 @@ export default function AuthScreen() {
         }
       }
     } catch (error) {
-      await errorLogger.error(error as Error, { action: 'handleAuth', authMode, userType });
+      console.error('Auth error:', error, { action: 'handleAuth', authMode, userType });
       Alert.alert(
         "Authentication Error", 
         "Something went wrong. Please try again."
