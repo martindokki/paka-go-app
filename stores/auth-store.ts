@@ -63,6 +63,7 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
+        console.log('Login attempt:', { email: credentials.email, userType: credentials.userType });
         
         try {
           // Mock login - simulate successful authentication
@@ -80,6 +81,8 @@ export const useAuthStore = create<AuthState>()(
             updatedAt: new Date().toISOString(),
           };
           
+          console.log('Setting user data:', mockUser);
+          
           set({
             user: mockUser,
             token: mockUser.token,
@@ -88,7 +91,16 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           
-          console.log('Login successful', { userType: mockUser.userType });
+          console.log('Login successful', { userType: mockUser.userType, userId: mockUser.id });
+          
+          // Verify the state was set correctly
+          const currentState = get();
+          console.log('Current auth state after login:', {
+            isAuthenticated: currentState.isAuthenticated,
+            user: currentState.user?.email,
+            userType: currentState.user?.userType
+          });
+          
           return true;
         } catch (error: any) {
           const errorMsg = 'Login failed. Please try again.';
@@ -108,6 +120,7 @@ export const useAuthStore = create<AuthState>()(
       
       register: async (userData: RegisterRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
+        console.log('Registration attempt:', { email: userData.email, userType: userData.userType });
         
         try {
           // Mock registration - simulate successful registration
@@ -125,6 +138,8 @@ export const useAuthStore = create<AuthState>()(
             updatedAt: new Date().toISOString(),
           };
           
+          console.log('Setting user data:', mockUser);
+          
           set({
             user: mockUser,
             token: mockUser.token,
@@ -133,7 +148,16 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           
-          console.log('Registration successful', { userType: mockUser.userType, email: userData.email });
+          console.log('Registration successful', { userType: mockUser.userType, email: userData.email, userId: mockUser.id });
+          
+          // Verify the state was set correctly
+          const currentState = get();
+          console.log('Current auth state after registration:', {
+            isAuthenticated: currentState.isAuthenticated,
+            user: currentState.user?.email,
+            userType: currentState.user?.userType
+          });
+          
           return true;
         } catch (error: any) {
           const errorMsg = 'Registration failed. Please check your details and try again.';
@@ -296,7 +320,9 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
+        console.log('Auth store rehydrating:', state ? 'success' : 'failed');
         if (state) {
+          console.log('Rehydrated user:', state.user?.email, 'isAuthenticated:', state.isAuthenticated);
           state.setInitialized(true);
         }
       },
@@ -309,5 +335,29 @@ setTimeout(() => {
   const state = useAuthStore.getState();
   if (!state.isInitialized) {
     state.setInitialized(true);
+    console.log('Auth store initialized via timeout fallback');
   }
-}, 1000);
+}, 2000);
+
+// Initialize auth store on app start
+if (typeof window !== 'undefined') {
+  // Web initialization
+  setTimeout(() => {
+    const state = useAuthStore.getState();
+    console.log('Auth store state on web:', { 
+      isAuthenticated: state.isAuthenticated, 
+      user: state.user?.email,
+      isInitialized: state.isInitialized 
+    });
+  }, 100);
+} else {
+  // Mobile initialization
+  setTimeout(() => {
+    const state = useAuthStore.getState();
+    console.log('Auth store state on mobile:', { 
+      isAuthenticated: state.isAuthenticated, 
+      user: state.user?.email,
+      isInitialized: state.isInitialized 
+    });
+  }, 100);
+}

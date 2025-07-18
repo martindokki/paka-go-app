@@ -247,8 +247,12 @@ export const useOrdersStore = create<OrdersState>()(
       
       initializeSampleData: () => {
         const currentOrders = get().orders;
+        console.log("Initializing sample data. Current orders count:", currentOrders.length);
         if (currentOrders.length === 0) {
+          console.log("Adding sample orders");
           set({ orders: sampleOrders });
+        } else {
+          console.log("Sample data already exists, skipping initialization");
         }
       },
       

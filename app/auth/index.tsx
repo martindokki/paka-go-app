@@ -32,7 +32,7 @@ import {
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 
 type UserType = 'client' | 'driver' | 'admin';
 
@@ -621,9 +621,9 @@ export default function AuthScreen() {
                   <Text style={styles.testAccount}>Create new accounts with real data!</Text>
                   <TouchableOpacity 
                     style={styles.debugButton}
-                    onPress={() => router.push('/debug-backend')}
+                    onPress={() => router.push('/debug-auth')}
                   >
-                    <Text style={styles.debugButtonText}>🔧 Debug Backend</Text>
+                    <Text style={styles.debugButtonText}>🔧 Debug Auth</Text>
                   </TouchableOpacity>
                 </View>
               )}

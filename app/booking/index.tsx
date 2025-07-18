@@ -246,9 +246,10 @@ export default function BookingScreen() {
     }
 
     // Check authentication status
-    console.log("Auth check:", { user, isAuthenticated, userType: user?.userType });
+    console.log("Auth check:", { user, isAuthenticated, userType: user?.userType, userId: user?.id });
     
     if (!isAuthenticated || !user) {
+      console.log("Authentication failed - redirecting to login");
       Alert.alert(
         "Authentication Required", 
         "Please log in to book a delivery. You will be redirected to the login page.",
@@ -290,6 +291,7 @@ export default function BookingScreen() {
     try {
       // Get customer ID from user - ensure we have a valid user ID
       const customerId = user.id;
+      console.log("Creating order for customer:", customerId);
       
       // Create the order locally first
       const orderId = `ORD-${Date.now()}`;
@@ -328,6 +330,18 @@ export default function BookingScreen() {
       const createdOrderId = createOrder(orderData);
       
       console.log("Order created successfully:", { createdOrderId, trackingCode });
+      
+      // Verify order was created
+      const createdOrder = useOrdersStore.getState().getOrderById(createdOrderId);
+      console.log("Verification - Order exists:", !!createdOrder);
+      if (createdOrder) {
+        console.log("Created order details:", { 
+          id: createdOrder.id, 
+          trackingCode: createdOrder.trackingCode,
+          clientId: createdOrder.clientId,
+          status: createdOrder.status 
+        });
+      }
       
       // Navigate based on payment term
       if (bookingData.paymentTerm === "pay_now" && bookingData.paymentMethod !== "cash") {

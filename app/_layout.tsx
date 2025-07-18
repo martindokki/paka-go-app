@@ -9,8 +9,7 @@ import { useColorScheme } from 'react-native';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import colors from '@/constants/colors';
-import { useOrdersStore } from '@/stores/orders-store';
-import { useAuthStore } from '@/stores/auth-store-simple';
+import { useAppInitialization } from '@/hooks/useAppInitialization';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -32,7 +31,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-
+  const { isAppReady } = useAppInitialization();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -40,12 +39,12 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && isAppReady) {
       SplashScreen.hideAsync().catch(console.error);
     }
-  }, [loaded]);
+  }, [loaded, isAppReady]);
 
-  if (!loaded) {
+  if (!loaded || !isAppReady) {
     return null;
   }
 
@@ -54,18 +53,6 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { initializeSampleData } = useOrdersStore();
-  const { isInitialized, setUser } = useAuthStore();
-
-  // Initialize stores when app loads
-  useEffect(() => {
-    if (isInitialized) {
-      // Initialize sample orders data
-      initializeSampleData();
-      
-      console.log('App initialized, auth state:', useAuthStore.getState());
-    }
-  }, [isInitialized, initializeSampleData]);
 
   return (
     <ErrorBoundary>

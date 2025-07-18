@@ -61,11 +61,17 @@ export default function TrackingScreen() {
   console.log('Found order:', order ? `${order.id} - ${order.trackingCode}` : 'null');
 
   useEffect(() => {
+    // Initialize sample data if needed
+    const { initializeSampleData } = useOrdersStore.getState();
+    initializeSampleData();
+    
     if (!order) {
+      console.log("Order not found. Available orders:", useOrdersStore.getState().orders.map(o => ({ id: o.id, trackingCode: o.trackingCode })));
       Alert.alert("Order Not Found", "The order you're looking for doesn't exist.", [
         { text: "Go Back", onPress: () => router.back() }
       ]);
     } else {
+      console.log("Order found:", { id: order.id, trackingCode: order.trackingCode, status: order.status });
       // Geocode pickup and delivery addresses
       geocodeAddresses();
     }
