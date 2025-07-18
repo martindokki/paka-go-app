@@ -48,7 +48,7 @@ export interface Order {
 
 interface OrdersState {
   orders: Order[];
-  createOrder: (orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt' | 'timeline' | 'paymentStatus'>) => string;
+  createOrder: (orderData: any) => string;
   updateOrderStatus: (orderId: string, status: OrderStatus, driverInfo?: Order['driverInfo']) => void;
   updatePaymentStatus: (orderId: string, paymentStatus: Order['paymentStatus']) => void;
   assignDriver: (orderId: string, driverId: string, driverInfo: Order['driverInfo']) => void;
@@ -246,16 +246,37 @@ export const useOrdersStore = create<OrdersState>()(
       },
       
       createOrder: (orderData) => {
-        const orderId = `ORD-${Date.now()}`;
+        const orderId = orderData.id || `ORD-${Date.now()}`;
         const now = new Date().toISOString();
         
         const order: Order = {
-          ...orderData,
           id: orderId,
-          createdAt: now,
-          updatedAt: now,
+          clientId: orderData.customerId || orderData.clientId || '1',
+          from: orderData.pickupAddress || orderData.from || '',
+          to: orderData.deliveryAddress || orderData.to || '',
+          fromCoords: orderData.pickupLatitude && orderData.pickupLongitude ? {
+            lat: orderData.pickupLatitude,
+            lng: orderData.pickupLongitude
+          } : undefined,
+          toCoords: orderData.deliveryLatitude && orderData.deliveryLongitude ? {
+            lat: orderData.deliveryLatitude,
+            lng: orderData.deliveryLongitude
+          } : undefined,
+          packageType: orderData.packageType || 'documents',
+          packageDescription: orderData.packageDescription || '',
+          recipientName: orderData.recipientName || '',
+          recipientPhone: orderData.recipientPhone || '',
+          specialInstructions: orderData.specialInstructions || '',
+          status: orderData.status || 'pending',
+          paymentMethod: orderData.paymentMethod || 'mpesa',
+          paymentTerm: orderData.paymentTerm || 'pay_now',
           paymentStatus: orderData.paymentTerm === 'pay_now' ? 'pending' : 'pending',
-          timeline: createTimeline(orderData.status),
+          price: orderData.price || 0,
+          distance: orderData.estimatedDistance ? `${orderData.estimatedDistance.toFixed(1)} km` : undefined,
+          estimatedTime: orderData.estimatedDuration ? `${orderData.estimatedDuration}-${orderData.estimatedDuration + 10} mins` : undefined,
+          createdAt: orderData.createdAt || now,
+          updatedAt: now,
+          timeline: createTimeline(orderData.status || 'pending'),
         };
         
         set((state) => ({

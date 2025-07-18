@@ -6,8 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from 'react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { trpc, trpcClient } from '@/lib/trpc';
+
 import { useOrdersStore } from '@/stores/orders-store';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import colors from '@/constants/colors';
@@ -25,42 +24,7 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// Create a client with timeout settings
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error) => {
-        // Don't retry on certain errors
-        if (error instanceof Error) {
-          if (error.message.includes('Backend not available') || 
-              error.message.includes('Request timed out') ||
-              error.message.includes('Network error')) {
-            return false;
-          }
-        }
-        return failureCount < 2;
-      },
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      networkMode: 'offlineFirst',
-    },
-    mutations: {
-      retry: (failureCount, error) => {
-        // Don't retry on certain errors
-        if (error instanceof Error) {
-          if (error.message.includes('Backend not available') || 
-              error.message.includes('Request timed out') ||
-              error.message.includes('Network error')) {
-            return false;
-          }
-        }
-        return failureCount < 1;
-      },
-      networkMode: 'offlineFirst',
-    },
-  },
-});
+
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -102,9 +66,7 @@ function RootLayoutNav() {
 
   return (
     <ErrorBoundary>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="auth/index" options={{ headerShown: false }} />
@@ -160,18 +122,9 @@ function RootLayoutNav() {
                   headerShown: false,
                 }} 
               />
-              <Stack.Screen 
-                name="debug-connection" 
-                options={{ 
-                  presentation: 'modal',
-                  title: 'Connection Debug',
-                  headerShown: true,
-                }} 
-              />
+
             </Stack>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </trpc.Provider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

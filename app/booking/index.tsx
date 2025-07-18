@@ -35,7 +35,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { trpc } from "@/lib/trpc";
+
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
@@ -46,7 +46,7 @@ import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/const
 export default function BookingScreen() {
   const { user } = useAuthStore();
   const { createOrder } = useOrdersStore();
-  const createOrderMutation = trpc.orders.create.useMutation();
+
   const { userLocation, destination, routePoints, clearRoute } = useMapStore();
   
   const [bookingData, setBookingData] = useState({
@@ -252,8 +252,13 @@ export default function BookingScreen() {
       // Get customer ID from user
       const customerId = `customer_${user.id}`;
       
-      // Create the order via tRPC
-      const result = await createOrderMutation.mutateAsync({
+      // Create the order locally
+      const orderId = `order_${Date.now()}`;
+      const trackingCode = `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+      
+      const orderData = {
+        id: orderId,
+        trackingCode,
         customerId,
         pickupAddress: bookingData.pickupLocation,
         pickupLatitude: bookingData.pickupCoords?.latitude,
@@ -272,12 +277,15 @@ export default function BookingScreen() {
           ? MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords)
           : undefined,
         estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
-      });
-
-      const orderId = result.data?.orderId;
-      const trackingCode = result.data?.trackingCode;
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        price: priceBreakdown?.total || 0,
+      };
       
-      console.log("Order created:", orderId, trackingCode, bookingData);
+      // Add to local store
+      createOrder(orderData);
+      
+      console.log("Order created locally:", orderId, trackingCode, orderData);
       
       // Navigate based on payment term
       if (bookingData.paymentTerm === "pay_now" && bookingData.paymentMethod !== "cash") {
