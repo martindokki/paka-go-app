@@ -49,6 +49,9 @@ interface PendingOrder {
 }
 
 export default function DriverDashboard() {
+  const { user } = useAuthStore();
+  const { getPendingOrders, getOrdersByDriver, assignDriver, updateOrderStatus } = useOrdersStore();
+  const { updateDriverStatus, getDriverById } = useLocalDataStore();
   const [isOnline, setIsOnline] = useState(true);
   const [currentOrder, setCurrentOrder] = useState<PendingOrder | null>({
     id: "1",
@@ -302,7 +305,7 @@ export default function DriverDashboard() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.greeting}>Good morning! 🌅</Text>
-            <Text style={styles.driverName}>Driver Peter</Text>
+            <Text style={styles.driverName}>{user?.name || 'Driver'}</Text>
           </View>
           <View style={styles.headerRight}>
             <View style={styles.onlineToggle}>

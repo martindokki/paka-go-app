@@ -10,24 +10,16 @@ import { SupportManagement } from '@/components/admin/SupportManagement';
 import { NotificationsManagement } from '@/components/admin/NotificationsManagement';
 import { SettingsManagement } from '@/components/admin/SettingsManagement';
 import { SecurityManagement } from '@/components/admin/SecurityManagement';
-import { useAdminStore } from '@/stores/admin-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { useLocalDataStore } from '@/stores/local-data-store';
+import { useOrdersStore } from '@/stores/orders-store';
 import { router } from 'expo-router';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { user, isAuthenticated } = useAuthStore();
-  const { 
-    stats, 
-    fetchStats, 
-    fetchDrivers, 
-    fetchVehicles, 
-    fetchCustomers, 
-    fetchSupportQueries,
-    fetchSettings,
-    fetchActivityLogs,
-    isLoading 
-  } = useAdminStore();
+  const { adminStats, drivers, initializeData } = useLocalDataStore();
+  const { orders } = useOrdersStore();
 
   useEffect(() => {
     // Check if user is authenticated and is admin
@@ -37,31 +29,19 @@ export default function AdminDashboard() {
     }
 
     // Initialize admin data
-    const initializeData = async () => {
-      await Promise.all([
-        fetchStats(),
-        fetchDrivers(),
-        fetchVehicles(),
-        fetchCustomers(),
-        fetchSupportQueries(),
-        fetchSettings(),
-        fetchActivityLogs(),
-      ]);
-    };
-
     initializeData();
   }, [isAuthenticated, user]);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return stats ? <DashboardStats stats={stats} /> : null;
+        return <DashboardStats stats={adminStats} orders={orders} drivers={drivers} />;
       case 'orders':
-        return <OrdersManagement />;
+        return <OrdersManagement orders={orders} />;
       case 'drivers':
-        return <DriversManagement />;
+        return <DriversManagement drivers={drivers} />;
       case 'vehicles':
-        return <VehiclesManagement />;
+        return <VehiclesManagement drivers={drivers} />;
       case 'customers':
         return <CustomersManagement />;
       case 'support':
@@ -73,7 +53,7 @@ export default function AdminDashboard() {
       case 'security':
         return <SecurityManagement />;
       default:
-        return stats ? <DashboardStats stats={stats} /> : null;
+        return <DashboardStats stats={adminStats} orders={orders} drivers={drivers} />;
     }
   };
 

@@ -13,7 +13,9 @@ import {
   Timer
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { AdminStats } from '@/stores/admin-store';
+import { AdminStats } from '@/stores/local-data-store';
+import { Order } from '@/stores/orders-store';
+import { Driver } from '@/stores/local-data-store';
 
 interface StatCardProps {
   title: string;
@@ -40,9 +42,11 @@ function StatCard({ title, value, icon: IconComponent, color, subtitle }: StatCa
 
 interface DashboardStatsProps {
   stats: AdminStats;
+  orders: Order[];
+  drivers: Driver[];
 }
 
-export function DashboardStats({ stats }: DashboardStatsProps) {
+export function DashboardStats({ stats, orders, drivers }: DashboardStatsProps) {
   const formatCurrency = (amount: number) => {
     return `KES ${amount.toLocaleString()}`;
   };
@@ -51,24 +55,29 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     return num.toLocaleString();
   };
 
+  // Calculate real-time stats from orders and drivers
+  const pendingOrders = orders.filter(order => order.status === 'pending').length;
+  const onTransitOrders = orders.filter(order => ['assigned', 'picked_up', 'in_transit'].includes(order.status)).length;
+  const onlineDrivers = drivers.filter(driver => driver.status === 'online').length;
+
   const statCards = [
     {
       title: 'Total Revenue',
       value: formatCurrency(stats.totalRevenue),
       icon: DollarSign,
       color: colors.success,
-      subtitle: 'This month',
+      subtitle: 'All time',
     },
     {
       title: 'Total Orders',
-      value: formatNumber(stats.totalOrders),
+      value: formatNumber(orders.length),
       icon: Package,
       color: colors.primary,
       subtitle: 'All time',
     },
     {
       title: 'Pending Orders',
-      value: formatNumber(stats.pendingOrders),
+      value: formatNumber(pendingOrders),
       icon: Clock,
       color: colors.warning,
       subtitle: 'Awaiting assignment',
@@ -82,7 +91,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     },
     {
       title: 'On Transit',
-      value: formatNumber(stats.onTransitOrders),
+      value: formatNumber(onTransitOrders),
       icon: Truck,
       color: colors.info,
       subtitle: 'Currently delivering',
@@ -103,38 +112,38 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     },
     {
       title: 'Active Drivers',
-      value: `${stats.activeDrivers}/${stats.totalDrivers}`,
+      value: `${onlineDrivers}/${drivers.length}`,
       icon: UserCheck,
       color: colors.success,
       subtitle: 'Online drivers',
     },
     {
-      title: 'Avg Orders/Min',
-      value: stats.averageOrdersPerMinute.toFixed(1),
+      title: 'Today\'s Orders',
+      value: formatNumber(stats.ordersToday),
       icon: TrendingUp,
       color: colors.primary,
-      subtitle: 'Peak hours',
+      subtitle: 'Today',
     },
     {
-      title: 'Average ETA',
-      value: `${stats.averageETA} min`,
+      title: 'Average Rating',
+      value: stats.averageRating.toFixed(1),
       icon: Timer,
       color: colors.info,
-      subtitle: 'Delivery time',
+      subtitle: 'Customer satisfaction',
     },
     {
-      title: 'New Users (Daily)',
-      value: formatNumber(stats.newUsersDaily),
+      title: 'New Customers',
+      value: formatNumber(stats.newCustomersToday),
       icon: Users,
       color: colors.success,
       subtitle: 'Today',
     },
     {
-      title: 'New Users (Weekly)',
-      value: formatNumber(stats.newUsersWeekly),
-      icon: Users,
+      title: 'Today\'s Revenue',
+      value: formatCurrency(stats.revenueToday),
+      icon: DollarSign,
       color: colors.secondary,
-      subtitle: 'This week',
+      subtitle: 'Today',
     },
   ];
 

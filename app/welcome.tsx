@@ -1,119 +1,202 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
+} from 'react-native';
 import { router } from 'expo-router';
-import { BackendStatus } from '@/components/BackendStatus';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Send, Truck, Shield, Users } from 'lucide-react-native';
 import colors from '@/constants/colors';
 
-export default function Welcome() {
+const { width } = Dimensions.get('window');
+
+export default function WelcomeScreen() {
+  const features = [
+    {
+      icon: Send,
+      title: 'Fast Delivery',
+      description: 'Quick and reliable package delivery across Kenya',
+    },
+    {
+      icon: Truck,
+      title: 'Real-time Tracking',
+      description: 'Track your packages in real-time with live updates',
+    },
+    {
+      icon: Shield,
+      title: 'Secure & Safe',
+      description: 'Your packages are insured and handled with care',
+    },
+    {
+      icon: Users,
+      title: 'Trusted Drivers',
+      description: 'Verified and rated drivers for peace of mind',
+    },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>PAKA Go</Text>
-        <Text style={styles.subtitle}>Fast & Reliable Delivery Service</Text>
-        
-        <BackendStatus showDetails={true} />
-        
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.primaryButton} onPress={() => router.push('/auth')}>
-            <Text style={styles.primaryButtonText}>Get Started</Text>
-          </Pressable>
-          
-          <Pressable style={styles.secondaryButton} onPress={() => router.push('/debug-connection')}>
-            <Text style={styles.secondaryButtonText}>Debug Connection</Text>
-          </Pressable>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={[colors.primary, colors.primaryDark]}
+        style={styles.gradient}
+      >
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Send size={48} color={colors.background} />
+            </View>
+            <Text style={styles.title}>Swift Delivery</Text>
+            <Text style={styles.subtitle}>
+              Your trusted delivery partner in Kenya
+            </Text>
+          </View>
+
+          <View style={styles.featuresContainer}>
+            {features.map((feature, index) => (
+              <View key={index} style={styles.featureCard}>
+                <View style={styles.featureIcon}>
+                  <feature.icon size={24} color={colors.primary} />
+                </View>
+                <View style={styles.featureContent}>
+                  <Text style={styles.featureTitle}>{feature.title}</Text>
+                  <Text style={styles.featureDescription}>{feature.description}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={styles.getStartedButton}
+              onPress={() => router.push('/auth')}
+            >
+              <LinearGradient
+                colors={[colors.background, '#FFFFFF']}
+                style={styles.getStartedGradient}
+              >
+                <Text style={styles.getStartedText}>Get Started</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <Text style={styles.footerText}>
+              Join thousands of satisfied customers
+            </Text>
+          </View>
         </View>
-        
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoTitle}>Quick Access</Text>
-          <Pressable style={styles.linkButton} onPress={() => router.push('/auth')}>
-            <Text style={styles.linkText}>• Login / Register</Text>
-          </Pressable>
-          <Pressable style={styles.linkButton} onPress={() => router.push('/tracking')}>
-            <Text style={styles.linkText}>• Track Order</Text>
-          </Pressable>
-          <Pressable style={styles.linkButton} onPress={() => router.push('/debug-connection')}>
-            <Text style={styles.linkText}>• Connection Status</Text>
-          </Pressable>
-        </View>
-      </View>
-    </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+  },
+  gradient: {
+    flex: 1,
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+    justifyContent: 'space-between',
+  },
+  header: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  logoContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
-    minHeight: '100%',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   title: {
-    fontSize: 48,
-    fontWeight: 'bold',
+    fontSize: 36,
+    fontWeight: '900',
+    color: colors.background,
+    marginBottom: 12,
     textAlign: 'center',
-    color: colors.primary,
-    marginBottom: 10,
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 18,
+    color: colors.background + 'CC',
     textAlign: 'center',
-    color: '#6c757d',
-    marginBottom: 40,
+    fontWeight: '500',
   },
-  buttonContainer: {
-    marginVertical: 30,
+  featuresContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 20,
+    marginVertical: 40,
   },
-  primaryButton: {
-    backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  primaryButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  secondaryButton: {
-    backgroundColor: 'transparent',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  secondaryButtonText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  infoContainer: {
-    marginTop: 40,
+  featureCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 16,
     padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    gap: 16,
   },
-  infoTitle: {
+  featureIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  featureContent: {
+    flex: 1,
+  },
+  featureTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 15,
-    color: '#333',
+    fontWeight: '700',
+    color: colors.background,
+    marginBottom: 4,
   },
-  linkButton: {
-    paddingVertical: 8,
+  featureDescription: {
+    fontSize: 14,
+    color: colors.background + 'CC',
+    fontWeight: '500',
+    lineHeight: 20,
   },
-  linkText: {
-    fontSize: 16,
+  actions: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  getStartedButton: {
+    width: '100%',
+    borderRadius: 16,
+    shadowColor: colors.background,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  getStartedGradient: {
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  getStartedText: {
+    fontSize: 18,
+    fontWeight: '800',
     color: colors.primary,
+  },
+  footerText: {
+    fontSize: 14,
+    color: colors.background + '99',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

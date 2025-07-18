@@ -250,16 +250,16 @@ export default function BookingScreen() {
 
     try {
       // Get customer ID from user
-      const customerId = `customer_${user.id}`;
+      const customerId = user.id;
       
       // Create the order locally
-      const orderId = `order_${Date.now()}`;
+      const orderId = `ORD-${Date.now()}`;
       const trackingCode = `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
       
       const orderData = {
         id: orderId,
         trackingCode,
-        customerId,
+        clientId: customerId,
         pickupAddress: bookingData.pickupLocation,
         pickupLatitude: bookingData.pickupCoords?.latitude,
         pickupLongitude: bookingData.pickupCoords?.longitude,

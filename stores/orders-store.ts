@@ -251,7 +251,7 @@ export const useOrdersStore = create<OrdersState>()(
         
         const order: Order = {
           id: orderId,
-          clientId: orderData.customerId || orderData.clientId || '1',
+          clientId: orderData.customerId || orderData.clientId || 'user_1',
           from: orderData.pickupAddress || orderData.from || '',
           to: orderData.deliveryAddress || orderData.to || '',
           fromCoords: orderData.pickupLatitude && orderData.pickupLongitude ? {

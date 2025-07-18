@@ -24,7 +24,19 @@ import {
   Edit
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { useAdminStore, Customer } from '@/stores/admin-store';
+// Mock customer interface
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  totalOrders: number;
+  totalSpent: number;
+  rating: number;
+  status: 'active' | 'inactive' | 'suspended';
+  createdAt: string;
+  lastOrderDate?: string;
+}
 
 interface CustomerCardProps {
   customer: Customer;

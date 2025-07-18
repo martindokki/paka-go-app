@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from 'react-native';
 
 import { useOrdersStore } from '@/stores/orders-store';
+import { useLocalDataStore } from '@/stores/local-data-store';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import colors from '@/constants/colors';
 
@@ -32,6 +33,7 @@ export default function RootLayout() {
   });
 
   const { initializeSampleData } = useOrdersStore();
+  const { initializeData } = useLocalDataStore();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -47,6 +49,7 @@ export default function RootLayout() {
       setTimeout(() => {
         try {
           initializeSampleData();
+          initializeData();
         } catch (error) {
           console.error('Failed to initialize sample data:', error);
         }

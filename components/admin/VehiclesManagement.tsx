@@ -6,345 +6,122 @@ import {
   ScrollView, 
   TouchableOpacity, 
   TextInput,
-  Alert,
-  Modal
+  Alert
 } from 'react-native';
 import { 
   Search, 
   Filter, 
   Car, 
-  Plus, 
-  Trash2, 
   User,
   Package,
-  Settings,
   CheckCircle,
   AlertTriangle
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { useAdminStore, Vehicle } from '@/stores/admin-store';
+import { Driver } from '@/stores/local-data-store';
+
+interface Vehicle {
+  id: string;
+  plateNumber: string;
+  type: string;
+  model: string;
+  year: string;
+  loadCapacity: number;
+  status: string;
+  driverId?: string;
+  driverName?: string;
+  lastMaintenance: string;
+  nextMaintenance: string;
+}
 
 interface VehicleCardProps {
   vehicle: Vehicle;
-  onDelete: (vehicleId: string) => void;
-  onEdit: (vehicle: Vehicle) => void;
 }
 
-function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
+function VehicleCard({ vehicle }: VehicleCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return colors.success;
-      case 'assigned': return colors.info;
-      case 'maintenance': return colors.warning;
+      case 'active': return colors.success;
+      case 'inactive': return colors.warning;
+      case 'maintenance': return colors.error;
       default: return colors.textMuted;
     }
   };
-
-  const getStatusText = (status: string) => {
-    return status.toUpperCase();
-  };
-
-  const getVehicleIcon = (type: string) => {
-    switch (type) {
-      case 'motorcycle':
-      case 'bicycle':
-      case 'car':
-      case 'van':
-        return Car;
-      default:
-        return Car;
-    }
-  };
-
-  const VehicleIcon = getVehicleIcon(vehicle.type);
 
   return (
     <View style={styles.vehicleCard}>
       <View style={styles.vehicleHeader}>
         <View style={styles.vehicleInfo}>
-          <View style={styles.vehicleIconContainer}>
-            <VehicleIcon size={24} color={colors.primary} />
-          </View>
-          <View>
-            <Text style={styles.vehiclePlate}>{vehicle.plateNumber}</Text>
-            <Text style={styles.vehicleType}>{vehicle.type}</Text>
+          <Text style={styles.plateNumber}>{vehicle.plateNumber}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(vehicle.status) + '20' }]}>
+            <Text style={[styles.statusText, { color: getStatusColor(vehicle.status) }]}>
+              {vehicle.status.toUpperCase()}
+            </Text>
           </View>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(vehicle.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(vehicle.status) }]}>
-            {getStatusText(vehicle.status)}
-          </Text>
-        </View>
+        <Text style={styles.vehicleType}>{vehicle.type} {vehicle.model}</Text>
       </View>
 
       <View style={styles.vehicleDetails}>
         <View style={styles.detailRow}>
-          <Package size={16} color={colors.textMuted} />
-          <Text style={styles.detailText}>Load Capacity: {vehicle.loadCapacity}kg</Text>
+          <Car size={16} color={colors.textMuted} />
+          <Text style={styles.detailText}>Year: {vehicle.year}</Text>
         </View>
-        
-        {vehicle.driverId && (
+        <View style={styles.detailRow}>
+          <Package size={16} color={colors.textMuted} />
+          <Text style={styles.detailText}>Capacity: {vehicle.loadCapacity}kg</Text>
+        </View>
+        {vehicle.driverName && (
           <View style={styles.detailRow}>
             <User size={16} color={colors.textMuted} />
-            <Text style={styles.detailText}>Assigned to Driver: {vehicle.driverId}</Text>
+            <Text style={styles.detailText}>Driver: {vehicle.driverName}</Text>
           </View>
         )}
-        
-        <View style={styles.detailRow}>
-          <Text style={styles.dateText}>
-            Added: {new Date(vehicle.createdAt).toLocaleDateString()}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.vehicleActions}>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.editButton]}
-          onPress={() => onEdit(vehicle)}
-        >
-          <Settings size={16} color={colors.background} />
-          <Text style={styles.editButtonText}>Edit</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => onDelete(vehicle.id)}
-        >
-          <Trash2 size={16} color={colors.background} />
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-interface VehicleFormProps {
-  visible: boolean;
-  vehicle?: Vehicle | null;
-  onClose: () => void;
-  onSave: (vehicleData: any) => void;
+interface VehiclesManagementProps {
+  drivers: Driver[];
 }
 
-function VehicleForm({ visible, vehicle, onClose, onSave }: VehicleFormProps) {
-  const [plateNumber, setPlateNumber] = useState(vehicle?.plateNumber || '');
-  const [type, setType] = useState(vehicle?.type || 'motorcycle');
-  const [loadCapacity, setLoadCapacity] = useState(vehicle?.loadCapacity?.toString() || '');
-  const [showTypeSelector, setShowTypeSelector] = useState(false);
-
-  const vehicleTypes = [
-    { value: 'motorcycle', label: 'Motorcycle' },
-    { value: 'bicycle', label: 'Bicycle' },
-    { value: 'car', label: 'Car' },
-    { value: 'van', label: 'Van' },
-  ];
-
-  const handleSave = () => {
-    if (!plateNumber.trim() || !loadCapacity.trim()) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
-    }
-
-    const vehicleData = {
-      plateNumber: plateNumber.trim(),
-      type: type as Vehicle['type'],
-      loadCapacity: parseInt(loadCapacity),
-      status: 'available' as Vehicle['status'],
-    };
-
-    onSave(vehicleData);
-    
-    // Reset form
-    setPlateNumber('');
-    setType('motorcycle');
-    setLoadCapacity('');
-  };
-
-  React.useEffect(() => {
-    if (vehicle) {
-      setPlateNumber(vehicle.plateNumber);
-      setType(vehicle.type);
-      setLoadCapacity(vehicle.loadCapacity.toString());
-    } else {
-      setPlateNumber('');
-      setType('motorcycle');
-      setLoadCapacity('');
-    }
-  }, [vehicle, visible]);
-
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            {vehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
-          </Text>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Plate Number *</Text>
-            <TextInput
-              style={styles.formInput}
-              value={plateNumber}
-              onChangeText={setPlateNumber}
-              placeholder="e.g., KCA 123A"
-              placeholderTextColor={colors.textMuted}
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Vehicle Type *</Text>
-            <TouchableOpacity
-              style={styles.formInput}
-              onPress={() => setShowTypeSelector(!showTypeSelector)}
-            >
-              <Text style={styles.formInputText}>
-                {vehicleTypes.find(t => t.value === type)?.label}
-              </Text>
-            </TouchableOpacity>
-            
-            {showTypeSelector && (
-              <View style={styles.typeSelector}>
-                {vehicleTypes.map((vehicleType) => (
-                  <TouchableOpacity
-                    key={vehicleType.value}
-                    style={styles.typeOption}
-                    onPress={() => {
-                      setType(vehicleType.value as 'motorcycle' | 'bicycle' | 'car' | 'van');
-                      setShowTypeSelector(false);
-                    }}
-                  >
-                    <Text style={styles.typeOptionText}>{vehicleType.label}</Text>
-                    {type === vehicleType.value && (
-                      <CheckCircle size={16} color={colors.success} />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.formLabel}>Load Capacity (kg) *</Text>
-            <TextInput
-              style={styles.formInput}
-              value={loadCapacity}
-              onChangeText={setLoadCapacity}
-              placeholder="e.g., 50"
-              keyboardType="numeric"
-              placeholderTextColor={colors.textMuted}
-            />
-          </View>
-
-          <View style={styles.modalActions}>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={onClose}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.modalButton, styles.saveButton]}
-              onPress={handleSave}
-            >
-              <Text style={styles.saveButtonText}>
-                {vehicle ? 'Update' : 'Add Vehicle'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-export function VehiclesManagement() {
-  const { 
-    vehicles, 
-    createVehicle, 
-    deleteVehicle,
-    isLoading 
-  } = useAdminStore();
-  
+export function VehiclesManagement({ drivers }: VehiclesManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-  const [showVehicleForm, setShowVehicleForm] = useState(false);
-  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+
+  // Mock vehicles data based on drivers
+  const vehicles: Vehicle[] = drivers.map(driver => ({
+    id: driver.id,
+    plateNumber: driver.vehicleInfo?.split(' - ')[1] || 'N/A',
+    type: driver.vehicleInfo?.split(' ')[0] || 'Unknown',
+    model: driver.vehicleInfo?.split(' ')[1] || 'Unknown',
+    year: '2020',
+    loadCapacity: 50,
+    status: driver.status === 'online' ? 'active' : 'inactive',
+    driverId: driver.id,
+    driverName: driver.name,
+    lastMaintenance: new Date().toISOString(),
+    nextMaintenance: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+  }));
 
   const filteredVehicles = vehicles.filter(vehicle => {
     const matchesSearch = 
       vehicle.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      vehicle.type.toLowerCase().includes(searchQuery.toLowerCase());
+      vehicle.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      vehicle.driverName?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || vehicle.status === statusFilter;
-    const matchesType = typeFilter === 'all' || vehicle.type === typeFilter;
     
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesStatus;
   });
 
-  const handleAddVehicle = () => {
-    setEditingVehicle(null);
-    setShowVehicleForm(true);
-  };
-
-  const handleEditVehicle = (vehicle: Vehicle) => {
-    setEditingVehicle(vehicle);
-    setShowVehicleForm(true);
-  };
-
-  const handleSaveVehicle = async (vehicleData: any) => {
-    if (editingVehicle) {
-      // Update existing vehicle (not implemented in store yet)
-      Alert.alert('Info', 'Vehicle update functionality will be implemented');
-    } else {
-      // Create new vehicle
-      const success = await createVehicle(vehicleData);
-      if (success) {
-        Alert.alert('Success', 'Vehicle added successfully');
-        setShowVehicleForm(false);
-      }
-    }
-  };
-
-  const handleDeleteVehicle = async (vehicleId: string) => {
-    Alert.alert(
-      'Delete Vehicle',
-      'Are you sure you want to delete this vehicle?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            const success = await deleteVehicle(vehicleId);
-            if (success) {
-              Alert.alert('Success', 'Vehicle deleted successfully');
-            }
-          }
-        }
-      ]
-    );
-  };
-
   const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    { value: 'available', label: 'Available' },
-    { value: 'assigned', label: 'Assigned' },
+    { value: 'all', label: 'All Vehicles' },
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' },
     { value: 'maintenance', label: 'Maintenance' },
-  ];
-
-  const typeOptions = [
-    { value: 'all', label: 'All Types' },
-    { value: 'motorcycle', label: 'Motorcycle' },
-    { value: 'bicycle', label: 'Bicycle' },
-    { value: 'car', label: 'Car' },
-    { value: 'van', label: 'Van' },
   ];
 
   return (
@@ -367,13 +144,6 @@ export function VehiclesManagement() {
         >
           <Filter size={20} color={colors.primary} />
         </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={handleAddVehicle}
-        >
-          <Plus size={20} color={colors.background} />
-        </TouchableOpacity>
       </View>
 
       {showFilters && (
@@ -381,7 +151,7 @@ export function VehiclesManagement() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {statusOptions.map((option) => (
               <TouchableOpacity
-                key={`status-${option.value}`}
+                key={option.value}
                 style={[
                   styles.filterChip,
                   statusFilter === option.value && styles.filterChipActive
@@ -397,26 +167,6 @@ export function VehiclesManagement() {
               </TouchableOpacity>
             ))}
           </ScrollView>
-          
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.secondFilterRow}>
-            {typeOptions.map((option) => (
-              <TouchableOpacity
-                key={`type-${option.value}`}
-                style={[
-                  styles.filterChip,
-                  typeFilter === option.value && styles.filterChipActive
-                ]}
-                onPress={() => setTypeFilter(option.value)}
-              >
-                <Text style={[
-                  styles.filterChipText,
-                  typeFilter === option.value && styles.filterChipTextActive
-                ]}>
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
         </View>
       )}
 
@@ -426,9 +176,9 @@ export function VehiclesManagement() {
             <Car size={48} color={colors.textMuted} />
             <Text style={styles.emptyStateText}>No vehicles found</Text>
             <Text style={styles.emptyStateSubtext}>
-              {searchQuery || statusFilter !== 'all' || typeFilter !== 'all'
+              {searchQuery || statusFilter !== 'all' 
                 ? 'Try adjusting your search or filters'
-                : 'Add vehicles to get started'
+                : 'Vehicles will appear here when drivers are registered'
               }
             </Text>
           </View>
@@ -437,19 +187,10 @@ export function VehiclesManagement() {
             <VehicleCard
               key={vehicle.id}
               vehicle={vehicle}
-              onDelete={handleDeleteVehicle}
-              onEdit={handleEditVehicle}
             />
           ))
         )}
       </ScrollView>
-
-      <VehicleForm
-        visible={showVehicleForm}
-        vehicle={editingVehicle}
-        onClose={() => setShowVehicleForm(false)}
-        onSave={handleSaveVehicle}
-      />
     </View>
   );
 }
@@ -488,16 +229,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  addButton: {
-    padding: 12,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-  },
   filtersContainer: {
     marginBottom: 16,
-  },
-  secondFilterRow: {
-    marginTop: 8,
   },
   filterChip: {
     paddingHorizontal: 16,
@@ -547,23 +280,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  vehicleIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  vehiclePlate: {
+  plateNumber: {
     fontSize: 16,
     fontWeight: 'bold',
     color: colors.text,
-  },
-  vehicleType: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textTransform: 'capitalize',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -574,50 +294,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+  vehicleType: {
+    fontSize: 14,
+    color: colors.textMuted,
+  },
   vehicleDetails: {
-    marginBottom: 16,
+    gap: 8,
   },
   detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
-  },
-  detailText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: colors.textMuted,
-  },
-  dateText: {
-    fontSize: 12,
-    color: colors.textMuted,
-  },
-  vehicleActions: {
-    flexDirection: 'row',
     gap: 8,
   },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    gap: 4,
-  },
-  editButton: {
-    backgroundColor: colors.info,
-  },
-  editButtonText: {
-    color: colors.background,
-    fontWeight: '600',
+  detailText: {
     fontSize: 14,
-  },
-  deleteButton: {
-    backgroundColor: colors.error,
-  },
-  deleteButtonText: {
-    color: colors.background,
-    fontWeight: '600',
-    fontSize: 14,
+    color: colors.textMuted,
   },
   emptyState: {
     alignItems: 'center',
@@ -636,95 +327,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     paddingHorizontal: 32,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 24,
-    width: '90%',
-    maxWidth: 400,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  formGroup: {
-    marginBottom: 16,
-  },
-  formLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 8,
-  },
-  formInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.backgroundSecondary,
-  },
-  formInputText: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  typeSelector: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    backgroundColor: colors.background,
-  },
-  typeOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  typeOptionText: {
-    fontSize: 16,
-    color: colors.text,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 20,
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: colors.backgroundSecondary,
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: colors.primary,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    color: colors.background,
-    fontWeight: '600',
   },
 });

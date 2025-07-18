@@ -25,7 +25,7 @@ import {
   Package
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { useAdminStore, Driver } from '@/stores/admin-store';
+import { Driver } from '@/stores/local-data-store';
 
 interface DriverCardProps {
   driver: Driver;
@@ -98,44 +98,24 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
           </View>
           <View style={styles.statItem}>
             <Package size={16} color={colors.textMuted} />
-            <Text style={styles.statText}>{driver.totalDeliveries} deliveries</Text>
+            <Text style={styles.statText}>{driver.totalOrders} orders</Text>
           </View>
           <View style={styles.statItem}>
             <DollarSign size={16} color={colors.textMuted} />
-            <Text style={styles.statText}>KES {driver.earnings.toLocaleString()}</Text>
+            <Text style={styles.statText}>KES {driver.totalEarnings.toLocaleString()}</Text>
           </View>
         </View>
 
-        {driver.vehicleId && (
+        {driver.vehicleInfo && (
           <View style={styles.vehicleInfo}>
             <Car size={16} color={colors.textMuted} />
-            <Text style={styles.vehicleText}>Vehicle: {driver.vehicleId}</Text>
+            <Text style={styles.vehicleText}>{driver.vehicleInfo}</Text>
           </View>
         )}
       </View>
 
       <View style={styles.driverActions}>
-        {driver.status === 'pending' && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.approveButton]}
-            onPress={() => onApprove(driver.id)}
-          >
-            <CheckCircle size={16} color={colors.background} />
-            <Text style={styles.approveButtonText}>Approve</Text>
-          </TouchableOpacity>
-        )}
-        
-        {driver.status === 'approved' && !driver.vehicleId && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.assignButton]}
-            onPress={() => onAssignVehicle(driver.id)}
-          >
-            <Car size={16} color={colors.background} />
-            <Text style={styles.assignButtonText}>Assign Vehicle</Text>
-          </TouchableOpacity>
-        )}
-        
-        {driver.status === 'active' && driver.location && (
+        {driver.location && (
           <TouchableOpacity 
             style={[styles.actionButton, styles.locationButton]}
             onPress={() => onViewLocation(driver)}
@@ -145,35 +125,28 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
           </TouchableOpacity>
         )}
         
-        {driver.status !== 'suspended' && driver.status !== 'pending' && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.suspendButton]}
-            onPress={() => onSuspend(driver.id)}
-          >
-            <Pause size={16} color={colors.background} />
-            <Text style={styles.suspendButtonText}>Suspend</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.assignButton]}
+          onPress={() => onAssignVehicle(driver.id)}
+        >
+          <Car size={16} color={colors.background} />
+          <Text style={styles.assignButtonText}>Manage</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-export function DriversManagement() {
-  const { 
-    drivers, 
-    vehicles,
-    approveDriver, 
-    suspendDriver, 
-    assignVehicleToDriver,
-    isLoading 
-  } = useAdminStore();
+interface DriversManagementProps {
+  drivers: Driver[];
+}
+
+export function DriversManagement({ drivers }: DriversManagementProps) {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
-  const [showVehicleModal, setShowVehicleModal] = useState(false);
-  const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
+
 
   const filteredDrivers = drivers.filter(driver => {
     const matchesSearch = 
@@ -186,9 +159,7 @@ export function DriversManagement() {
     return matchesSearch && matchesStatus;
   });
 
-  const availableVehicles = vehicles.filter(vehicle => vehicle.status === 'available');
-
-  const handleApprove = async (driverId: string) => {
+  const handleApprove = (driverId: string) => {
     Alert.alert(
       'Approve Driver',
       'Are you sure you want to approve this driver?',
@@ -196,18 +167,16 @@ export function DriversManagement() {
         { text: 'Cancel', style: 'cancel' },
         { 
           text: 'Approve', 
-          onPress: async () => {
-            const success = await approveDriver(driverId);
-            if (success) {
-              Alert.alert('Success', 'Driver approved successfully');
-            }
+          onPress: () => {
+            Alert.alert('Success', 'Driver approved successfully');
+            // In a real app, you would update the driver status
           }
         }
       ]
     );
   };
 
-  const handleSuspend = async (driverId: string) => {
+  const handleSuspend = (driverId: string) => {
     Alert.alert(
       'Suspend Driver',
       'Are you sure you want to suspend this driver?',
@@ -216,11 +185,9 @@ export function DriversManagement() {
         { 
           text: 'Suspend', 
           style: 'destructive',
-          onPress: async () => {
-            const success = await suspendDriver(driverId);
-            if (success) {
-              Alert.alert('Success', 'Driver suspended successfully');
-            }
+          onPress: () => {
+            Alert.alert('Success', 'Driver suspended successfully');
+            // In a real app, you would update the driver status
           }
         }
       ]
@@ -228,19 +195,7 @@ export function DriversManagement() {
   };
 
   const handleAssignVehicle = (driverId: string) => {
-    setSelectedDriverId(driverId);
-    setShowVehicleModal(true);
-  };
-
-  const handleVehicleAssignment = async (vehicleId: string) => {
-    if (!selectedDriverId) return;
-    
-    const success = await assignVehicleToDriver(selectedDriverId, vehicleId);
-    if (success) {
-      Alert.alert('Success', 'Vehicle assigned successfully');
-      setShowVehicleModal(false);
-      setSelectedDriverId(null);
-    }
+    Alert.alert('Vehicle Assignment', 'Vehicle assignment feature coming soon!');
   };
 
   const handleViewLocation = (driver: Driver) => {
@@ -255,10 +210,9 @@ export function DriversManagement() {
 
   const statusOptions = [
     { value: 'all', label: 'All Drivers' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'active', label: 'Active' },
-    { value: 'suspended', label: 'Suspended' },
+    { value: 'online', label: 'Online' },
+    { value: 'offline', label: 'Offline' },
+    { value: 'busy', label: 'Busy' },
   ];
 
   return (

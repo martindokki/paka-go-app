@@ -136,8 +136,12 @@ function OrderCard({ order, onAssignDriver, onCancelOrder, onSendSTKPush }: Orde
   );
 }
 
-export function OrdersManagement() {
-  const { orders, assignDriver, cancelOrder, sendSTKPush } = useOrdersStore();
+interface OrdersManagementProps {
+  orders: Order[];
+}
+
+export function OrdersManagement({ orders }: OrdersManagementProps) {
+  const { assignDriver, cancelOrder, sendSTKPush } = useOrdersStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
