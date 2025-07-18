@@ -63,24 +63,9 @@ function RootLayoutNav() {
       // Initialize sample orders data
       initializeSampleData();
       
-      // Create a test user if none exists (for development)
-      const { user } = useAuthStore.getState();
-      if (!user) {
-        const testUser = {
-          id: 'test_user_123',
-          name: 'Test User',
-          email: 'test@example.com',
-          phone: '+254700000000',
-          userType: 'client' as const,
-          token: 'test_token_123',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setUser(testUser);
-        console.log('Test user created for development:', testUser);
-      }
+      console.log('App initialized, auth state:', useAuthStore.getState());
     }
-  }, [isInitialized, initializeSampleData, setUser]);
+  }, [isInitialized, initializeSampleData]);
 
   return (
     <ErrorBoundary>

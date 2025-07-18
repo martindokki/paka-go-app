@@ -234,6 +234,7 @@ export default function BookingScreen() {
   };
 
   const handleBookDelivery = async () => {
+    // Validate required fields
     if (!bookingData.pickupLocation || !bookingData.dropoffLocation) {
       Alert.alert("Missing Information", "Please fill in pickup and dropoff locations");
       return;
@@ -244,7 +245,10 @@ export default function BookingScreen() {
       return;
     }
 
-    if (!user || !isAuthenticated) {
+    // Check authentication status
+    console.log("Auth check:", { user, isAuthenticated, userType: user?.userType });
+    
+    if (!isAuthenticated || !user) {
       Alert.alert(
         "Authentication Required", 
         "Please log in to book a delivery. You will be redirected to the login page.",
@@ -265,9 +269,27 @@ export default function BookingScreen() {
       return;
     }
 
+    // Validate user type
+    if (user.userType !== 'client') {
+      Alert.alert(
+        "Access Denied", 
+        "Only clients can book deliveries. Please log in with a client account.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.dismiss();
+              router.push("/auth");
+            }
+          }
+        ]
+      );
+      return;
+    }
+
     try {
       // Get customer ID from user - ensure we have a valid user ID
-      const customerId = user.id || `temp_user_${Date.now()}`;
+      const customerId = user.id;
       
       // Create the order locally first
       const orderId = `ORD-${Date.now()}`;
@@ -300,10 +322,12 @@ export default function BookingScreen() {
         price: priceBreakdown?.total || 0,
       };
       
+      console.log("Creating order with data:", orderData);
+      
       // Add to local store
       const createdOrderId = createOrder(orderData);
       
-      console.log("Order created locally:", createdOrderId, trackingCode, orderData);
+      console.log("Order created successfully:", { createdOrderId, trackingCode });
       
       // Navigate based on payment term
       if (bookingData.paymentTerm === "pay_now" && bookingData.paymentMethod !== "cash") {
@@ -357,11 +381,15 @@ export default function BookingScreen() {
       console.error("Booking error:", error);
       Alert.alert(
         "Booking Error", 
-        "Failed to create order. Please check your connection and try again.",
+        "Failed to create order. Please check your details and try again.",
         [
           {
+            text: "Retry",
+            onPress: () => handleBookDelivery()
+          },
+          {
             text: "OK",
-            style: "default"
+            style: "cancel"
           }
         ]
       );
@@ -780,6 +808,19 @@ export default function BookingScreen() {
             </LinearGradient>
           </TouchableOpacity>
         )}
+
+        {/* Debug Info */}
+        <View style={styles.debugInfo}>
+          <Text style={styles.debugText}>
+            Auth Status: {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}
+          </Text>
+          <Text style={styles.debugText}>
+            User: {user ? `${user.name} (${user.userType})` : 'None'}
+          </Text>
+          <Text style={styles.debugText}>
+            User ID: {user?.id || 'None'}
+          </Text>
+        </View>
 
         <TouchableOpacity style={styles.bookButton} onPress={handleBookDelivery}>
           <LinearGradient
@@ -1355,5 +1396,19 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 8,
+  },
+  debugInfo: {
+    backgroundColor: colors.backgroundSecondary,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  debugText: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontWeight: '500',
+    marginBottom: 4,
   },
 });

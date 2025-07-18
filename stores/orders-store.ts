@@ -247,44 +247,56 @@ export const useOrdersStore = create<OrdersState>()(
       },
       
       createOrder: (orderData) => {
-        const orderId = orderData.id || `ORD-${Date.now()}`;
-        const now = new Date().toISOString();
-        
-        const order: Order = {
-          id: orderId,
-          clientId: orderData.customerId || orderData.clientId || 'user_1',
-          from: orderData.pickupAddress || orderData.from || '',
-          to: orderData.deliveryAddress || orderData.to || '',
-          fromCoords: orderData.pickupLatitude && orderData.pickupLongitude ? {
-            lat: orderData.pickupLatitude,
-            lng: orderData.pickupLongitude
-          } : undefined,
-          toCoords: orderData.deliveryLatitude && orderData.deliveryLongitude ? {
-            lat: orderData.deliveryLatitude,
-            lng: orderData.deliveryLongitude
-          } : undefined,
-          packageType: orderData.packageType || 'documents',
-          packageDescription: orderData.packageDescription || '',
-          recipientName: orderData.recipientName || '',
-          recipientPhone: orderData.recipientPhone || '',
-          specialInstructions: orderData.specialInstructions || '',
-          status: orderData.status || 'pending',
-          paymentMethod: orderData.paymentMethod || 'mpesa',
-          paymentTerm: orderData.paymentTerm || 'pay_now',
-          paymentStatus: orderData.paymentTerm === 'pay_now' ? 'pending' : 'pending',
-          price: orderData.price || 0,
-          distance: orderData.estimatedDistance ? `${orderData.estimatedDistance.toFixed(1)} km` : undefined,
-          estimatedTime: orderData.estimatedDuration ? `${orderData.estimatedDuration}-${orderData.estimatedDuration + 10} mins` : undefined,
-          createdAt: orderData.createdAt || now,
-          updatedAt: now,
-          timeline: createTimeline(orderData.status || 'pending'),
-        };
-        
-        set((state) => ({
-          orders: [...state.orders, order],
-        }));
-        
-        return orderId;
+        try {
+          const orderId = orderData.id || `ORD-${Date.now()}`;
+          const now = new Date().toISOString();
+          
+          console.log("Creating order in store with data:", orderData);
+          
+          const order: Order = {
+            id: orderId,
+            clientId: orderData.customerId || orderData.clientId || 'unknown_user',
+            from: orderData.pickupAddress || orderData.from || '',
+            to: orderData.deliveryAddress || orderData.to || '',
+            fromCoords: orderData.pickupLatitude && orderData.pickupLongitude ? {
+              lat: orderData.pickupLatitude,
+              lng: orderData.pickupLongitude
+            } : undefined,
+            toCoords: orderData.deliveryLatitude && orderData.deliveryLongitude ? {
+              lat: orderData.deliveryLatitude,
+              lng: orderData.deliveryLongitude
+            } : undefined,
+            packageType: orderData.packageType || 'documents',
+            packageDescription: orderData.packageDescription || '',
+            recipientName: orderData.recipientName || '',
+            recipientPhone: orderData.recipientPhone || '',
+            specialInstructions: orderData.specialInstructions || '',
+            status: orderData.status || 'pending',
+            paymentMethod: orderData.paymentMethod || 'mpesa',
+            paymentTerm: orderData.paymentTerm || 'pay_now',
+            paymentStatus: orderData.paymentTerm === 'pay_now' ? 'pending' : 'pending',
+            price: orderData.price || 0,
+            distance: orderData.estimatedDistance ? `${orderData.estimatedDistance.toFixed(1)} km` : undefined,
+            estimatedTime: orderData.estimatedDuration ? `${orderData.estimatedDuration}-${orderData.estimatedDuration + 10} mins` : undefined,
+            createdAt: orderData.createdAt || now,
+            updatedAt: now,
+            timeline: createTimeline(orderData.status || 'pending'),
+          };
+          
+          console.log("Created order object:", order);
+          
+          set((state) => {
+            const newOrders = [...state.orders, order];
+            console.log("Updated orders array length:", newOrders.length);
+            return { orders: newOrders };
+          });
+          
+          console.log("Order created successfully with ID:", orderId);
+          return orderId;
+        } catch (error) {
+          console.error("Error creating order:", error);
+          throw error;
+        }
       },
       
       updateOrderStatus: (orderId, status, driverInfo) => {

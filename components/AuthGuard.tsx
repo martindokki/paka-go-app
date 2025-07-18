@@ -13,10 +13,18 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children, 
   requiredUserType 
 }) => {
-  const { isAuthenticated, user, isLoading } = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized } = useAuthStore();
 
-  // Show loading while auth is being checked
-  if (isLoading) {
+  console.log("AuthGuard check:", { 
+    isAuthenticated, 
+    user: user?.userType, 
+    isLoading, 
+    isInitialized,
+    requiredUserType 
+  });
+
+  // Show loading while auth is being initialized or checked
+  if (isLoading || !isInitialized) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -24,32 +32,47 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     );
   }
 
-  // Redirect to auth if not authenticated
-  if (!isAuthenticated || !user) {
-    router.replace('/auth');
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+  // Allow access if no specific user type is required and user is authenticated
+  if (!requiredUserType && isAuthenticated && user) {
+    return <>{children}</>;
   }
 
   // Check user type requirements
-  if (requiredUserType && user.userType !== requiredUserType) {
-    // Redirect to appropriate dashboard
-    switch (user.userType) {
-      case 'client':
-        router.replace('/(client)');
-        break;
-      case 'driver':
-        router.replace('/(driver)');
-        break;
-      case 'admin':
-        router.replace('/(admin)');
-        break;
-      default:
-        router.replace('/auth');
+  if (requiredUserType && isAuthenticated && user) {
+    if (user.userType === requiredUserType) {
+      return <>{children}</>;
+    } else {
+      // User is authenticated but wrong type - redirect to appropriate dashboard
+      setTimeout(() => {
+        switch (user.userType) {
+          case 'client':
+            router.replace('/(client)');
+            break;
+          case 'driver':
+            router.replace('/(driver)');
+            break;
+          case 'admin':
+            router.replace('/(admin)');
+            break;
+          default:
+            router.replace('/auth');
+        }
+      }, 100);
+      
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      );
     }
+  }
+
+  // Not authenticated - redirect to auth
+  if (!isAuthenticated || !user) {
+    setTimeout(() => {
+      router.replace('/auth');
+    }, 100);
+    
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />

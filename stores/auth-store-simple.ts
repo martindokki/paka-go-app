@@ -60,8 +60,8 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       isInitialized: false,
-  
-  login: async (credentials: LoginRequest): Promise<boolean> => {
+      
+      login: async (credentials: LoginRequest): Promise<boolean> => {
     set({ isLoading: true, error: null });
     
     try {
@@ -253,11 +253,11 @@ export const useAuthStore = create<AuthState>()(
     set({ error: null });
   },
   
-  setInitialized: (initialized: boolean) => {
-    set({ isInitialized: initialized });
-  },
-}),
-{
+      setInitialized: (initialized: boolean) => {
+        set({ isInitialized: initialized });
+      },
+    }),
+    {
   name: 'auth-simple-storage',
   storage: createJSONStorage(() => {
     if (Platform.OS === 'web') {
