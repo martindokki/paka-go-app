@@ -192,10 +192,11 @@ export default function AuthScreen() {
     }
   };
 
-  const UserTypeSelector = () => (
-    <View style={styles.userTypeContainer}>
-      <Text style={styles.userTypeTitle}>Choose Your Adventure 🚀</Text>
-      <View style={styles.userTypeButtons}>
+  const UserTypeSelector = () => {
+    return (
+      <View style={styles.userTypeContainer}>
+        <Text style={styles.userTypeTitle}>Choose Your Adventure 🚀</Text>
+        <View style={styles.userTypeButtons}>
         <TouchableOpacity
           style={[
             styles.userTypeButton,
@@ -323,9 +324,10 @@ export default function AuthScreen() {
             </LinearGradient>
           </TouchableOpacity>
         )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
