@@ -284,9 +284,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcel, error } = await ParcelService.createParcel(parcelData);
           
           if (error || !parcel) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to create parcel';
+            const errorMessage = error?.message || 'Failed to create parcel';
             throw new Error(errorMessage);
           }
 
@@ -340,9 +338,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data, error } = await ParcelService.updateParcelStatus(orderId, supabaseStatus);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to update status';
+            const errorMessage = error?.message || 'Failed to update status';
             throw new Error(errorMessage);
           }
 
@@ -362,9 +358,7 @@ export const useOrdersStore = create<OrdersState>()(
           }));
         } catch (error: any) {
           console.error("Error updating order status:", error);
-          const errorMessage = error && typeof error === 'object' && 'message' in error 
-            ? (error as any).message 
-            : 'Failed to update order status';
+          const errorMessage = error?.message || 'Failed to update order status';
           set({ error: errorMessage, isLoading: false });
         }
       },
@@ -389,9 +383,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data, error } = await ParcelService.assignDriverToParcel(orderId, driverId);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to update status';
+            const errorMessage = error?.message || 'Failed to update status';
             throw new Error(errorMessage);
           }
 
@@ -425,9 +417,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcels, error } = await ParcelService.getUserParcels(clientId);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to update status';
+            const errorMessage = error?.message || 'Failed to update status';
             throw new Error(errorMessage);
           }
 
@@ -473,9 +463,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: deliveries, error } = await ParcelService.getDriverDeliveries(driverId);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to update status';
+            const errorMessage = error?.message || 'Failed to update status';
             throw new Error(errorMessage);
           }
 
@@ -518,9 +506,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcels, error } = await ParcelService.getAllParcels();
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Failed to update status';
+            const errorMessage = error?.message || 'Failed to update status';
             throw new Error(errorMessage);
           }
 

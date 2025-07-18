@@ -71,9 +71,7 @@ export const useAuthStore = create<AuthState>()(
           const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
           
           if (error || !authUser) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Login failed';
+            const errorMessage = error?.message || 'Login failed';
             throw new Error(errorMessage);
           }
 
@@ -138,9 +136,7 @@ export const useAuthStore = create<AuthState>()(
           );
           
           if (error || !authUser) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
-              : 'Registration failed';
+            const errorMessage = error?.message || 'Registration failed';
             throw new Error(errorMessage);
           }
 

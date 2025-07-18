@@ -238,7 +238,7 @@ export default function TestBackendScreen() {
       const { data: assignData, error: assignError } = await ParcelService.assignDriverToParcel(parcelId, authData.user.id);
       
       if (assignError) {
-        addResult(`❌ Driver assignment failed: ${(assignError as any)?.message || 'Unknown error'}`);
+        addResult(`❌ Driver assignment failed: ${assignError?.message || 'Unknown error'}`);
         return false;
       }
 
@@ -285,7 +285,7 @@ export default function TestBackendScreen() {
       const { data: updateData, error: updateError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'picked');
       
       if (updateError) {
-        addResult(`❌ Delivery status update failed: ${(updateError as any)?.message || 'Unknown error'}`);
+        addResult(`❌ Delivery status update failed: ${updateError?.message || 'Unknown error'}`);
         return false;
       }
 
@@ -295,7 +295,7 @@ export default function TestBackendScreen() {
       const { data: deliveredData, error: deliveredError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'delivered');
       
       if (deliveredError) {
-        addResult(`❌ Delivery completion failed: ${(deliveredError as any)?.message || 'Unknown error'}`);
+        addResult(`❌ Delivery completion failed: ${deliveredError?.message || 'Unknown error'}`);
         return false;
       }
 
@@ -334,7 +334,7 @@ export default function TestBackendScreen() {
       const { data: drivers, error: driversError } = await ParcelService.getDrivers();
       
       if (driversError) {
-        addResult(`❌ Admin: Failed to fetch drivers: ${(driversError as any)?.message || 'Unknown error'}`);
+        addResult(`❌ Admin: Failed to fetch drivers: ${driversError?.message || 'Unknown error'}`);
         return false;
       }
 
