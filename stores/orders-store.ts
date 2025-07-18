@@ -328,7 +328,12 @@ export const useOrdersStore = create<OrdersState>()(
       updateOrderStatus: async (orderId, status, driverInfo) => {
         set({ isLoading: true, error: null });
         try {
-          const supabaseStatus = status === 'assigned' ? 'pending' : status === 'picked_up' ? 'in_transit' : status as 'pending' | 'in_transit' | 'delivered' | 'cancelled';
+          const supabaseStatus: 'pending' | 'in_transit' | 'delivered' | 'cancelled' = 
+            status === 'assigned' ? 'pending' : 
+            status === 'picked_up' ? 'in_transit' : 
+            status === 'in_transit' ? 'in_transit' :
+            status === 'delivered' ? 'delivered' :
+            status === 'cancelled' ? 'cancelled' : 'pending';
           const { data, error } = await ParcelService.updateParcelStatus(orderId, supabaseStatus);
           
           if (error) {
