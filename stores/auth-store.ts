@@ -111,7 +111,7 @@ export const useAuthStore = create<AuthState>()(
         
         try {
           // Mock registration - simulate successful registration
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+          await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
           
           // Create mock user data
           const mockUser: User = {
@@ -133,10 +133,10 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           
-          console.log('Registration successful', { userType: mockUser.userType });
+          console.log('Registration successful', { userType: mockUser.userType, email: userData.email });
           return true;
         } catch (error: any) {
-          const errorMsg = 'Registration failed. Please try again.';
+          const errorMsg = 'Registration failed. Please check your details and try again.';
           
           set({ 
             error: errorMsg, 
@@ -146,7 +146,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
           });
           
-          console.error('Registration failed', error);
+          console.error('Registration error:', error);
           return false;
         }
       },

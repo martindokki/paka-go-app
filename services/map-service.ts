@@ -63,7 +63,7 @@ export interface RouteResponse {
 
 export class MapService {
   /**
-   * Geocode an address to coordinates using LocationIQ with fallback
+   * Geocode an address to coordinates using local fallback
    */
   static async geocodeAddress(address: string): Promise<Coordinates | null> {
     try {
@@ -83,42 +83,30 @@ export class MapService {
         }
       }
 
-      // Try the API call with updated endpoint
-      const response = await axios.get(
-        `https://us1.locationiq.com/v1/search.php`,
-        {
-          params: {
-            key: LOCATIONIQ_API_KEY,
-            q: address,
-            format: 'json',
-            limit: 1,
-            countrycodes: 'ke', // Focus on Kenya
-          },
-          timeout: 10000, // 10 second timeout
-        }
-      );
-
-      if (response.data && response.data.length > 0) {
-        const result: GeocodingResult = response.data[0];
-        return {
-          latitude: parseFloat(result.lat),
-          longitude: parseFloat(result.lon),
-        };
-      }
-
-      // If API returns no results, return Nairobi as default
-      console.log('No geocoding results found, using Nairobi default');
-      return MOCK_LOCATIONS['nairobi'];
+      // For demo purposes, return a random location in Nairobi area
+      const baseLocation = MOCK_LOCATIONS['nairobi'];
+      const randomOffset = {
+        latitude: (Math.random() - 0.5) * 0.1, // ±0.05 degrees (~5km)
+        longitude: (Math.random() - 0.5) * 0.1,
+      };
+      
+      const demoLocation = {
+        latitude: baseLocation.latitude + randomOffset.latitude,
+        longitude: baseLocation.longitude + randomOffset.longitude,
+      };
+      
+      console.log('Using demo location for:', address, demoLocation);
+      return demoLocation;
     } catch (error) {
       console.error('Geocoding error:', error);
       // Return Nairobi as fallback when API fails
-      console.log('Geocoding API failed, using Nairobi fallback');
+      console.log('Using Nairobi fallback');
       return MOCK_LOCATIONS['nairobi'];
     }
   }
 
   /**
-   * Get driving route between two points using GraphHopper API
+   * Get driving route between two points using local fallback
    */
   static async getRoute(
     start: Coordinates,
@@ -127,45 +115,13 @@ export class MapService {
     try {
       console.log('Calculating route from:', start, 'to:', end);
       
-      // Try GraphHopper API first
-      const params = new URLSearchParams();
-      params.append('point', `${start.latitude},${start.longitude}`);
-      params.append('point', `${end.latitude},${end.longitude}`);
-      params.append('vehicle', 'car');
-      params.append('points_encoded', 'false');
-      params.append('key', GRAPHHOPPER_API_KEY);
-      params.append('locale', 'en');
-      params.append('instructions', 'false');
-
-      const response = await axios.get(
-        `https://graphhopper.com/api/1/route?${params.toString()}`,
-        {
-          timeout: 15000, // 15 second timeout
-        }
-      );
-
-      if (response.data && response.data.paths && response.data.paths.length > 0) {
-        const path = response.data.paths[0];
-        if (path.points && path.points.coordinates) {
-          // Convert GraphHopper coordinates to our format
-          const routePoints: RoutePoint[] = path.points.coordinates.map((coord: number[]) => ({
-            latitude: coord[1], // GraphHopper returns [lng, lat]
-            longitude: coord[0],
-          }));
-          
-          console.log('GraphHopper route calculated successfully with', routePoints.length, 'points');
-          return routePoints;
-        }
-      }
-      
-      // Fallback to simple route generation
-      console.log('GraphHopper API failed, using fallback route generation');
+      // Use local route generation for reliability
       const route = this.generateSimpleRoute(start, end);
+      console.log('Generated local route with', route.length, 'points');
       return route;
     } catch (error) {
-      console.error('GraphHopper routing error:', error);
+      console.error('Route generation error:', error);
       // Return simple curved route as fallback
-      console.log('Using fallback route generation');
       const route = this.generateSimpleRoute(start, end);
       return route;
     }
@@ -221,29 +177,31 @@ export class MapService {
   }
 
   /**
-   * Reverse geocode coordinates to address using LocationIQ with fallback
+   * Reverse geocode coordinates to address using local fallback
    */
   static async reverseGeocode(coordinates: Coordinates): Promise<string | null> {
     try {
-      const response = await axios.get(
-        `https://us1.locationiq.com/v1/reverse.php`,
-        {
-          params: {
-            key: LOCATIONIQ_API_KEY,
-            lat: coordinates.latitude,
-            lon: coordinates.longitude,
-            format: 'json',
-            zoom: 18,
-          },
-          timeout: 10000, // 10 second timeout
+      // Find the closest mock location
+      let closestLocation = 'Unknown Location';
+      let minDistance = Infinity;
+      
+      for (const [name, location] of Object.entries(MOCK_LOCATIONS)) {
+        const distance = this.calculateDistance(coordinates, location);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestLocation = name.charAt(0).toUpperCase() + name.slice(1);
         }
-      );
-
-      if (response.data && response.data.display_name) {
-        return response.data.display_name;
       }
-
-      return `Location: ${coordinates.latitude.toFixed(4)}, ${coordinates.longitude.toFixed(4)}`;
+      
+      // If very close to a known location, use that name
+      if (minDistance < 2) { // Within 2km
+        return `Near ${closestLocation}, Nairobi, Kenya`;
+      }
+      
+      // Otherwise, generate a generic address
+      const areas = ['Nairobi', 'Westlands', 'Karen', 'Kilimani', 'Lavington'];
+      const randomArea = areas[Math.floor(Math.random() * areas.length)];
+      return `${randomArea} Area, Nairobi, Kenya`;
     } catch (error) {
       console.error('Reverse geocoding error:', error);
       // Return coordinate string as fallback
