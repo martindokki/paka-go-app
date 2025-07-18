@@ -10,7 +10,7 @@ import { SupportManagement } from '@/components/admin/SupportManagement';
 import { NotificationsManagement } from '@/components/admin/NotificationsManagement';
 import { SettingsManagement } from '@/components/admin/SettingsManagement';
 import { SecurityManagement } from '@/components/admin/SecurityManagement';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 import { useLocalDataStore } from '@/stores/local-data-store';
 import { useOrdersStore } from '@/stores/orders-store';
 import { router } from 'expo-router';

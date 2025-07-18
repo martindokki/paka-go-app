@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 
 export default function DriverHomeScreen() {
   const { user } = useAuthStore();

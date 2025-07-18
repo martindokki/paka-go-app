@@ -13,7 +13,7 @@ import {
 import { AlertTriangle, X } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/colors';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 import { showAlert } from '@/utils/platform-utils';
 import { router } from 'expo-router';
 

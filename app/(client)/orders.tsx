@@ -26,7 +26,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 
 export default function OrdersScreen() {
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");

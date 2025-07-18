@@ -34,7 +34,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";

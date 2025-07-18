@@ -11,7 +11,7 @@ import {
 import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 
 const { width } = Dimensions.get("window");
 

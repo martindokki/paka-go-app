@@ -14,7 +14,7 @@ import {
   Menu
 } from 'lucide-react-native';
 import colors from '@/constants/colors';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
