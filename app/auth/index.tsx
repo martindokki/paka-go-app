@@ -30,7 +30,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react-native";
-// import { LinearGradient } from "expo-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 // Simple colors object
 const colors = {
   primary: '#FF6A00',
@@ -203,10 +203,10 @@ export default function AuthScreen() {
           ]}
           onPress={() => setUserType("client")}
         >
-          <View style={[
-            styles.userTypeGradient,
-            userType === "client" && { backgroundColor: colors.primary }
-          ]}>
+          <LinearGradient
+            colors={userType === "client" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
+            style={styles.userTypeGradient}
+          >
             <View style={styles.userTypeIconContainer}>
               <View style={[
                 styles.userTypeIcon,
