@@ -9,6 +9,8 @@ import { useColorScheme } from 'react-native';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import colors from '@/constants/colors';
+import { useOrdersStore } from '@/stores/orders-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,6 +54,33 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { initializeSampleData } = useOrdersStore();
+  const { isInitialized, setUser } = useAuthStore();
+
+  // Initialize stores when app loads
+  useEffect(() => {
+    if (isInitialized) {
+      // Initialize sample orders data
+      initializeSampleData();
+      
+      // Create a test user if none exists (for development)
+      const { user } = useAuthStore.getState();
+      if (!user) {
+        const testUser = {
+          id: 'test_user_123',
+          name: 'Test User',
+          email: 'test@example.com',
+          phone: '+254700000000',
+          userType: 'client' as const,
+          token: 'test_token_123',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setUser(testUser);
+        console.log('Test user created for development:', testUser);
+      }
+    }
+  }, [isInitialized, initializeSampleData, setUser]);
 
   return (
     <ErrorBoundary>

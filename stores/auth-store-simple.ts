@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 export type UserType = 'client' | 'driver' | 'admin';
 
@@ -47,14 +50,16 @@ interface AuthState {
   setInitialized: (initialized: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>()((set, get) => ({
-  // Initialize the store
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-  isInitialized: true,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      // Initialize the store
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+      isInitialized: false,
   
   login: async (credentials: LoginRequest): Promise<boolean> => {
     set({ isLoading: true, error: null });
@@ -151,6 +156,21 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     
     try {
       console.log('User logged out');
+      
+      // Clear storage on web and mobile
+      if (Platform.OS === 'web') {
+        try {
+          localStorage.removeItem('auth-simple-storage');
+        } catch (e) {
+          console.warn('Failed to clear localStorage:', e);
+        }
+      } else {
+        try {
+          await AsyncStorage.removeItem('auth-simple-storage');
+        } catch (e) {
+          console.warn('Failed to clear AsyncStorage:', e);
+        }
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -236,4 +256,55 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   setInitialized: (initialized: boolean) => {
     set({ isInitialized: initialized });
   },
-}));
+}),
+{
+  name: 'auth-simple-storage',
+  storage: createJSONStorage(() => {
+    if (Platform.OS === 'web') {
+      return {
+        getItem: (name: string) => {
+          try {
+            return localStorage.getItem(name);
+          } catch {
+            return null;
+          }
+        },
+        setItem: (name: string, value: string) => {
+          try {
+            localStorage.setItem(name, value);
+          } catch {
+            // Ignore storage errors on web
+          }
+        },
+        removeItem: (name: string) => {
+          try {
+            localStorage.removeItem(name);
+          } catch {
+            // Ignore storage errors on web
+          }
+        },
+      };
+    }
+    return AsyncStorage;
+  }),
+  partialize: (state) => ({
+    user: state.user,
+    token: state.token,
+    isAuthenticated: state.isAuthenticated,
+  }),
+  onRehydrateStorage: () => (state) => {
+    if (state) {
+      state.setInitialized(true);
+    }
+  },
+}
+)
+);
+
+// Fallback initialization after a timeout
+setTimeout(() => {
+  const state = useAuthStore.getState();
+  if (!state.isInitialized) {
+    state.setInitialized(true);
+  }
+}, 1000);

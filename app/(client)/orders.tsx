@@ -27,6 +27,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store-simple";
+import { AuthGuard } from "@/components/AuthGuard";
 
 export default function OrdersScreen() {
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
@@ -318,7 +319,8 @@ export default function OrdersScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <AuthGuard requiredUserType="client">
+      <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>My Orders</Text>
         <Text style={styles.subtitle}>Track and manage your deliveries</Text>
@@ -374,6 +376,7 @@ export default function OrdersScreen() {
         ListEmptyComponent={<EmptyState isActive={activeTab === "active"} />}
       />
     </SafeAreaView>
+    </AuthGuard>
   );
 }
 

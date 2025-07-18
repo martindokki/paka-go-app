@@ -35,6 +35,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store-simple";
+import { AuthGuard } from "@/components/AuthGuard";
 
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
 import { useMapStore } from "@/stores/map-store";
@@ -44,7 +45,7 @@ import { PriceBreakdownModal } from "@/components/PriceBreakdownModal";
 import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/constants/pricing";
 
 export default function BookingScreen() {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { createOrder } = useOrdersStore();
 
   const { userLocation, destination, routePoints, clearRoute } = useMapStore();
@@ -243,16 +244,32 @@ export default function BookingScreen() {
       return;
     }
 
-    if (!user) {
-      Alert.alert("Authentication Error", "Please log in to book a delivery");
+    if (!user || !isAuthenticated) {
+      Alert.alert(
+        "Authentication Required", 
+        "Please log in to book a delivery. You will be redirected to the login page.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Login",
+            onPress: () => {
+              router.dismiss();
+              router.push("/auth");
+            }
+          }
+        ]
+      );
       return;
     }
 
     try {
-      // Get customer ID from user
-      const customerId = user.id;
+      // Get customer ID from user - ensure we have a valid user ID
+      const customerId = user.id || `temp_user_${Date.now()}`;
       
-      // Create the order locally
+      // Create the order locally first
       const orderId = `ORD-${Date.now()}`;
       const trackingCode = `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
       
@@ -260,6 +277,7 @@ export default function BookingScreen() {
         id: orderId,
         trackingCode,
         clientId: customerId,
+        customerId: customerId, // Add both for compatibility
         pickupAddress: bookingData.pickupLocation,
         pickupLatitude: bookingData.pickupCoords?.latitude,
         pickupLongitude: bookingData.pickupCoords?.longitude,
@@ -283,21 +301,21 @@ export default function BookingScreen() {
       };
       
       // Add to local store
-      createOrder(orderData);
+      const createdOrderId = createOrder(orderData);
       
-      console.log("Order created locally:", orderId, trackingCode, orderData);
+      console.log("Order created locally:", createdOrderId, trackingCode, orderData);
       
       // Navigate based on payment term
       if (bookingData.paymentTerm === "pay_now" && bookingData.paymentMethod !== "cash") {
         Alert.alert(
           "Booking Confirmed! 🎉",
-          `Your delivery has been booked successfully. Tracking Code: ${trackingCode}. Proceed to payment.`,
+          `Your delivery has been booked successfully.\n\nTracking Code: ${trackingCode}\n\nProceed to payment to complete your order.`,
           [
             {
               text: "Pay Now",
               onPress: () => {
                 router.dismiss();
-                router.push(`/payment?orderId=${orderId}`);
+                router.push(`/payment?orderId=${createdOrderId}`);
               },
             },
             {
@@ -312,10 +330,10 @@ export default function BookingScreen() {
       } else {
         Alert.alert(
           "Booking Confirmed! 🎉",
-          `Your delivery has been booked successfully. Tracking Code: ${trackingCode}. ${
+          `Your delivery has been booked successfully.\n\nTracking Code: ${trackingCode}\n\n${
             bookingData.paymentTerm === "pay_on_delivery" 
               ? "You will pay when the package is delivered." 
-              : ""
+              : "Your order is being processed."
           }`,
           [
             {
@@ -337,12 +355,22 @@ export default function BookingScreen() {
       }
     } catch (error) {
       console.error("Booking error:", error);
-      Alert.alert("Booking Error", "Failed to create order. Please try again.");
+      Alert.alert(
+        "Booking Error", 
+        "Failed to create order. Please check your connection and try again.",
+        [
+          {
+            text: "OK",
+            style: "default"
+          }
+        ]
+      );
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <AuthGuard requiredUserType="client">
+      <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Text style={styles.title}>Book Delivery</Text>
@@ -799,6 +827,7 @@ export default function BookingScreen() {
         />
       )}
     </SafeAreaView>
+    </AuthGuard>
   );
 }
 
