@@ -80,14 +80,14 @@ export default function OrdersScreen() {
       value: activeOrders.length,
       icon: Truck,
       color: colors.primary,
-      gradient: [colors.primary, colors.primaryDark]
+      gradient: [colors.primary, colors.primaryDark] as const
     },
     {
       label: "Completed",
       value: completedOrders.filter(o => o.status === "delivered").length,
       icon: CheckCircle,
       color: colors.success,
-      gradient: [colors.success, "#10B981"]
+      gradient: [colors.success, "#10B981"] as const
     },
     {
       label: "This Month",
@@ -99,14 +99,14 @@ export default function OrdersScreen() {
       }).length,
       icon: Calendar,
       color: colors.accent,
-      gradient: [colors.accent, colors.accentDark]
+      gradient: [colors.accent, colors.accentDark] as const
     },
     {
       label: "Total Spent",
       value: `KSh ${allOrders.reduce((sum, order) => sum + order.price, 0).toLocaleString()}`,
       icon: DollarSign,
       color: colors.info,
-      gradient: [colors.info, "#3B82F6"]
+      gradient: [colors.info, "#3B82F6"] as const
     }
   ];
 
