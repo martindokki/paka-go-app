@@ -11,21 +11,47 @@ export class AuthService {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Update the user profile in the public.users table
-        const { error: profileError } = await supabase
-          .from('users')
-          .update({
-            full_name: fullName,
-            phone_number: phoneNumber,
-            role: role,
-          })
-          .eq('id', authData.user.id);
+        // Wait a bit for the trigger to create the user record
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        if (profileError) throw profileError;
+        // Try to update the user profile, if it doesn't exist, insert it
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (existingUser) {
+          // Update existing user
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({
+              full_name: fullName,
+              phone_number: phoneNumber,
+              role: role,
+            })
+            .eq('id', authData.user.id);
+
+          if (updateError) throw updateError;
+        } else {
+          // Insert new user if trigger didn't create it
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: authData.user.id,
+              full_name: fullName,
+              email: email,
+              phone_number: phoneNumber,
+              role: role,
+            });
+
+          if (insertError) throw insertError;
+        }
       }
 
       return { user: authData.user, error: null };
     } catch (error) {
+      console.error('SignUp error:', error);
       return { user: null, error };
     }
   }
