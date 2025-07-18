@@ -20,6 +20,24 @@ export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuthStore();
   const { adminStats, drivers, initializeData } = useLocalDataStore();
   const { orders, initializeSampleData } = useOrdersStore();
+  
+  // Provide safe defaults
+  const safeAdminStats = adminStats || {
+    totalOrders: 0,
+    totalDrivers: 0,
+    totalCustomers: 0,
+    totalRevenue: 0,
+    activeOrders: 0,
+    completedOrders: 0,
+    cancelledOrders: 0,
+    averageRating: 0,
+    ordersToday: 0,
+    revenueToday: 0,
+    newCustomersToday: 0,
+    activeDrivers: 0
+  };
+  const safeDrivers = drivers || [];
+  const safeOrders = orders || [];
 
   useEffect(() => {
     // Check if user is authenticated and is admin
@@ -36,13 +54,13 @@ export default function AdminDashboard() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardStats stats={adminStats} orders={orders} drivers={drivers} />;
+        return <DashboardStats stats={safeAdminStats} orders={safeOrders} drivers={safeDrivers} />;
       case 'orders':
-        return <OrdersManagement orders={orders} />;
+        return <OrdersManagement orders={safeOrders} />;
       case 'drivers':
-        return <DriversManagement drivers={drivers} />;
+        return <DriversManagement drivers={safeDrivers} />;
       case 'vehicles':
-        return <VehiclesManagement drivers={drivers} />;
+        return <VehiclesManagement drivers={safeDrivers} />;
       case 'customers':
         return <CustomersManagement />;
       case 'support':
@@ -54,7 +72,7 @@ export default function AdminDashboard() {
       case 'security':
         return <SecurityManagement />;
       default:
-        return <DashboardStats stats={adminStats} orders={orders} drivers={drivers} />;
+        return <DashboardStats stats={safeAdminStats} orders={safeOrders} drivers={safeDrivers} />;
     }
   };
 
