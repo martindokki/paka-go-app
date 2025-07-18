@@ -3,6 +3,8 @@ import { supabase, User } from './supabase';
 export class AuthService {
   static async signUp(email: string, password: string, fullName: string, phoneNumber?: string, role: 'customer' | 'driver' = 'customer') {
     try {
+      console.log('Starting signup process for:', email);
+      
       // First, sign up the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -18,78 +20,41 @@ export class AuthService {
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        throw authError;
+        throw new Error(`Authentication failed: ${authError.message}`);
       }
 
       if (!authData.user) {
         throw new Error('No user returned from signup');
       }
 
-      // Wait a moment for the trigger to potentially create the user record
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Auth user created successfully:', authData.user.id);
 
-      // Check if user record exists in public.users table
-      const { data: existingUser, error: checkError } = await supabase
+      // Create user profile in public.users table
+      const { data: profileData, error: profileError } = await supabase
         .from('users')
-        .select('id')
-        .eq('id', authData.user.id)
-        .maybeSingle();
-
-      if (checkError && checkError.code !== 'PGRST116') {
-        console.error('Error checking existing user:', checkError);
-        throw checkError;
-      }
-
-      if (existingUser) {
-        // Update existing user record
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({
-            full_name: fullName,
-            phone_number: phoneNumber,
-            role: role,
-          })
-          .eq('id', authData.user.id);
-
-        if (updateError) {
-          console.error('Error updating user profile:', updateError);
-          throw updateError;
-        }
-      } else {
-        // Create new user record manually
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: authData.user.id,
-            full_name: fullName,
-            email: email,
-            phone_number: phoneNumber,
-            role: role,
-          });
-
-        if (insertError) {
-          console.error('Error inserting user profile:', insertError);
-          throw insertError;
-        }
-      }
-
-      // Verify the user was created successfully
-      const { data: finalUser, error: verifyError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', authData.user.id)
+        .insert({
+          id: authData.user.id,
+          full_name: fullName,
+          email: email,
+          phone_number: phoneNumber,
+          role: role,
+          status: 'active'
+        })
+        .select()
         .single();
 
-      if (verifyError || !finalUser) {
-        console.error('Error verifying user creation:', verifyError);
-        throw new Error('Failed to create user profile in database');
+      if (profileError) {
+        console.error('Error creating user profile:', profileError);
+        // If profile creation fails, we should clean up the auth user
+        await supabase.auth.admin.deleteUser(authData.user.id).catch(console.error);
+        throw new Error(`Profile creation failed: ${profileError.message}`);
       }
 
-      console.log('User successfully created:', finalUser);
-      return { user: authData.user, error: null };
+      console.log('User profile created successfully:', profileData);
+      return { user: authData.user, profile: profileData, error: null };
     } catch (error: any) {
       console.error('SignUp error:', error);
-      return { user: null, error };
+      return { user: null, profile: null, error };
     }
   }
 

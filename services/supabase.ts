@@ -12,7 +12,10 @@ export interface User {
   email: string;
   phone_number?: string;
   role: 'customer' | 'driver' | 'admin';
+  status?: 'active' | 'suspended' | 'pending';
+  profile_image?: string;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface Parcel {
