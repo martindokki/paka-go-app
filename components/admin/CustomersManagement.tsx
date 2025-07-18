@@ -220,7 +220,7 @@ function CustomerDetailsModal({ visible, customer, onClose }: CustomerDetailsMod
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Last Updated:</Text>
                 <Text style={styles.detailValue}>
-                  {new Date(customer.updatedAt || customer.createdAt).toLocaleDateString('en-US', {
+                  {new Date(customer.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
@@ -273,7 +273,7 @@ export function CustomersManagement() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  const filteredCustomers = customers.filter((customer: Customer) => {
+  const filteredCustomers = customers.filter((customer) => {
     const matchesSearch = 
       customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -388,7 +388,7 @@ export function CustomersManagement() {
             </Text>
           </View>
         ) : (
-          filteredCustomers.map((customer: Customer) => (
+          filteredCustomers.map((customer) => (
             <CustomerCard
               key={customer.id}
               customer={customer}

@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { user, isAuthenticated } = useAuthStore();
   const { adminStats, drivers, initializeData } = useLocalDataStore();
-  const { orders } = useOrdersStore();
+  const { orders, initializeSampleData } = useOrdersStore();
 
   useEffect(() => {
     // Check if user is authenticated and is admin
@@ -30,6 +30,7 @@ export default function AdminDashboard() {
 
     // Initialize admin data
     initializeData();
+    initializeSampleData();
   }, [isAuthenticated, user]);
 
   const renderContent = () => {
