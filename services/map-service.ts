@@ -128,17 +128,18 @@ export class MapService {
       console.log('Calculating route from:', start, 'to:', end);
       
       // Try GraphHopper API first
+      const params = new URLSearchParams();
+      params.append('point', `${start.latitude},${start.longitude}`);
+      params.append('point', `${end.latitude},${end.longitude}`);
+      params.append('vehicle', 'car');
+      params.append('points_encoded', 'false');
+      params.append('key', GRAPHHOPPER_API_KEY);
+      params.append('locale', 'en');
+      params.append('instructions', 'false');
+
       const response = await axios.get(
-        'https://graphhopper.com/api/1/route',
+        `https://graphhopper.com/api/1/route?${params.toString()}`,
         {
-          params: {
-            point: [`${start.latitude},${start.longitude}`, `${end.latitude},${end.longitude}`],
-            vehicle: 'car',
-            points_encoded: false,
-            key: GRAPHHOPPER_API_KEY,
-            locale: 'en',
-            instructions: false,
-          },
           timeout: 15000, // 15 second timeout
         }
       );
