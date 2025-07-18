@@ -34,7 +34,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
-import { useAuthStore } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 import { AuthGuard } from "@/components/AuthGuard";
 
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
@@ -809,17 +809,23 @@ export default function BookingScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Debug Info */}
-        <View style={styles.debugInfo}>
-          <Text style={styles.debugText}>
-            Auth Status: {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}
-          </Text>
-          <Text style={styles.debugText}>
-            User: {user ? `${user.name} (${user.userType})` : 'None'}
-          </Text>
-          <Text style={styles.debugText}>
-            User ID: {user?.id || 'None'}
-          </Text>
+        {/* Quick Tips */}
+        <View style={styles.tipsSection}>
+          <Text style={styles.tipsTitle}>💡 Quick Tips</Text>
+          <View style={styles.tipsContainer}>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipEmoji}>📱</Text>
+              <Text style={styles.tipText}>Use M-Pesa for instant payment</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipEmoji}>📦</Text>
+              <Text style={styles.tipText}>Mark fragile items for careful handling</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipEmoji}>⚡</Text>
+              <Text style={styles.tipText}>Get real-time tracking updates</Text>
+            </View>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.bookButton} onPress={handleBookDelivery}>
@@ -1397,18 +1403,38 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
   },
-  debugInfo: {
-    backgroundColor: colors.backgroundSecondary,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+  tipsSection: {
+    marginBottom: 24,
   },
-  debugText: {
-    fontSize: 12,
+  tipsTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: colors.text,
+    marginBottom: 16,
+  },
+  tipsContainer: {
+    backgroundColor: colors.background,
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  tipItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 12,
+  },
+  tipEmoji: {
+    fontSize: 16,
+  },
+  tipText: {
+    fontSize: 14,
     color: colors.textMuted,
-    fontWeight: '500',
-    marginBottom: 4,
+    fontWeight: "500",
+    flex: 1,
   },
 });

@@ -48,8 +48,12 @@ export default function TrackingScreen() {
 
   // Fallback: if trackingCode didn't work, try to find by orderId that contains the tracking code
   if (!order && trackingCode) {
-    const { orders } = useOrdersStore();
-    order = orders.find(o => o.id.includes(trackingCode) || o.id === trackingCode) || null;
+    const { orders } = useOrdersStore.getState();
+    order = orders.find(o => 
+      o.trackingCode === trackingCode || 
+      o.id.includes(trackingCode) || 
+      o.id === trackingCode
+    ) || null;
   }
 
   // Debug logging
