@@ -11,7 +11,6 @@ import {
 import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { trpc } from "@/lib/trpc";
 import { useAuthStore } from "@/stores/auth-store";
 
 const { width } = Dimensions.get("window");
@@ -36,17 +35,6 @@ interface DriverOrder {
 export default function DriverOrdersScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<"today" | "week" | "month">("today");
   const { user } = useAuthStore();
-  
-  // Get driver ID from user
-  const driverId = user ? `driver_${user.id}` : null;
-  
-  // Fetch orders from backend
-  const { data: ordersData, isLoading } = trpc.orders.getByDriver.useQuery(
-    { driverId: driverId! },
-    { enabled: !!driverId }
-  );
-  
-  const orders = ordersData?.data || [];
   
   // Mock data for fallback (remove this once backend is fully working)
   const mockOrders: DriverOrder[] = [
@@ -105,20 +93,8 @@ export default function DriverOrdersScreen() {
     },
   ];
   
-  // Use real orders if available, otherwise use mock data
-  const displayOrders = orders.length > 0 ? orders.map((order: any) => ({
-    id: order.id,
-    from: order.pickupAddress,
-    to: order.deliveryAddress,
-    status: order.status === 'delivered' ? 'completed' as OrderStatus : 'cancelled' as OrderStatus,
-    customerName: order.recipientName,
-    price: `KSh ${order.totalAmount}`,
-    date: new Date(order.createdAt).toLocaleDateString(),
-    rating: order.customerRating || undefined,
-    distance: `${order.estimatedDistance || 0} km`,
-    duration: `${order.estimatedDuration || 0} mins`,
-    packageType: order.packageType,
-  })) : mockOrders;
+  // Use mock data for now
+  const displayOrders = mockOrders;
 
   const periods = [
     { key: "today", label: "Today", emoji: "📅" },

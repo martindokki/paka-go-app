@@ -2,8 +2,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { trpcClient } from '@/lib/trpc';
-import { errorLogger } from '@/utils/error-logger';
 
 export type UserType = 'client' | 'driver' | 'admin';
 
@@ -67,50 +65,33 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await trpcClient.auth.login.mutate(credentials);
+          // Mock login - simulate successful authentication
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
           
-          if (response.success && response.data) {
-            const { user, token } = response.data;
-            
-            set({
-              user: { ...user, token },
-              token,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            
-            await errorLogger.info('Login successful', { userType: user.userType });
-            return true;
-          } else {
-            const errorMsg = 'Login failed';
-            set({ 
-              error: errorMsg, 
-              isLoading: false,
-              isAuthenticated: false,
-              user: null,
-              token: null,
-            });
-            
-            await errorLogger.error('Login failed', { 
-              error: errorMsg,
-              credentials: { email: credentials.email, userType: credentials.userType }
-            });
-            return false;
-          }
+          // Create mock user data
+          const mockUser: User = {
+            id: `user_${Date.now()}`,
+            name: credentials.email.split('@')[0], // Use email prefix as name
+            email: credentials.email,
+            phone: '+254700000000', // Mock phone
+            userType: credentials.userType,
+            token: `mock_token_${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          
+          set({
+            user: mockUser,
+            token: mockUser.token,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          
+          console.log('Login successful', { userType: mockUser.userType });
+          return true;
         } catch (error: any) {
-          let errorMsg = 'Login failed. Please check your credentials.';
-          
-          // Handle specific error messages from the backend
-          if (error.message) {
-            if (error.message.includes('Invalid credentials')) {
-              errorMsg = 'Invalid email, password, or user type. Please check your information and try again.';
-            } else if (error.message.includes('not found')) {
-              errorMsg = 'No account found with this email and user type. Please check your information or sign up.';
-            } else {
-              errorMsg = error.message;
-            }
-          }
+          const errorMsg = 'Login failed. Please try again.';
           
           set({ 
             error: errorMsg, 
@@ -120,10 +101,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
           });
           
-          await errorLogger.error('Login failed', { 
-            error: error.message || 'Unknown error',
-            credentials: { email: credentials.email, userType: credentials.userType }
-          });
+          console.error('Login failed', error);
           return false;
         }
       },
@@ -132,50 +110,33 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          const response = await trpcClient.auth.register.mutate(userData);
+          // Mock registration - simulate successful registration
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
           
-          if (response.success && response.data) {
-            const { user, token } = response.data;
-            
-            set({
-              user: { ...user, token },
-              token,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            
-            await errorLogger.info('Registration successful', { userType: user.userType });
-            return true;
-          } else {
-            const errorMsg = 'Registration failed';
-            set({ 
-              error: errorMsg, 
-              isLoading: false,
-              isAuthenticated: false,
-              user: null,
-              token: null,
-            });
-            
-            await errorLogger.error('Registration failed', { 
-              error: errorMsg,
-              userData: { email: userData.email, userType: userData.userType }
-            });
-            return false;
-          }
+          // Create mock user data
+          const mockUser: User = {
+            id: `user_${Date.now()}`,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone,
+            userType: userData.userType,
+            token: `mock_token_${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          
+          set({
+            user: mockUser,
+            token: mockUser.token,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          
+          console.log('Registration successful', { userType: mockUser.userType });
+          return true;
         } catch (error: any) {
-          let errorMsg = 'Registration failed. Please try again.';
-          
-          // Handle specific error messages from the backend
-          if (error.message) {
-            if (error.message.includes('already exists')) {
-              errorMsg = 'An account with this email already exists. Please try signing in instead.';
-            } else if (error.message.includes('invalid')) {
-              errorMsg = 'Please check your information and try again.';
-            } else {
-              errorMsg = error.message;
-            }
-          }
+          const errorMsg = 'Registration failed. Please try again.';
           
           set({ 
             error: errorMsg, 
@@ -185,10 +146,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
           });
           
-          await errorLogger.error('Registration failed', { 
-            error: error.message || 'Unknown error',
-            userData: { email: userData.email, userType: userData.userType }
-          });
+          console.error('Registration failed', error);
           return false;
         }
       },
@@ -197,7 +155,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         
         try {
-          await errorLogger.info('User logged out');
+          console.log('User logged out');
           
           // Clear storage on web and mobile
           if (Platform.OS === 'web') {
@@ -216,7 +174,7 @@ export const useAuthStore = create<AuthState>()(
             }
           }
         } catch (error) {
-          await errorLogger.error(error as Error, { action: 'logout' });
+          console.error('Logout error:', error);
         } finally {
           set({
             user: null,
@@ -235,20 +193,20 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          // For now, just update locally since we don't have a backend endpoint
+          // Update locally
           set({
-            user: { ...user, ...profileData },
+            user: { ...user, ...profileData, updatedAt: new Date().toISOString() },
             isLoading: false,
             error: null,
           });
           
-          await errorLogger.info('Profile updated successfully');
+          console.log('Profile updated successfully');
           return true;
         } catch (error) {
           const errorMsg = 'Profile update failed. Please try again.';
           set({ error: errorMsg, isLoading: false });
           
-          await errorLogger.error(error as Error, { action: 'updateProfile' });
+          console.error('Profile update error:', error);
           return false;
         }
       },
@@ -257,7 +215,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          // For now, just clear the account locally
+          // Clear the account locally
           set({
             user: null,
             token: null,
@@ -266,13 +224,13 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           
-          await errorLogger.info('Account deleted successfully');
+          console.log('Account deleted successfully');
           return true;
         } catch (error) {
           const errorMsg = 'Account deletion failed. Please try again.';
           set({ error: errorMsg, isLoading: false });
           
-          await errorLogger.error(error as Error, { action: 'deleteAccount' });
+          console.error('Account deletion error:', error);
           return false;
         }
       },

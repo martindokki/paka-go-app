@@ -27,7 +27,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { trpc } from "@/lib/trpc";
 
 export default function OrdersScreen() {
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
@@ -36,16 +35,8 @@ export default function OrdersScreen() {
   const { user } = useAuthStore();
   const { getOrdersByClient, initializeSampleData } = useOrdersStore();
   
-  // Get customer ID from user
-  const customerId = user ? `customer_${user.id}` : null;
-  
-  // Fetch orders from backend
-  const { data: ordersData, refetch: refetchOrders, isLoading } = trpc.orders.getByCustomer.useQuery(
-    { customerId: customerId! },
-    { enabled: !!customerId }
-  );
-  
-  const allOrders = ordersData?.data || [];
+  // Get orders from local store
+  const allOrders = user ? getOrdersByClient(user.id) : [];
   const activeOrders = allOrders.filter(order => 
     !["delivered", "cancelled"].includes(order.status)
   );
@@ -56,7 +47,8 @@ export default function OrdersScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      await refetchOrders();
+      // Initialize sample data if needed
+      initializeSampleData();
     } catch (error) {
       console.error('Failed to refresh orders:', error);
     } finally {
