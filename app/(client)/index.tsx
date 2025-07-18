@@ -15,6 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useOrdersStore } from "@/stores/orders-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useLocalDataStore } from "@/stores/local-data-store";
 
 const { width } = Dimensions.get("window");
 

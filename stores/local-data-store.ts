@@ -14,6 +14,7 @@ export interface Driver {
   totalEarnings: number;
   vehicleInfo: string;
   status: 'online' | 'offline' | 'busy';
+  createdAt: string;
   location?: {
     lat: number;
     lng: number;
@@ -56,6 +57,7 @@ const mockDrivers: Driver[] = [
     totalEarnings: 45600,
     vehicleInfo: 'Red Honda CB 150R - KCA 123D',
     status: 'online',
+    createdAt: '2024-01-10T08:00:00Z',
     location: { lat: -1.2921, lng: 36.8219 }
   },
   {
@@ -68,6 +70,7 @@ const mockDrivers: Driver[] = [
     totalEarnings: 67800,
     vehicleInfo: 'Blue Yamaha YBR 125 - KCB 456E',
     status: 'online',
+    createdAt: '2024-01-05T09:30:00Z',
     location: { lat: -1.2864, lng: 36.8172 }
   },
   {
@@ -80,6 +83,7 @@ const mockDrivers: Driver[] = [
     totalEarnings: 23400,
     vehicleInfo: 'Green Bajaj Boxer - KCC 789F',
     status: 'offline',
+    createdAt: '2024-02-01T11:15:00Z',
     location: { lat: -1.3032, lng: 36.8073 }
   }
 ];

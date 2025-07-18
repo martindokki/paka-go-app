@@ -31,6 +31,9 @@ import {
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
+import { useAuthStore } from "@/stores/auth-store";
+import { useOrdersStore } from "@/stores/orders-store";
+import { useLocalDataStore } from "@/stores/local-data-store";
 
 const { width } = Dimensions.get("window");
 

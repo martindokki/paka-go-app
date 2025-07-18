@@ -73,7 +73,7 @@ function DriverCard({ driver, onApprove, onSuspend, onAssignVehicle, onViewLocat
           </View>
         </View>
         <Text style={styles.joinDate}>
-          Joined: {new Date(driver.createdAt).toLocaleDateString()}
+          Status: {driver.status}
         </Text>
       </View>
 
@@ -202,7 +202,7 @@ export function DriversManagement({ drivers }: DriversManagementProps) {
     if (driver.location) {
       Alert.alert(
         'Driver Location',
-        `${driver.name} is currently at:\nLat: ${driver.location.latitude.toFixed(6)}\nLng: ${driver.location.longitude.toFixed(6)}`,
+        `${driver.name} is currently at:\nLat: ${driver.location.lat.toFixed(6)}\nLng: ${driver.location.lng.toFixed(6)}`,
         [{ text: 'OK' }]
       );
     }
@@ -287,44 +287,7 @@ export function DriversManagement({ drivers }: DriversManagementProps) {
         )}
       </ScrollView>
 
-      {/* Vehicle Assignment Modal */}
-      <Modal
-        visible={showVehicleModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowVehicleModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Assign Vehicle</Text>
-            
-            {availableVehicles.length === 0 ? (
-              <Text style={styles.noVehiclesText}>No available vehicles</Text>
-            ) : (
-              <ScrollView style={styles.vehiclesList}>
-                {availableVehicles.map((vehicle) => (
-                  <TouchableOpacity
-                    key={vehicle.id}
-                    style={styles.vehicleItem}
-                    onPress={() => handleVehicleAssignment(vehicle.id)}
-                  >
-                    <Text style={styles.vehiclePlate}>{vehicle.plateNumber}</Text>
-                    <Text style={styles.vehicleType}>{vehicle.type}</Text>
-                    <Text style={styles.vehicleCapacity}>{vehicle.loadCapacity}kg</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            )}
-            
-            <TouchableOpacity
-              style={styles.modalCloseButton}
-              onPress={() => setShowVehicleModal(false)}
-            >
-              <Text style={styles.modalCloseText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+
     </View>
   );
 }
