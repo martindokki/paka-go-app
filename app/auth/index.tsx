@@ -314,10 +314,10 @@ export default function AuthScreen() {
                   <Zap size={48} color={colors.primary} />
                 </View>
                 <View style={styles.logoTextContainer}>
-                  <Text style={styles.logo}>PAKA Go</Text>
+                  <Text style={styles.logo}>PAKA HOME</Text>
                   <View style={styles.taglineContainer}>
                     <Sparkles size={16} color={colors.background} />
-                    <Text style={styles.tagline}>Lightning Fast Delivery</Text>
+                    <Text style={styles.tagline}>Parcel Delivery Service</Text>
                     <Sparkles size={16} color={colors.background} />
                   </View>
                 </View>
@@ -584,7 +584,7 @@ export default function AuthScreen() {
                       ) : (
                         <>
                           <Text style={styles.authButtonText}>
-                            {authMode === "login" ? "Let's Go! 🚀" : "Join PAKA Go! 🎉"}
+                            {authMode === "login" ? "Let's Go! 🚀" : "Join PAKA HOME! 🎉"}
                           </Text>
                           <ArrowRight size={20} color={colors.primary} />
                         </>
@@ -596,7 +596,7 @@ export default function AuthScreen() {
                 {authMode === "register" && (
                   <View style={styles.termsContainer}>
                     <Text style={styles.termsText}>
-                      By joining PAKA Go, you agree to our{" "}
+                      By joining PAKA HOME, you agree to our{" "}
                       <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
                       <Text style={styles.termsLink}>Privacy Policy</Text>
                     </Text>
