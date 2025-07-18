@@ -71,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
           const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
           
           if (error || !authUser) {
-            throw new Error(error?.message || 'Login failed');
+            throw new Error((error as any)?.message || 'Login failed');
           }
 
           // Get user profile
@@ -135,7 +135,7 @@ export const useAuthStore = create<AuthState>()(
           );
           
           if (error || !authUser) {
-            throw new Error(error?.message || 'Registration failed');
+            throw new Error((error as any)?.message || 'Registration failed');
           }
 
           // Get updated user profile
