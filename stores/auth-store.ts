@@ -2,8 +2,10 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { AuthService } from '@/services/auth-service';
+import { User as SupabaseUser } from '@/services/supabase';
 
-export type UserType = 'client' | 'driver' | 'admin';
+export type UserType = 'customer' | 'driver' | 'admin';
 
 export interface User {
   id: string;
@@ -19,12 +21,12 @@ export interface User {
 export interface LoginRequest {
   email: string;
   password: string;
-  userType: UserType;
 }
 
 export interface RegisterRequest extends LoginRequest {
   name: string;
   phone: string;
+  userType: UserType;
 }
 
 interface AuthState {
@@ -63,47 +65,48 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
-        console.log('Login attempt:', { email: credentials.email, userType: credentials.userType });
+        console.log('Login attempt:', { email: credentials.email });
         
         try {
-          // Mock login - simulate successful authentication
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+          const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
           
-          // Create mock user data
-          const mockUser: User = {
-            id: `user_${Date.now()}`,
-            name: credentials.email.split('@')[0], // Use email prefix as name
-            email: credentials.email,
-            phone: '+254700000000', // Mock phone
-            userType: credentials.userType,
-            token: `mock_token_${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+          if (error || !authUser) {
+            throw new Error(error?.message || 'Login failed');
+          }
+
+          // Get user profile
+          const { profile, error: profileError } = await AuthService.getCurrentUser();
+          
+          if (profileError || !profile) {
+            throw new Error('Failed to get user profile');
+          }
+
+          const userData: User = {
+            id: profile.id,
+            name: profile.full_name,
+            email: profile.email,
+            phone: profile.phone_number || '',
+            userType: profile.role as UserType,
+            token: authUser.access_token,
+            createdAt: profile.created_at,
+            updatedAt: profile.created_at,
           };
           
-          console.log('Setting user data:', mockUser);
+          console.log('Setting user data:', userData);
           
           set({
-            user: mockUser,
-            token: mockUser.token,
+            user: userData,
+            token: authUser.access_token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
           
-          console.log('Login successful', { userType: mockUser.userType, userId: mockUser.id });
-          
-          // Verify the state was set correctly
-          const currentState = get();
-          console.log('Current auth state after login:', {
-            isAuthenticated: currentState.isAuthenticated,
-            user: currentState.user?.email,
-            userType: currentState.user?.userType
-          });
+          console.log('Login successful', { userType: userData.userType, userId: userData.id });
           
           return true;
         } catch (error: any) {
-          const errorMsg = 'Login failed. Please try again.';
+          const errorMsg = error.message || 'Login failed. Please try again.';
           
           set({ 
             error: errorMsg, 
@@ -123,44 +126,51 @@ export const useAuthStore = create<AuthState>()(
         console.log('Registration attempt:', { email: userData.email, userType: userData.userType });
         
         try {
-          // Mock registration - simulate successful registration
-          await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
+          const { user: authUser, error } = await AuthService.signUp(
+            userData.email, 
+            userData.password, 
+            userData.name, 
+            userData.phone, 
+            userData.userType
+          );
           
-          // Create mock user data
-          const mockUser: User = {
-            id: `user_${Date.now()}`,
-            name: userData.name,
-            email: userData.email,
-            phone: userData.phone,
-            userType: userData.userType,
-            token: `mock_token_${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+          if (error || !authUser) {
+            throw new Error(error?.message || 'Registration failed');
+          }
+
+          // Get updated user profile
+          const { profile, error: profileError } = await AuthService.getCurrentUser();
+          
+          if (profileError || !profile) {
+            throw new Error('Failed to get user profile after registration');
+          }
+
+          const userDataForStore: User = {
+            id: profile.id,
+            name: profile.full_name,
+            email: profile.email,
+            phone: profile.phone_number || '',
+            userType: profile.role as UserType,
+            token: authUser.access_token,
+            createdAt: profile.created_at,
+            updatedAt: profile.created_at,
           };
           
-          console.log('Setting user data:', mockUser);
+          console.log('Setting user data:', userDataForStore);
           
           set({
-            user: mockUser,
-            token: mockUser.token,
+            user: userDataForStore,
+            token: authUser.access_token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           });
           
-          console.log('Registration successful', { userType: mockUser.userType, email: userData.email, userId: mockUser.id });
-          
-          // Verify the state was set correctly
-          const currentState = get();
-          console.log('Current auth state after registration:', {
-            isAuthenticated: currentState.isAuthenticated,
-            user: currentState.user?.email,
-            userType: currentState.user?.userType
-          });
+          console.log('Registration successful', { userType: userDataForStore.userType, email: userData.email, userId: userDataForStore.id });
           
           return true;
         } catch (error: any) {
-          const errorMsg = 'Registration failed. Please check your details and try again.';
+          const errorMsg = error.message || 'Registration failed. Please check your details and try again.';
           
           set({ 
             error: errorMsg, 
@@ -179,6 +189,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         
         try {
+          await AuthService.signOut();
           console.log('User logged out');
           
           // Clear storage on web and mobile

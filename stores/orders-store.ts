@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { ParcelService } from '@/services/parcel-service';
+import { Parcel, Delivery } from '@/services/supabase';
 
 export type OrderStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'mpesa' | 'card' | 'cash';
@@ -50,18 +52,22 @@ export interface Order {
 
 interface OrdersState {
   orders: Order[];
-  createOrder: (orderData: any) => string;
-  updateOrderStatus: (orderId: string, status: OrderStatus, driverInfo?: Order['driverInfo']) => void;
+  isLoading: boolean;
+  error: string | null;
+  createOrder: (orderData: any) => Promise<string>;
+  updateOrderStatus: (orderId: string, status: OrderStatus, driverInfo?: Order['driverInfo']) => Promise<void>;
   updatePaymentStatus: (orderId: string, paymentStatus: Order['paymentStatus']) => void;
-  assignDriver: (orderId: string, driverId: string, driverInfo: Order['driverInfo']) => void;
+  assignDriver: (orderId: string, driverId: string, driverInfo: Order['driverInfo']) => Promise<void>;
   cancelOrder: (orderId: string, reason?: string) => void;
   sendSTKPush: (orderId: string) => void;
-  getOrdersByClient: (clientId: string) => Order[];
-  getOrdersByDriver: (driverId: string) => Order[];
+  getOrdersByClient: (clientId: string) => Promise<void>;
+  getOrdersByDriver: (driverId: string) => Promise<void>;
+  getAllOrders: () => Promise<void>;
   getPendingOrders: () => Order[];
   getOrderById: (orderId: string) => Order | undefined;
   getOrderByTrackingCode: (trackingCode: string) => Order | undefined;
   initializeSampleData: () => void;
+  clearError: () => void;
 }
 
 const createTimeline = (status: OrderStatus): Order['timeline'] => {
@@ -244,6 +250,10 @@ export const useOrdersStore = create<OrdersState>()(
   persist(
     (set, get) => ({
       orders: [],
+      isLoading: false,
+      error: null,
+      
+      clearError: () => set({ error: null }),
       
       initializeSampleData: () => {
         const currentOrders = get().orders;
@@ -256,74 +266,92 @@ export const useOrdersStore = create<OrdersState>()(
         }
       },
       
-      createOrder: (orderData) => {
+      createOrder: async (orderData) => {
+        set({ isLoading: true, error: null });
         try {
-          const orderId = orderData.id || `ORD-${Date.now()}`;
-          const now = new Date().toISOString();
+          console.log("Creating order with data:", orderData);
           
-          console.log("Creating order in store with data:", orderData);
+          const parcelData = {
+            sender_id: orderData.customerId || orderData.clientId,
+            receiver_name: orderData.recipientName,
+            receiver_phone: orderData.recipientPhone,
+            pickup_address: orderData.pickupAddress || orderData.from,
+            dropoff_address: orderData.deliveryAddress || orderData.to,
+            parcel_description: orderData.packageDescription,
+            weight_kg: orderData.weight || 1,
+          };
+
+          const { data: parcel, error } = await ParcelService.createParcel(parcelData);
           
+          if (error || !parcel) {
+            throw new Error(error?.message || 'Failed to create parcel');
+          }
+
+          // Convert Supabase parcel to local Order format
           const order: Order = {
-            id: orderId,
-            trackingCode: orderData.trackingCode,
-            clientId: orderData.customerId || orderData.clientId || 'unknown_user',
-            from: orderData.pickupAddress || orderData.from || '',
-            to: orderData.deliveryAddress || orderData.to || '',
-            fromCoords: orderData.pickupLatitude && orderData.pickupLongitude ? {
-              lat: orderData.pickupLatitude,
-              lng: orderData.pickupLongitude
-            } : undefined,
-            toCoords: orderData.deliveryLatitude && orderData.deliveryLongitude ? {
-              lat: orderData.deliveryLatitude,
-              lng: orderData.deliveryLongitude
-            } : undefined,
+            id: parcel.id,
+            trackingCode: `TRK${parcel.id.slice(-8).toUpperCase()}`,
+            clientId: parcel.sender_id,
+            from: parcel.pickup_address,
+            to: parcel.dropoff_address,
             packageType: orderData.packageType || 'documents',
-            packageDescription: orderData.packageDescription || '',
-            recipientName: orderData.recipientName || '',
-            recipientPhone: orderData.recipientPhone || '',
+            packageDescription: parcel.parcel_description || '',
+            recipientName: parcel.receiver_name,
+            recipientPhone: parcel.receiver_phone || '',
             specialInstructions: orderData.specialInstructions || '',
-            status: orderData.status || 'pending',
+            status: parcel.status as OrderStatus,
             paymentMethod: orderData.paymentMethod || 'mpesa',
             paymentTerm: orderData.paymentTerm || 'pay_now',
-            paymentStatus: orderData.paymentTerm === 'pay_now' ? 'pending' : 'pending',
+            paymentStatus: 'pending',
             price: orderData.price || 0,
             distance: orderData.estimatedDistance ? `${orderData.estimatedDistance.toFixed(1)} km` : undefined,
             estimatedTime: orderData.estimatedDuration ? `${orderData.estimatedDuration}-${orderData.estimatedDuration + 10} mins` : undefined,
-            createdAt: orderData.createdAt || now,
-            updatedAt: now,
-            timeline: createTimeline(orderData.status || 'pending'),
+            createdAt: parcel.created_at,
+            updatedAt: parcel.created_at,
+            timeline: createTimeline(parcel.status as OrderStatus),
           };
           
-          console.log("Created order object:", order);
+          set((state) => ({
+            orders: [...state.orders, order],
+            isLoading: false,
+          }));
           
-          set((state) => {
-            const newOrders = [...state.orders, order];
-            console.log("Updated orders array length:", newOrders.length);
-            return { orders: newOrders };
-          });
-          
-          console.log("Order created successfully with ID:", orderId);
-          return orderId;
-        } catch (error) {
+          console.log("Order created successfully with ID:", parcel.id);
+          return parcel.id;
+        } catch (error: any) {
           console.error("Error creating order:", error);
+          set({ error: error.message, isLoading: false });
           throw error;
         }
       },
       
-      updateOrderStatus: (orderId, status, driverInfo) => {
-        set((state) => ({
-          orders: state.orders.map((order) =>
-            order.id === orderId
-              ? {
-                  ...order,
-                  status,
-                  updatedAt: new Date().toISOString(),
-                  timeline: createTimeline(status),
-                  ...(driverInfo && { driverInfo }),
-                }
-              : order
-          ),
-        }));
+      updateOrderStatus: async (orderId, status, driverInfo) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data, error } = await ParcelService.updateParcelStatus(orderId, status);
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          set((state) => ({
+            orders: state.orders.map((order) =>
+              order.id === orderId
+                ? {
+                    ...order,
+                    status,
+                    updatedAt: new Date().toISOString(),
+                    timeline: createTimeline(status),
+                    ...(driverInfo && { driverInfo }),
+                  }
+                : order
+            ),
+            isLoading: false,
+          }));
+        } catch (error: any) {
+          console.error("Error updating order status:", error);
+          set({ error: error.message, isLoading: false });
+        }
       },
       
       updatePaymentStatus: (orderId, paymentStatus) => {
@@ -340,29 +368,159 @@ export const useOrdersStore = create<OrdersState>()(
         }));
       },
       
-      assignDriver: (orderId, driverId, driverInfo) => {
-        set((state) => ({
-          orders: state.orders.map((order) =>
-            order.id === orderId
-              ? {
-                  ...order,
-                  driverId,
-                  driverInfo,
-                  status: 'assigned' as OrderStatus,
-                  updatedAt: new Date().toISOString(),
-                  timeline: createTimeline('assigned'),
-                }
-              : order
-          ),
-        }));
+      assignDriver: async (orderId, driverId, driverInfo) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data, error } = await ParcelService.assignDriverToParcel(orderId, driverId);
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          set((state) => ({
+            orders: state.orders.map((order) =>
+              order.id === orderId
+                ? {
+                    ...order,
+                    driverId,
+                    driverInfo,
+                    status: 'assigned' as OrderStatus,
+                    updatedAt: new Date().toISOString(),
+                    timeline: createTimeline('assigned'),
+                  }
+                : order
+            ),
+            isLoading: false,
+          }));
+        } catch (error: any) {
+          console.error("Error assigning driver:", error);
+          set({ error: error.message, isLoading: false });
+        }
       },
       
-      getOrdersByClient: (clientId) => {
-        return get().orders.filter((order) => order.clientId === clientId);
+      getOrdersByClient: async (clientId) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data: parcels, error } = await ParcelService.getUserParcels(clientId);
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          const orders: Order[] = (parcels || []).map((parcel: any) => ({
+            id: parcel.id,
+            trackingCode: `TRK${parcel.id.slice(-8).toUpperCase()}`,
+            clientId: parcel.sender_id,
+            driverId: parcel.deliveries?.[0]?.driver_id,
+            from: parcel.pickup_address,
+            to: parcel.dropoff_address,
+            packageType: 'documents' as PackageType,
+            packageDescription: parcel.parcel_description || '',
+            recipientName: parcel.receiver_name,
+            recipientPhone: parcel.receiver_phone || '',
+            status: parcel.status as OrderStatus,
+            paymentMethod: 'mpesa' as PaymentMethod,
+            paymentTerm: 'pay_now' as PaymentTerm,
+            paymentStatus: 'pending' as Order['paymentStatus'],
+            price: 500,
+            createdAt: parcel.created_at,
+            updatedAt: parcel.created_at,
+            timeline: createTimeline(parcel.status as OrderStatus),
+            driverInfo: parcel.deliveries?.[0]?.driver ? {
+              name: parcel.deliveries[0].driver.full_name,
+              phone: parcel.deliveries[0].driver.phone_number || '',
+              rating: 4.5,
+            } : undefined,
+          }));
+
+          set({ orders, isLoading: false });
+        } catch (error: any) {
+          console.error("Error fetching user orders:", error);
+          set({ error: error.message, isLoading: false });
+        }
       },
       
-      getOrdersByDriver: (driverId) => {
-        return get().orders.filter((order) => order.driverId === driverId);
+      getOrdersByDriver: async (driverId) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data: deliveries, error } = await ParcelService.getDriverDeliveries(driverId);
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          const orders: Order[] = (deliveries || []).map((delivery: any) => ({
+            id: delivery.parcel.id,
+            trackingCode: `TRK${delivery.parcel.id.slice(-8).toUpperCase()}`,
+            clientId: delivery.parcel.sender_id,
+            driverId: delivery.driver_id,
+            customerName: delivery.parcel.sender?.full_name,
+            customerPhone: delivery.parcel.sender?.phone_number,
+            from: delivery.parcel.pickup_address,
+            to: delivery.parcel.dropoff_address,
+            packageType: 'documents' as PackageType,
+            packageDescription: delivery.parcel.parcel_description || '',
+            recipientName: delivery.parcel.receiver_name,
+            recipientPhone: delivery.parcel.receiver_phone || '',
+            status: delivery.parcel.status as OrderStatus,
+            paymentMethod: 'mpesa' as PaymentMethod,
+            paymentTerm: 'pay_now' as PaymentTerm,
+            paymentStatus: 'pending' as Order['paymentStatus'],
+            price: 500,
+            createdAt: delivery.parcel.created_at,
+            updatedAt: delivery.parcel.created_at,
+            timeline: createTimeline(delivery.parcel.status as OrderStatus),
+          }));
+
+          set({ orders, isLoading: false });
+        } catch (error: any) {
+          console.error("Error fetching driver orders:", error);
+          set({ error: error.message, isLoading: false });
+        }
+      },
+
+      getAllOrders: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data: parcels, error } = await ParcelService.getAllParcels();
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          const orders: Order[] = (parcels || []).map((parcel: any) => ({
+            id: parcel.id,
+            trackingCode: `TRK${parcel.id.slice(-8).toUpperCase()}`,
+            clientId: parcel.sender_id,
+            driverId: parcel.deliveries?.[0]?.driver_id,
+            customerName: parcel.sender?.full_name,
+            customerPhone: parcel.sender?.phone_number,
+            from: parcel.pickup_address,
+            to: parcel.dropoff_address,
+            packageType: 'documents' as PackageType,
+            packageDescription: parcel.parcel_description || '',
+            recipientName: parcel.receiver_name,
+            recipientPhone: parcel.receiver_phone || '',
+            status: parcel.status as OrderStatus,
+            paymentMethod: 'mpesa' as PaymentMethod,
+            paymentTerm: 'pay_now' as PaymentTerm,
+            paymentStatus: 'pending' as Order['paymentStatus'],
+            price: 500,
+            createdAt: parcel.created_at,
+            updatedAt: parcel.created_at,
+            timeline: createTimeline(parcel.status as OrderStatus),
+            driverInfo: parcel.deliveries?.[0]?.driver ? {
+              name: parcel.deliveries[0].driver.full_name,
+              phone: parcel.deliveries[0].driver.phone_number || '',
+              rating: 4.5,
+            } : undefined,
+          }));
+
+          set({ orders, isLoading: false });
+        } catch (error: any) {
+          console.error("Error fetching all orders:", error);
+          set({ error: error.message, isLoading: false });
+        }
       },
       
       getPendingOrders: () => {
