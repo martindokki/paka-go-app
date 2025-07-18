@@ -6,6 +6,9 @@ import { ParcelService } from '@/services/parcel-service';
 import { Parcel, Delivery } from '@/services/supabase';
 
 export type OrderStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled';
+export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
+export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
+export type SupabaseParcelStatus = 'pending' | 'in_transit' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'mpesa' | 'card' | 'cash';
 export type PaymentTerm = 'pay_now' | 'pay_on_delivery';
 export type PackageType = 'documents' | 'small' | 'medium' | 'electronics' | 'clothing' | 'food';
@@ -284,7 +287,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcel, error } = await ParcelService.createParcel(parcelData);
           
           if (error || !parcel) {
-            throw new Error(error?.message || 'Failed to create parcel');
+            throw new Error((error as any)?.message || 'Failed to create parcel');
           }
 
           // Convert Supabase parcel to local Order format
@@ -299,7 +302,7 @@ export const useOrdersStore = create<OrdersState>()(
             recipientName: parcel.receiver_name,
             recipientPhone: parcel.receiver_phone || '',
             specialInstructions: orderData.specialInstructions || '',
-            status: parcel.status as OrderStatus,
+            status: (parcel.status === 'in_transit' ? 'in_transit' : parcel.status) as OrderStatus,
             paymentMethod: orderData.paymentMethod || 'mpesa',
             paymentTerm: orderData.paymentTerm || 'pay_now',
             paymentStatus: 'pending',
@@ -328,10 +331,11 @@ export const useOrdersStore = create<OrdersState>()(
       updateOrderStatus: async (orderId, status, driverInfo) => {
         set({ isLoading: true, error: null });
         try {
-          const { data, error } = await ParcelService.updateParcelStatus(orderId, status);
+          const supabaseStatus = status === 'assigned' ? 'pending' : status as SupabaseParcelStatus;
+          const { data, error } = await ParcelService.updateParcelStatus(orderId, supabaseStatus);
           
           if (error) {
-            throw new Error(error.message);
+            throw new Error((error as any)?.message || 'Failed to update status');
           }
 
           set((state) => ({
@@ -350,7 +354,7 @@ export const useOrdersStore = create<OrdersState>()(
           }));
         } catch (error: any) {
           console.error("Error updating order status:", error);
-          set({ error: error.message, isLoading: false });
+          set({ error: error?.message || 'Failed to update order status', isLoading: false });
         }
       },
       
@@ -374,7 +378,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data, error } = await ParcelService.assignDriverToParcel(orderId, driverId);
           
           if (error) {
-            throw new Error(error.message);
+            throw new Error((error as any)?.message || 'Failed to update status');
           }
 
           set((state) => ({
@@ -394,7 +398,7 @@ export const useOrdersStore = create<OrdersState>()(
           }));
         } catch (error: any) {
           console.error("Error assigning driver:", error);
-          set({ error: error.message, isLoading: false });
+          set({ error: error?.message || 'Failed to assign driver', isLoading: false });
         }
       },
       
@@ -404,7 +408,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcels, error } = await ParcelService.getUserParcels(clientId);
           
           if (error) {
-            throw new Error(error.message);
+            throw new Error((error as any)?.message || 'Failed to update status');
           }
 
           const orders: Order[] = (parcels || []).map((parcel: any) => ({
@@ -436,7 +440,7 @@ export const useOrdersStore = create<OrdersState>()(
           set({ orders, isLoading: false });
         } catch (error: any) {
           console.error("Error fetching user orders:", error);
-          set({ error: error.message, isLoading: false });
+          set({ error: error?.message || 'Failed to fetch user orders', isLoading: false });
         }
       },
       
@@ -446,7 +450,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: deliveries, error } = await ParcelService.getDriverDeliveries(driverId);
           
           if (error) {
-            throw new Error(error.message);
+            throw new Error((error as any)?.message || 'Failed to update status');
           }
 
           const orders: Order[] = (deliveries || []).map((delivery: any) => ({
@@ -475,7 +479,7 @@ export const useOrdersStore = create<OrdersState>()(
           set({ orders, isLoading: false });
         } catch (error: any) {
           console.error("Error fetching driver orders:", error);
-          set({ error: error.message, isLoading: false });
+          set({ error: error?.message || 'Failed to fetch driver orders', isLoading: false });
         }
       },
 
@@ -485,7 +489,7 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcels, error } = await ParcelService.getAllParcels();
           
           if (error) {
-            throw new Error(error.message);
+            throw new Error((error as any)?.message || 'Failed to update status');
           }
 
           const orders: Order[] = (parcels || []).map((parcel: any) => ({
@@ -519,7 +523,7 @@ export const useOrdersStore = create<OrdersState>()(
           set({ orders, isLoading: false });
         } catch (error: any) {
           console.error("Error fetching all orders:", error);
-          set({ error: error.message, isLoading: false });
+          set({ error: error?.message || 'Failed to fetch all orders', isLoading: false });
         }
       },
       
