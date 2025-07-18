@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 export const trpc = createTRPCReact<AppRouter>();
 
 const getBaseUrl = () => {
+  // Check for environment variable first
   if (process.env.EXPO_PUBLIC_RORK_API_BASE_URL) {
     console.log('Using EXPO_PUBLIC_RORK_API_BASE_URL:', process.env.EXPO_PUBLIC_RORK_API_BASE_URL);
     return process.env.EXPO_PUBLIC_RORK_API_BASE_URL;
@@ -14,14 +15,17 @@ const getBaseUrl = () => {
   
   // For web development
   if (typeof window !== 'undefined') {
-    console.log('Using window.location.origin:', window.location.origin);
-    return window.location.origin;
+    const origin = window.location.origin;
+    console.log('Using window.location.origin:', origin);
+    return origin;
   }
   
-  // For mobile development - use the Expo dev server URL
+  // For mobile development - try different localhost variations
   if (Platform.OS !== 'web') {
-    console.log('Using mobile localhost for Platform.OS:', Platform.OS);
-    return 'http://localhost:8081';
+    // Try to get the dev server URL from Expo constants
+    const devServerUrl = 'http://localhost:8081';
+    console.log('Using mobile localhost for Platform.OS:', Platform.OS, 'URL:', devServerUrl);
+    return devServerUrl;
   }
   
   console.log('Fallback to localhost:8081');
@@ -83,8 +87,8 @@ export const trpcClient = trpc.createClient({
             body: options?.body ? 'Present' : 'None'
           });
           
-          // Add timeout to prevent hanging - shorter timeout for faster feedback
-          const timeoutDuration = Platform.OS === 'web' ? 10000 : 15000;
+          // Add timeout to prevent hanging
+          const timeoutDuration = Platform.OS === 'web' ? 8000 : 12000;
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
           
@@ -114,9 +118,14 @@ export const trpcClient = trpc.createClient({
           
           if (!response.ok) {
             console.error('tRPC response not ok:', response.status, response.statusText);
-            const text = await response.text();
-            console.error('Error response body:', text);
-            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${text}`);
+            let errorText = '';
+            try {
+              errorText = await response.text();
+              console.error('Error response body:', errorText);
+            } catch (e) {
+              console.error('Could not read error response body');
+            }
+            throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ''}`);
           }
           
           return response;
@@ -125,6 +134,19 @@ export const trpcClient = trpc.createClient({
             console.error('tRPC request timed out');
             throw new Error('Request timed out. Please check your connection and try again.');
           }
+          
+          // Handle network errors more gracefully
+          if (error instanceof Error) {
+            if (error.message.includes('fetch')) {
+              console.error('Network error:', error.message);
+              throw new Error('Network error. Please check your internet connection and ensure the backend server is running.');
+            }
+            if (error.message.includes('ECONNREFUSED') || error.message.includes('Failed to fetch')) {
+              console.error('Connection refused:', error.message);
+              throw new Error('Backend not available. The API server may not be running or the URL may be incorrect.');
+            }
+          }
+          
           console.error('tRPC fetch error:', error);
           throw error instanceof Error ? error : new Error('Unknown error occurred');
         }

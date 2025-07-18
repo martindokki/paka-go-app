@@ -43,7 +43,7 @@ export default function Index() {
             router.replace('/auth');
         }
       } else {
-        router.replace('/auth');
+        router.replace('/welcome');
       }
       setHasNavigated(true);
     }, 100);

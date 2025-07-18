@@ -29,14 +29,34 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: (failureCount, error) => {
+        // Don't retry on certain errors
+        if (error instanceof Error) {
+          if (error.message.includes('Backend not available') || 
+              error.message.includes('Request timed out') ||
+              error.message.includes('Network error')) {
+            return false;
+          }
+        }
+        return failureCount < 2;
+      },
       staleTime: 1000 * 60 * 5, // 5 minutes
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       networkMode: 'offlineFirst',
     },
     mutations: {
-      retry: 1,
+      retry: (failureCount, error) => {
+        // Don't retry on certain errors
+        if (error instanceof Error) {
+          if (error.message.includes('Backend not available') || 
+              error.message.includes('Request timed out') ||
+              error.message.includes('Network error')) {
+            return false;
+          }
+        }
+        return failureCount < 1;
+      },
       networkMode: 'offlineFirst',
     },
   },
@@ -138,6 +158,14 @@ function RootLayoutNav() {
                   presentation: 'fullScreenModal',
                   title: 'Map',
                   headerShown: false,
+                }} 
+              />
+              <Stack.Screen 
+                name="debug-connection" 
+                options={{ 
+                  presentation: 'modal',
+                  title: 'Connection Debug',
+                  headerShown: true,
                 }} 
               />
             </Stack>
