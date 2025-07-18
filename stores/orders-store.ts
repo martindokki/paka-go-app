@@ -286,7 +286,7 @@ export const useOrdersStore = create<OrdersState>()(
           if (error || !parcel) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error && 'message' in error
+              : typeof error === 'object' && error !== null && 'message' in error
               ? String((error as any).message)
               : 'Failed to create parcel';
             throw new Error(errorMessage);
