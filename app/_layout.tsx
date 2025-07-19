@@ -112,7 +112,6 @@ function RootLayoutNav() {
                   headerShown: false,
                 }} 
               />
-
             </Stack>
       </ThemeProvider>
     </ErrorBoundary>
