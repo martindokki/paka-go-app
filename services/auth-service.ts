@@ -228,13 +228,10 @@ export class AuthService {
         const profileData = {
           id: user.id,
           full_name: user.user_metadata?.full_name || 
-                    user.raw_user_meta_data?.full_name || 
                     user.email?.split('@')[0] || 'User',
           email: user.email || '',
-          phone_number: user.user_metadata?.phone_number || 
-                       user.raw_user_meta_data?.phone_number || '',
-          role: (user.user_metadata?.role || 
-                user.raw_user_meta_data?.role || 'customer') as 'customer' | 'driver' | 'admin',
+          phone_number: user.user_metadata?.phone_number || '',
+          role: (user.user_metadata?.role || 'customer') as 'customer' | 'driver' | 'admin',
           status: 'active' as const
         };
 
@@ -262,13 +259,10 @@ export class AuthService {
         profile = {
           id: user.id,
           full_name: user.user_metadata?.full_name || 
-                    user.raw_user_meta_data?.full_name || 
                     user.email?.split('@')[0] || 'User',
           email: user.email || '',
-          phone_number: user.user_metadata?.phone_number || 
-                       user.raw_user_meta_data?.phone_number || '',
-          role: (user.user_metadata?.role || 
-                user.raw_user_meta_data?.role || 'customer') as 'customer' | 'driver' | 'admin',
+          phone_number: user.user_metadata?.phone_number || '',
+          role: (user.user_metadata?.role || 'customer') as 'customer' | 'driver' | 'admin',
           status: 'active' as const,
           profile_image: null,
           created_at: user.created_at,
