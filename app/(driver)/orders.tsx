@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,94 +7,61 @@ import {
   SafeAreaView,
   FlatList,
   Dimensions,
+  RefreshControl,
+  Alert,
 } from "react-native";
-import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap } from "lucide-react-native";
+import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap, CheckCircle, Truck, Navigation } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
+import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 
 const { width } = Dimensions.get("window");
 
-type OrderStatus = "completed" | "cancelled";
-
-interface DriverOrder {
-  id: string;
-  from: string;
-  to: string;
-  status: OrderStatus;
-  customerName: string;
-  price: string;
-  date: string;
-  rating?: number;
-  distance: string;
-  duration: string;
-  tip?: string;
-  packageType: string;
-}
-
 export default function DriverOrdersScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<"today" | "week" | "month">("today");
+  const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuthStore();
+  const { orders, getOrdersByDriver, updateOrderStatus, isLoading } = useOrdersStore();
   
-  // Mock data for fallback (remove this once backend is fully working)
-  const mockOrders: DriverOrder[] = [
-    {
-      id: "1",
-      from: "Westlands Mall",
-      to: "Karen Shopping Centre",
-      status: "completed",
-      customerName: "John Doe",
-      price: "KSh 450",
-      date: "Today, 2:30 PM",
-      rating: 5,
-      distance: "12.5 km",
-      duration: "25 mins",
-      tip: "KSh 50",
-      packageType: "Documents",
-    },
-    {
-      id: "2",
-      from: "CBD Post Office",
-      to: "Kilimani",
-      status: "completed",
-      customerName: "Mary Smith",
-      price: "KSh 320",
-      date: "Today, 1:15 PM",
-      rating: 4,
-      distance: "8.2 km",
-      duration: "18 mins",
-      packageType: "Small Package",
-    },
-    {
-      id: "3",
-      from: "Sarit Centre",
-      to: "Lavington",
-      status: "completed",
-      customerName: "Peter Wilson",
-      price: "KSh 280",
-      date: "Today, 11:45 AM",
-      rating: 5,
-      distance: "6.8 km",
-      duration: "15 mins",
-      tip: "KSh 30",
-      packageType: "Electronics",
-    },
-    {
-      id: "4",
-      from: "Junction Mall",
-      to: "Runda",
-      status: "cancelled",
-      customerName: "Grace Akinyi",
-      price: "KSh 520",
-      date: "Yesterday, 4:20 PM",
-      distance: "15.2 km",
-      duration: "30 mins",
-      packageType: "Clothing",
-    },
-  ];
+  useEffect(() => {
+    if (user?.id) {
+      getOrdersByDriver(user.id);
+    }
+  }, [user?.id]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    if (user?.id) {
+      await getOrdersByDriver(user.id);
+    }
+    setRefreshing(false);
+  };
+
+  // Filter orders for this driver
+  const driverOrders = orders.filter(order => order.driverId === user?.id);
   
-  // Use mock data for now
-  const displayOrders = mockOrders;
+  // Filter by period
+  const filterOrdersByPeriod = (orders: any[]) => {
+    const now = new Date();
+    return orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      switch (selectedPeriod) {
+        case "today":
+          return orderDate.toDateString() === now.toDateString();
+        case "week":
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return orderDate >= weekAgo;
+        case "month":
+          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          return orderDate >= monthAgo;
+        default:
+          return true;
+      }
+    });
+  };
+  
+  const displayOrders = filterOrdersByPeriod(driverOrders);
 
   const periods = [
     { key: "today", label: "Today", emoji: "📅" },
@@ -102,21 +69,45 @@ export default function DriverOrdersScreen() {
     { key: "month", label: "This Month", emoji: "📈" },
   ];
 
+  const completedOrders = displayOrders.filter(order => order.status === "delivered");
   const stats = {
-    totalOrders: displayOrders.filter((o: DriverOrder) => o.status === "completed").length,
-    totalEarnings: displayOrders
-      .filter((o: DriverOrder) => o.status === "completed")
-      .reduce((sum: number, order: DriverOrder) => {
-        const price = parseInt(order.price.replace("KSh ", ""));
-        const tip = order.tip ? parseInt(order.tip.replace("KSh ", "")) : 0;
-        return sum + price + tip;
-      }, 0),
-    averageRating: displayOrders
-      .filter((o: DriverOrder) => o.rating)
-      .reduce((sum: number, order: DriverOrder) => sum + (order.rating || 0), 0) / displayOrders.filter((o: DriverOrder) => o.rating).length || 0,
-    totalTips: displayOrders
-      .filter((o: DriverOrder) => o.tip)
-      .reduce((sum: number, order: DriverOrder) => sum + parseInt(order.tip?.replace("KSh ", "") || "0"), 0),
+    totalOrders: completedOrders.length,
+    totalEarnings: completedOrders.reduce((sum, order) => sum + order.price, 0),
+    averageRating: completedOrders.length > 0 
+      ? completedOrders.reduce((sum, order) => sum + (order.driverInfo?.rating || 4.5), 0) / completedOrders.length 
+      : 4.5,
+    totalTips: 0, // Tips not implemented yet
+  };
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await updateOrderStatus(orderId, newStatus, {
+        name: user?.name || "Driver",
+        phone: user?.phone || "",
+        rating: 4.5,
+      });
+      Alert.alert("Success", "Order status updated successfully");
+    } catch (error) {
+      Alert.alert("Error", "Failed to update order status");
+    }
+  };
+
+  const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
+    switch (currentStatus) {
+      case "assigned": return "picked_up";
+      case "picked_up": return "in_transit";
+      case "in_transit": return "delivered";
+      default: return null;
+    }
+  };
+
+  const getStatusActionText = (status: OrderStatus): string => {
+    switch (status) {
+      case "assigned": return "Mark as Picked Up";
+      case "picked_up": return "Mark In Transit";
+      case "in_transit": return "Mark as Delivered";
+      default: return "";
+    }
   };
 
   const renderStarRating = (rating: number) => {
@@ -134,8 +125,14 @@ export default function DriverOrdersScreen() {
     );
   };
 
-  const renderOrderItem = ({ item }: { item: DriverOrder }) => (
-    <TouchableOpacity style={styles.orderCard}>
+  const renderOrderItem = ({ item }: { item: any }) => {
+    const nextStatus = getNextStatus(item.status);
+    const canUpdateStatus = nextStatus && !['delivered', 'cancelled'].includes(item.status);
+    
+    return (
+    <TouchableOpacity style={styles.orderCard} onPress={() => {
+        // Navigate to order details or tracking
+      }}>
       <View style={styles.orderHeader}>
         <View style={styles.orderRoute}>
           <View style={styles.routePoint}>
@@ -153,20 +150,12 @@ export default function DriverOrdersScreen() {
           </View>
         </View>
         <View style={styles.orderMeta}>
-          <Text style={styles.orderPrice}>{item.price}</Text>
-          {item.tip && (
-            <View style={styles.tipBadge}>
-              <Text style={styles.tipText}>+{item.tip} tip 💰</Text>
-            </View>
-          )}
+          <Text style={styles.orderPrice}>KSh {item.price}</Text>
           <View
             style={[
               styles.statusBadge,
               {
-                backgroundColor:
-                  item.status === "completed"
-                    ? colors.success + "20"
-                    : colors.error + "20",
+                backgroundColor: getStatusColor(item.status) + "20",
               },
             ]}
           >
@@ -174,43 +163,80 @@ export default function DriverOrdersScreen() {
               style={[
                 styles.statusText,
                 {
-                  color:
-                    item.status === "completed"
-                      ? colors.success
-                      : colors.error,
+                  color: getStatusColor(item.status),
                 },
               ]}
             >
-              {item.status === "completed" ? "✅ Completed" : "❌ Cancelled"}
+              {getStatusEmoji(item.status)} {getStatusText(item.status)}
             </Text>
           </View>
         </View>
       </View>
 
       <View style={styles.orderDetails}>
-        <Text style={styles.customerName}>👤 Customer: {item.customerName}</Text>
+        <Text style={styles.customerName}>👤 Customer: {item.customerName || "N/A"}</Text>
         <Text style={styles.packageType}>📦 {item.packageType}</Text>
-        <Text style={styles.orderDate}>🕐 {item.date}</Text>
+        <Text style={styles.orderDate}>🕐 {new Date(item.createdAt).toLocaleDateString()}</Text>
+        <Text style={styles.recipientInfo}>📞 Recipient: {item.recipientName} ({item.recipientPhone})</Text>
       </View>
 
       <View style={styles.orderStats}>
         <View style={styles.statItem}>
           <MapPin size={14} color={colors.textMuted} />
-          <Text style={styles.statText}>{item.distance}</Text>
+          <Text style={styles.statText}>{item.distance || "~8.5 km"}</Text>
         </View>
         <View style={styles.statItem}>
           <Clock size={14} color={colors.textMuted} />
-          <Text style={styles.statText}>{item.duration}</Text>
+          <Text style={styles.statText}>{item.estimatedTime || "~25 mins"}</Text>
         </View>
-        {item.rating && (
-          <View style={styles.ratingContainer}>
-            {renderStarRating(item.rating)}
-            <Text style={styles.ratingText}>({item.rating}.0)</Text>
-          </View>
+        {canUpdateStatus && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => nextStatus && handleStatusUpdate(item.id, nextStatus)}
+          >
+            <Text style={styles.actionButtonText}>{getStatusActionText(item.status)}</Text>
+          </TouchableOpacity>
         )}
       </View>
     </TouchableOpacity>
-  );
+    );
+  };
+
+  const getStatusColor = (status: OrderStatus) => {
+    switch (status) {
+      case "pending": return colors.warning;
+      case "assigned": return colors.primary;
+      case "picked_up":
+      case "in_transit": return colors.accent;
+      case "delivered": return colors.success;
+      case "cancelled": return colors.error;
+      default: return colors.textMuted;
+    }
+  };
+
+  const getStatusEmoji = (status: OrderStatus) => {
+    switch (status) {
+      case "pending": return "🔍";
+      case "assigned": return "👨‍💼";
+      case "picked_up": return "📦";
+      case "in_transit": return "🚚";
+      case "delivered": return "✅";
+      case "cancelled": return "❌";
+      default: return "📋";
+    }
+  };
+
+  const getStatusText = (status: OrderStatus) => {
+    switch (status) {
+      case "pending": return "Pending";
+      case "assigned": return "Assigned";
+      case "picked_up": return "Picked Up";
+      case "in_transit": return "In Transit";
+      case "delivered": return "Delivered";
+      case "cancelled": return "Cancelled";
+      default: return status;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -299,10 +325,24 @@ export default function DriverOrdersScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.ordersList}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
         ListHeaderComponent={
           <View style={styles.listHeader}>
             <Zap size={20} color={colors.primary} />
-            <Text style={styles.listHeaderText}>Recent Deliveries</Text>
+            <Text style={styles.listHeaderText}>Your Orders</Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Package size={48} color={colors.textMuted} />
+            <Text style={styles.emptyStateText}>No orders found for this period</Text>
           </View>
         }
       />
@@ -553,5 +593,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textMuted,
     fontWeight: "600",
+  },
+  recipientInfo: {
+    fontSize: 12,
+    color: colors.textMuted,
+    fontWeight: "500",
+  },
+  actionButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginLeft: "auto",
+  },
+  actionButtonText: {
+    fontSize: 10,
+    color: colors.background,
+    fontWeight: "700",
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    marginTop: 16,
+    textAlign: "center",
   },
 });

@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { user, isAuthenticated } = useAuthStore();
   const { adminStats, drivers, initializeData } = useLocalDataStore();
-  const { orders, initializeSampleData } = useOrdersStore();
+  const { orders, getAllOrders } = useOrdersStore();
   
   // Provide safe defaults
   const safeAdminStats = adminStats || {
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
 
     // Initialize admin data
     initializeData();
-    initializeSampleData();
+    getAllOrders();
   }, [isAuthenticated, user]);
 
   const renderContent = () => {

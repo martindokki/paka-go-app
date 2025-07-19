@@ -54,16 +54,18 @@ export default function OrdersScreen() {
   const [animatedValue] = useState(new Animated.Value(0));
   
   const { user } = useAuthStore();
-  const { getOrdersByClient, initializeSampleData } = useOrdersStore();
+  const { getOrdersByClient, fetchOrdersByClient } = useOrdersStore();
   
   useEffect(() => {
-    initializeSampleData();
+    if (user?.id) {
+      fetchOrdersByClient(user.id);
+    }
     Animated.timing(animatedValue, {
       toValue: 1,
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [user?.id, fetchOrdersByClient]);
 
   // Get orders from local store
   const allOrders = user ? getOrdersByClient(user.id) : [];
@@ -113,7 +115,9 @@ export default function OrdersScreen() {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      initializeSampleData();
+      if (user?.id) {
+        await fetchOrdersByClient(user.id);
+      }
     } catch (error) {
       console.error('Failed to refresh orders:', error);
     } finally {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Home, Package, DollarSign, User } from "lucide-react-native";
+import { Home, Package, DollarSign, User, Search } from "lucide-react-native";
 import colors from "@/constants/colors";
 
 function TabBarIcon({ icon: Icon, color }: { icon: any; color: string }) {
@@ -36,9 +36,16 @@ export default function DriverTabLayout() {
         }}
       />
       <Tabs.Screen
+        name="available-orders"
+        options={{
+          title: "Available",
+          tabBarIcon: ({ color }) => <TabBarIcon icon={Search} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="orders"
         options={{
-          title: "Orders",
+          title: "My Orders",
           tabBarIcon: ({ color }) => <TabBarIcon icon={Package} color={color} />,
         }}
       />

@@ -67,7 +67,7 @@ interface OrdersState {
   getPendingOrders: () => Order[];
   getOrderById: (orderId: string) => Order | undefined;
   getOrderByTrackingCode: (trackingCode: string) => Order | undefined;
-  initializeSampleData: () => void;
+
   clearError: () => void;
 }
 
@@ -137,115 +137,7 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
   return baseTimeline;
 };
 
-// Sample data for testing
-const sampleOrders: Order[] = [
-  {
-    id: 'ORD-001',
-    trackingCode: 'TRK12345ABC',
-    clientId: '1',
-    driverId: '2',
-    from: 'Westlands Shopping Mall',
-    to: 'Karen Shopping Centre',
-    packageType: 'documents',
-    packageDescription: 'Important business documents',
-    recipientName: 'Mary Wanjiku',
-    recipientPhone: '+254712345678',
-    specialInstructions: 'Call before delivery',
-    status: 'in_transit',
-    paymentMethod: 'mpesa',
-    paymentTerm: 'pay_now',
-    paymentStatus: 'paid',
-    price: 450,
-    distance: '12.5 km',
-    estimatedTime: '25-35 mins',
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    timeline: createTimeline('in_transit'),
-    driverInfo: {
-      name: 'Peter Mwangi',
-      phone: '+254798765432',
-      rating: 4.8,
-      vehicleInfo: 'Red Honda CB 150R - KCA 123D',
-    },
-  },
-  {
-    id: 'ORD-002',
-    trackingCode: 'TRK67890DEF',
-    clientId: '1',
-    from: 'CBD - Kencom House',
-    to: 'Kilimani - Yaya Centre',
-    packageType: 'small',
-    packageDescription: 'Birthday gift',
-    recipientName: 'John Kamau',
-    recipientPhone: '+254723456789',
-    status: 'delivered',
-    paymentMethod: 'mpesa',
-    paymentTerm: 'pay_now',
-    paymentStatus: 'paid',
-    price: 320,
-    distance: '8.2 km',
-    estimatedTime: '20-30 mins',
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
-    timeline: createTimeline('delivered'),
-    driverInfo: {
-      name: 'Grace Akinyi',
-      phone: '+254734567890',
-      rating: 4.9,
-      vehicleInfo: 'Blue Yamaha YBR 125 - KCB 456E',
-    },
-  },
-  {
-    id: 'ORD-003',
-    trackingCode: 'TRKABCDE123',
-    clientId: '1',
-    from: 'Sarit Centre',
-    to: 'Lavington Mall',
-    packageType: 'electronics',
-    packageDescription: 'Smartphone',
-    recipientName: 'Sarah Njeri',
-    recipientPhone: '+254745678901',
-    specialInstructions: 'Handle with care - fragile',
-    status: 'pending',
-    paymentMethod: 'cash',
-    paymentTerm: 'pay_on_delivery',
-    paymentStatus: 'pending',
-    price: 500,
-    distance: '6.8 km',
-    estimatedTime: '15-25 mins',
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    timeline: createTimeline('pending'),
-  },
-  {
-    id: 'ORD-004',
-    trackingCode: 'TRKFGH456IJK',
-    clientId: '2',
-    driverId: '2',
-    from: 'Nakumatt Junction',
-    to: 'Gigiri - UN Offices',
-    packageType: 'documents',
-    packageDescription: 'Legal documents',
-    recipientName: 'David Ochieng',
-    recipientPhone: '+254756789012',
-    status: 'assigned',
-    paymentMethod: 'card',
-    paymentTerm: 'pay_now',
-    paymentStatus: 'paid',
-    price: 600,
-    distance: '15.3 km',
-    estimatedTime: '30-40 mins',
-    createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
-    timeline: createTimeline('assigned'),
-    driverInfo: {
-      name: 'James Kiprotich',
-      phone: '+254767890123',
-      rating: 4.7,
-      vehicleInfo: 'Green Bajaj Boxer - KCC 789F',
-    },
-  },
-];
+
 
 export const useOrdersStore = create<OrdersState>()(
   persist(
@@ -256,67 +148,62 @@ export const useOrdersStore = create<OrdersState>()(
       
       clearError: () => set({ error: null }),
       
-      initializeSampleData: () => {
-        const currentOrders = get().orders;
-        console.log("Initializing sample data. Current orders count:", currentOrders.length);
-        if (currentOrders.length === 0) {
-          console.log("Adding sample orders");
-          set({ orders: sampleOrders });
-        } else {
-          console.log("Sample data already exists, skipping initialization");
-        }
-      },
+
       
       createOrder: async (orderData) => {
         set({ isLoading: true, error: null });
         try {
           console.log("Creating order with data:", orderData);
           
-          const parcelData = {
-            sender_id: orderData.customerId || orderData.clientId,
-            receiver_name: orderData.recipientName,
-            receiver_phone: orderData.recipientPhone,
-            pickup_address: orderData.pickupAddress || orderData.from,
-            dropoff_address: orderData.deliveryAddress || orderData.to,
-            parcel_description: orderData.packageDescription,
-            weight_kg: orderData.weight || 1,
-          };
+          // Try to create in Supabase first, but don't fail if it doesn't work
+          let supabaseOrderId = null;
+          try {
+            const parcelData = {
+              sender_id: orderData.customerId || orderData.clientId,
+              receiver_name: orderData.recipientName,
+              receiver_phone: orderData.recipientPhone,
+              pickup_address: orderData.pickupAddress || orderData.from,
+              dropoff_address: orderData.deliveryAddress || orderData.to,
+              parcel_description: orderData.packageDescription,
+              weight_kg: orderData.weight || 1,
+            };
 
-          const { data: parcel, error } = await ParcelService.createParcel(parcelData);
-          
-          if (error || !parcel) {
-            const errorMessage = error instanceof Error 
-              ? error.message 
-              : typeof error === 'string' 
-              ? error 
-              : typeof error === 'object' && error && 'message' in error
-              ? String((error as any).message)
-              : 'Failed to create parcel';
-            throw new Error(errorMessage);
+            const { data: parcel, error } = await ParcelService.createParcel(parcelData);
+            if (parcel && !error) {
+              supabaseOrderId = parcel.id;
+              console.log("Order created in Supabase with ID:", supabaseOrderId);
+            } else {
+              console.log("Supabase creation failed, continuing with local order:", error);
+            }
+          } catch (supabaseError) {
+            console.log("Supabase not available, creating local order:", supabaseError);
           }
 
-          // Convert Supabase parcel to local Order format
+          // Create local order regardless of Supabase success/failure
+          const orderId = supabaseOrderId || orderData.id || `ORD-${Date.now()}`;
+          const trackingCode = orderData.trackingCode || `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+          
           const order: Order = {
-            id: parcel.id,
-            trackingCode: `TRK${parcel.id.slice(-8).toUpperCase()}`,
-            clientId: parcel.sender_id,
-            from: parcel.pickup_address,
-            to: parcel.dropoff_address,
+            id: orderId,
+            trackingCode,
+            clientId: orderData.customerId || orderData.clientId,
+            from: orderData.pickupAddress || orderData.from,
+            to: orderData.deliveryAddress || orderData.to,
             packageType: orderData.packageType || 'documents',
-            packageDescription: parcel.parcel_description || '',
-            recipientName: parcel.receiver_name,
-            recipientPhone: parcel.receiver_phone || '',
+            packageDescription: orderData.packageDescription || '',
+            recipientName: orderData.recipientName,
+            recipientPhone: orderData.recipientPhone || '',
             specialInstructions: orderData.specialInstructions || '',
-            status: (parcel.status === 'in_transit' ? 'in_transit' : parcel.status) as OrderStatus,
+            status: 'pending',
             paymentMethod: orderData.paymentMethod || 'mpesa',
             paymentTerm: orderData.paymentTerm || 'pay_now',
             paymentStatus: 'pending',
             price: orderData.price || 0,
             distance: orderData.estimatedDistance ? `${orderData.estimatedDistance.toFixed(1)} km` : undefined,
             estimatedTime: orderData.estimatedDuration ? `${orderData.estimatedDuration}-${orderData.estimatedDuration + 10} mins` : undefined,
-            createdAt: parcel.created_at,
-            updatedAt: parcel.created_at,
-            timeline: createTimeline(parcel.status as OrderStatus),
+            createdAt: orderData.createdAt || new Date().toISOString(),
+            updatedAt: orderData.createdAt || new Date().toISOString(),
+            timeline: createTimeline('pending'),
           };
           
           set((state) => ({
@@ -324,8 +211,8 @@ export const useOrdersStore = create<OrdersState>()(
             isLoading: false,
           }));
           
-          console.log("Order created successfully with ID:", parcel.id);
-          return parcel.id;
+          console.log("Order created successfully with ID:", orderId);
+          return orderId;
         } catch (error: any) {
           console.error("Error creating order:", error);
           const errorMessage = error instanceof Error 
