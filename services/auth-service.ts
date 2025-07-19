@@ -299,26 +299,81 @@ export class AuthService {
     try {
       console.log('Updating profile for user:', userId, 'with updates:', updates);
       
-      // Update the users table
-      const { data, error } = await supabase
-        .from('users')
-        .update({
-          full_name: updates.full_name,
-          email: updates.email,
-          phone_number: updates.phone_number,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId)
-        .select()
-        .single();
+      // Filter out undefined values
+      const cleanUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+      );
+      
+      if (Object.keys(cleanUpdates).length === 0) {
+        throw new Error('No valid updates provided');
+      }
+      
+      // Approach 1: Try direct table update first
+      try {
+        console.log('Attempting direct table update...');
+        const { data, error } = await supabase
+          .from('users')
+          .update(cleanUpdates)
+          .eq('id', userId)
+          .select()
+          .single();
 
-      if (error) {
-        console.error('Profile update error:', error);
-        throw error;
+        if (!error && data) {
+          console.log('Profile updated successfully via direct update:', data);
+          return { data, error: null };
+        } else {
+          console.warn('Direct update failed:', error);
+        }
+      } catch (directError) {
+        console.warn('Direct update exception:', directError);
       }
 
-      console.log('Profile updated successfully:', data);
-      return { data, error: null };
+      // Approach 2: Use RPC function as fallback
+      try {
+        console.log('Attempting RPC function update...');
+        const { data, error } = await supabase
+          .rpc('update_user_profile', {
+            user_id: userId,
+            new_full_name: cleanUpdates.full_name || null,
+            new_email: cleanUpdates.email || null,
+            new_phone_number: cleanUpdates.phone_number || null,
+          });
+
+        if (!error && data && data.length > 0) {
+          console.log('Profile updated successfully via RPC:', data[0]);
+          return { data: data[0], error: null };
+        } else {
+          console.warn('RPC update failed:', error);
+        }
+      } catch (rpcError) {
+        console.warn('RPC update exception:', rpcError);
+      }
+
+      // Approach 3: Manual update without updated_at field
+      try {
+        console.log('Attempting manual update without updated_at...');
+        const updateData = { ...cleanUpdates };
+        delete (updateData as any).updated_at; // Remove updated_at if it exists
+        
+        const { data, error } = await supabase
+          .from('users')
+          .update(updateData)
+          .eq('id', userId)
+          .select()
+          .single();
+
+        if (!error && data) {
+          console.log('Profile updated successfully via manual update:', data);
+          return { data, error: null };
+        } else {
+          console.error('Manual update also failed:', error);
+          throw error || new Error('Manual update failed');
+        }
+      } catch (manualError) {
+        console.error('All update approaches failed:', manualError);
+        throw manualError;
+      }
+
     } catch (error) {
       console.error('Profile update exception:', error);
       return { data: null, error };
