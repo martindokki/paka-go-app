@@ -418,9 +418,9 @@ export const useAuthStore = create<AuthState>()(
               // Only logout if it's a clear authentication error, not a network error
               const errorObj = error as any;
               const isNetworkError = error && (
-                errorObj.message?.includes('network') ||
-                errorObj.message?.includes('fetch') ||
-                errorObj.message?.includes('timeout') ||
+                (errorObj.message && errorObj.message.includes('network')) ||
+                (errorObj.message && errorObj.message.includes('fetch')) ||
+                (errorObj.message && errorObj.message.includes('timeout')) ||
                 errorObj.code === 'NETWORK_ERROR'
               );
               
