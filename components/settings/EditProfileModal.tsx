@@ -14,7 +14,7 @@ import {
 import { X, User, Mail, Phone, Save } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/colors';
-import { useAuthStore } from '@/stores/auth-store-simple';
+import { useAuthStore } from '@/stores/auth-store';
 import { showAlert } from '@/utils/platform-utils';
 
 interface EditProfileModalProps {

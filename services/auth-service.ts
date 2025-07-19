@@ -277,19 +277,32 @@ export class AuthService {
     }
   }
 
-  static async updateProfile(userId: string, updates: Partial<User>) {
+  static async updateProfile(userId: string, updates: { full_name?: string; email?: string; phone_number?: string }) {
     try {
+      console.log('Updating profile for user:', userId, 'with updates:', updates);
+      
+      // Update the users table
       const { data, error } = await supabase
         .from('users')
-        .update(updates)
+        .update({
+          full_name: updates.full_name,
+          email: updates.email,
+          phone_number: updates.phone_number,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', userId)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile update error:', error);
+        throw error;
+      }
 
+      console.log('Profile updated successfully:', data);
       return { data, error: null };
     } catch (error) {
+      console.error('Profile update exception:', error);
       return { data: null, error };
     }
   }

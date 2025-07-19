@@ -243,17 +243,36 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          // Update locally
+          // Update profile in backend
+          const { data, error } = await AuthService.updateProfile(user.id, {
+            full_name: profileData.name,
+            email: profileData.email,
+            phone_number: profileData.phone,
+          });
+          
+          if (error) {
+            throw error;
+          }
+          
+          // Update local state with the response data or fallback to provided data
+          const updatedUser = {
+            ...user,
+            name: data?.full_name || profileData.name || user.name,
+            email: data?.email || profileData.email || user.email,
+            phone: data?.phone_number || profileData.phone || user.phone,
+            updatedAt: new Date().toISOString(),
+          };
+          
           set({
-            user: { ...user, ...profileData, updatedAt: new Date().toISOString() },
+            user: updatedUser,
             isLoading: false,
             error: null,
           });
           
-          console.log('Profile updated successfully');
+          console.log('Profile updated successfully:', updatedUser);
           return true;
-        } catch (error) {
-          const errorMsg = 'Profile update failed. Please try again.';
+        } catch (error: any) {
+          const errorMsg = error?.message || 'Profile update failed. Please try again.';
           set({ error: errorMsg, isLoading: false });
           
           console.error('Profile update error:', error);
