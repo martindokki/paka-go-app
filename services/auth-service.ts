@@ -20,8 +20,7 @@ export class AuthService {
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        const errorMessage = authError.message || 'Authentication failed';
-        throw new Error(`Authentication failed: ${errorMessage}`);
+        throw new Error(`Authentication failed: ${authError.message}`);
       }
 
       if (!authData.user) {
@@ -30,39 +29,20 @@ export class AuthService {
 
       console.log('Auth user created successfully:', authData.user.id);
 
-      // The user profile should be automatically created by the database trigger
-      // Let's wait and retry fetching the profile multiple times
-      let profileData = null;
-      let profileError = null;
-      let retries = 0;
-      const maxRetries = 5;
+      // Wait a moment for the trigger to potentially work
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      while (retries < maxRetries && !profileData) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (retries + 1))); // Increasing delay
-        
-        const result = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single();
-          
-        profileData = result.data;
-        profileError = result.error;
-        
-        if (profileData) {
-          console.log(`Profile found on attempt ${retries + 1}`);
-          break;
-        }
-        
-        retries++;
-        console.log(`Profile not found, retry ${retries}/${maxRetries}`);
-      }
+      // Check if profile was created by trigger
+      let { data: profileData, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single();
 
       if (profileError || !profileData) {
-        console.error('Error fetching user profile after creation:', profileError);
-        console.log('Database trigger may not be working. Creating user profile manually...');
+        console.log('Profile not created by trigger, creating manually...');
         
-        // Try to create the profile manually if the trigger didn't work
+        // Create the profile manually
         const { data: manualProfileData, error: manualError } = await supabase
           .from('users')
           .insert({
@@ -77,8 +57,23 @@ export class AuthService {
           .single();
           
         if (manualError) {
-          console.error('Manual profile creation also failed:', manualError);
-          // Return success with auth user data only
+          console.error('Manual profile creation failed:', manualError);
+          
+          // If it's a duplicate key error, try to fetch the existing profile
+          if (manualError.code === '23505') {
+            const { data: existingProfile } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', authData.user.id)
+              .single();
+              
+            if (existingProfile) {
+              console.log('Found existing profile after duplicate error');
+              return { user: authData.user, profile: existingProfile, error: null };
+            }
+          }
+          
+          // Return a fallback profile
           return { 
             user: authData.user, 
             profile: {
@@ -87,18 +82,20 @@ export class AuthService {
               email: email,
               phone_number: phoneNumber || '',
               role: role,
-              status: 'active',
-              created_at: new Date().toISOString()
+              status: 'active' as const,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
             }, 
             error: null 
           };
         }
         
-        console.log('Manual user profile created successfully:', manualProfileData);
-        return { user: authData.user, profile: manualProfileData, error: null };
+        console.log('Manual user profile created successfully');
+        profileData = manualProfileData;
+      } else {
+        console.log('Profile created by trigger successfully');
       }
 
-      console.log('User profile created successfully:', profileData);
       return { user: authData.user, profile: profileData, error: null };
     } catch (error: any) {
       console.error('SignUp error:', error);
