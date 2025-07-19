@@ -13,7 +13,7 @@ import {
 import { Package, Clock, MapPin, Star, TrendingUp, Award, Zap, CheckCircle, Truck, Navigation } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 
 const { width } = Dimensions.get("window");

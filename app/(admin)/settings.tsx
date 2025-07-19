@@ -25,7 +25,7 @@ import {
   LogOut,
 } from "lucide-react-native";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
 import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";

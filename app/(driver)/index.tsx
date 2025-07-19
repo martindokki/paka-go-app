@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { Package, Truck, DollarSign, Star, TrendingUp } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { useAuthStore } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 import { useOrdersStore } from "@/stores/orders-store";
 
 export default function DriverHomeScreen() {
