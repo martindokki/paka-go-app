@@ -202,7 +202,7 @@ export default function AvailableOrdersScreen() {
           </Text>
         </View>
       </LinearGradient>
-    </View>
+    </TouchableOpacity>
   );
 
   const EmptyState = () => (
