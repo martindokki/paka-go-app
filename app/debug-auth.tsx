@@ -27,7 +27,7 @@ export default function DebugAuthScreen() {
   };
 
   const handleInitializeOrders = () => {
-    ordersState.initializeSampleData();
+    console.log('Initialize orders - function not available');
   };
 
   return (

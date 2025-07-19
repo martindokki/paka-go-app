@@ -21,13 +21,12 @@ const { width } = Dimensions.get("window");
 
 export default function ClientHomeScreen() {
   const { user } = useAuthStore();
-  const { getOrdersByClient, initializeSampleData } = useOrdersStore();
+  const { getOrdersByClient } = useOrdersStore();
   const { initializeData } = useLocalDataStore();
   const [refreshing, setRefreshing] = React.useState(false);
 
   // Initialize sample data on component mount
   React.useEffect(() => {
-    initializeSampleData();
     initializeData();
   }, []);
 
