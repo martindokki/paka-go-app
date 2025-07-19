@@ -122,10 +122,10 @@ export class ParcelService {
 
       if (deliveryError) throw deliveryError;
 
-      // Update parcel status to in_transit
+      // Update parcel status to pending (assigned)
       const { data: parcelData, error: parcelError } = await supabase
         .from('parcels')
-        .update({ status: 'in_transit' })
+        .update({ status: 'pending' })
         .eq('id', parcelId)
         .select()
         .single();

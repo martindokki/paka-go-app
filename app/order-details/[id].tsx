@@ -33,7 +33,7 @@ import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuthStore();
-  const { getOrderById, updateOrderStatus } = useOrdersStore();
+  const { getOrderById, updateOrderStatus, assignDriver } = useOrdersStore();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(5);
   const [ratingComment, setRatingComment] = useState("");
@@ -95,11 +95,21 @@ export default function OrderDetailsScreen() {
 
     setIsUpdating(true);
     try {
-      await updateOrderStatus(order.id, newStatus, {
-        name: user.name || "Driver",
-        phone: user.phone || "",
-        rating: 4.5,
-      });
+      if (newStatus === "assigned" && !order.driverId) {
+        // Driver is accepting the order
+        await assignDriver(order.id, user.id, {
+          name: user.name || "Driver",
+          phone: user.phone || "",
+          rating: 4.5,
+        });
+      } else {
+        // Regular status update
+        await updateOrderStatus(order.id, newStatus, {
+          name: user.name || "Driver",
+          phone: user.phone || "",
+          rating: 4.5,
+        });
+      }
 
       Alert.alert("Success", "Order status updated successfully");
       
@@ -108,6 +118,7 @@ export default function OrderDetailsScreen() {
         setShowRatingModal(true);
       }
     } catch (error) {
+      console.error("Error updating order status:", error);
       Alert.alert("Error", "Failed to update order status");
     } finally {
       setIsUpdating(false);
@@ -125,6 +136,7 @@ export default function OrderDetailsScreen() {
   const canUpdateStatus = nextStatus && !['delivered', 'cancelled'].includes(order.status);
   const isDriverOrder = order.driverId === user?.id;
   const canAcceptOrder = order.status === 'pending' && !order.driverId && user?.userType === 'driver';
+  const canUpdateAsDriver = isDriverOrder && canUpdateStatus && order.status !== 'pending';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -277,7 +289,7 @@ export default function OrderDetailsScreen() {
         </View>
 
         {/* Action Buttons */}
-        {(canUpdateStatus || canAcceptOrder) && (
+        {(canAcceptOrder || canUpdateAsDriver) && (
           <View style={styles.actionContainer}>
             {canAcceptOrder && (
               <TouchableOpacity
@@ -290,12 +302,14 @@ export default function OrderDetailsScreen() {
                   style={styles.actionGradient}
                 >
                   <CheckCircle size={20} color={colors.background} />
-                  <Text style={styles.actionButtonText}>Accept Order</Text>
+                  <Text style={styles.actionButtonText}>
+                    {isUpdating ? "Accepting..." : "Accept Order"}
+                  </Text>
                 </LinearGradient>
               </TouchableOpacity>
             )}
 
-            {canUpdateStatus && isDriverOrder && (
+            {canUpdateAsDriver && (
               <TouchableOpacity
                 style={styles.updateButton}
                 onPress={() => nextStatus && handleStatusUpdate(nextStatus)}
@@ -307,7 +321,7 @@ export default function OrderDetailsScreen() {
                 >
                   <Truck size={20} color={colors.background} />
                   <Text style={styles.actionButtonText}>
-                    {getStatusActionText(order.status)}
+                    {isUpdating ? "Updating..." : getStatusActionText(order.status)}
                   </Text>
                 </LinearGradient>
               </TouchableOpacity>
