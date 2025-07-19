@@ -60,7 +60,8 @@ interface OrdersState {
   assignDriver: (orderId: string, driverId: string, driverInfo: Order['driverInfo']) => Promise<void>;
   cancelOrder: (orderId: string, reason?: string) => void;
   sendSTKPush: (orderId: string) => void;
-  getOrdersByClient: (clientId: string) => Promise<void>;
+  getOrdersByClient: (clientId: string) => Order[];
+  fetchOrdersByClient: (clientId: string) => Promise<void>;
   getOrdersByDriver: (driverId: string) => Promise<void>;
   getAllOrders: () => Promise<void>;
   getPendingOrders: () => Order[];
@@ -444,7 +445,11 @@ export const useOrdersStore = create<OrdersState>()(
         }
       },
       
-      getOrdersByClient: async (clientId) => {
+      getOrdersByClient: (clientId) => {
+        return get().orders.filter((order) => order.clientId === clientId);
+      },
+
+      fetchOrdersByClient: async (clientId) => {
         set({ isLoading: true, error: null });
         try {
           const { data: parcels, error } = await ParcelService.getUserParcels(clientId);

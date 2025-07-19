@@ -42,7 +42,7 @@ const { width, height } = Dimensions.get("window");
 
 export default function ClientHomeScreen() {
   const { user } = useAuthStore();
-  const { getOrdersByClient, initializeSampleData } = useOrdersStore();
+  const { getOrdersByClient, initializeSampleData, fetchOrdersByClient } = useOrdersStore();
   const [greeting, setGreeting] = useState("");
 
   useEffect(() => {
@@ -54,7 +54,12 @@ export default function ClientHomeScreen() {
     if (hour < 12) setGreeting("Good Morning");
     else if (hour < 17) setGreeting("Good Afternoon");
     else setGreeting("Good Evening");
-  }, []);
+
+    // Fetch user orders if user exists
+    if (user?.id) {
+      fetchOrdersByClient(user.id);
+    }
+  }, [user?.id, initializeSampleData, fetchOrdersByClient]);
 
   const userOrders = user ? getOrdersByClient(user.id) : [];
   const activeOrders = userOrders.filter(order => 
