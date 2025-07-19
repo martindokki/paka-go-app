@@ -34,7 +34,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 
-type UserType = 'client' | 'driver' | 'admin';
+type UserType = 'customer' | 'driver' | 'admin';
 
 interface LoginRequest {
   email: string;

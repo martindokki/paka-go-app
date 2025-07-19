@@ -253,7 +253,7 @@ export const useAuthStore = create<AuthState>()(
           });
           
           if (error) {
-            throw new Error(error.message || 'Failed to update profile in database');
+            throw new Error((error as any)?.message || 'Failed to update profile in database');
           }
           
           // Update locally after successful database update

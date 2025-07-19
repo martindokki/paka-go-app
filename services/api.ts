@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
 export interface LoginRequest {
   email: string;
   password: string;
-  userType: 'client' | 'driver' | 'admin';
+  userType: 'customer' | 'driver' | 'admin';
 }
 
 export interface RegisterRequest extends LoginRequest {
@@ -26,7 +26,7 @@ const MOCK_USERS = [
     name: 'John Client',
     email: 'client@test.com',
     phone: '+254712345678',
-    userType: 'client' as const,
+    userType: 'customer' as const,
     password: 'password123',
   },
   {
