@@ -673,19 +673,6 @@ export default function AuthScreen() {
               {__DEV__ && (
                 <View style={styles.testAccountsContainer}>
                   <Text style={styles.testAccountsTitle}>🧪 Test Accounts (Dev Only)</Text>
-                  <Text style={styles.testAccount}>⚠️ Test users need to be created first!</Text>
-                  <TouchableOpacity 
-                    style={styles.debugButton}
-                    onPress={() => router.push('/create-test-users-auth')}
-                  >
-                    <Text style={styles.debugButtonText}>🔧 Create Test Users</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.debugButton}
-                    onPress={() => router.push('/clear-all-data')}
-                  >
-                    <Text style={styles.debugButtonText}>🗑️ Clear All Data</Text>
-                  </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.debugButton}
                     onPress={() => {
