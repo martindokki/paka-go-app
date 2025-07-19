@@ -6,21 +6,22 @@ export const loginProcedure = publicProcedure
   .input(z.object({
     email: z.string().email(),
     password: z.string().min(6),
-    userType: z.enum(['client', 'driver', 'admin'])
+    userType: z.enum(['client', 'driver', 'admin']).optional()
   }))
   .mutation(async ({ input }) => {
-    const result = await AuthService.login(
+    const result = await AuthService.signIn(
       input.email,
-      input.password,
-      input.userType
+      input.password
     );
     
-    if (!result.success) {
-      throw new Error(result.error || 'Login failed');
+    if (result.error || !result.user) {
+      throw new Error(result.error?.message || 'Login failed');
     }
     
     return {
       success: true,
-      data: result.data
+      data: {
+        user: result.user
+      }
     };
   });

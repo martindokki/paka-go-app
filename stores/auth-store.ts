@@ -21,6 +21,7 @@ export interface User {
 export interface LoginRequest {
   email: string;
   password: string;
+  userType?: UserType;
 }
 
 export interface RegisterRequest extends LoginRequest {
@@ -65,7 +66,7 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
-        console.log('Login attempt:', { email: credentials.email });
+        console.log('Login attempt:', { email: credentials.email, userType: credentials.userType });
         
         try {
           const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
