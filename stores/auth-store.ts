@@ -75,6 +75,8 @@ export const useAuthStore = create<AuthState>()(
               ? error.message 
               : typeof error === 'string' 
               ? error 
+              : typeof error === 'object' && error && 'message' in error
+              ? (error as any).message
               : 'Login failed';
             throw new Error(errorMessage);
           }
