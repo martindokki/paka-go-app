@@ -321,13 +321,21 @@ export default function BookingScreen() {
         estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        price: priceBreakdown?.total || 500,
+        price: priceBreakdown?.total || 150, // Use minimum charge as fallback
       };
       
       console.log("Creating order with data:", orderData);
       
+      // Ensure price is calculated correctly before creating order
+      if (!priceBreakdown && bookingData.pickupCoords && bookingData.dropoffCoords) {
+        await calculatePrice();
+      }
+      
+      // Update order data with final price
+      orderData.price = priceBreakdown?.total || PRICING_CONFIG.minimumCharge;
+      
       // Add to local store
-      const createdOrderId = createOrder(orderData);
+      const createdOrderId = await createOrder(orderData);
       
       console.log("Order created successfully:", { createdOrderId, trackingCode });
       

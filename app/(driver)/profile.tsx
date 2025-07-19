@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -38,6 +38,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
+import { useOrdersStore } from "@/stores/orders-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
 import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
@@ -52,18 +53,49 @@ export default function DriverProfileScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { user, logout } = useAuthStore();
   
+  const { orders, getOrdersByDriver } = useOrdersStore();
+  const [driverStats, setDriverStats] = useState({
+    totalDeliveries: 0,
+    earnings: 0,
+    rating: 4.8,
+    completionRate: 96,
+    onTimeRate: 94
+  });
+
+  useEffect(() => {
+    if (user?.id) {
+      getOrdersByDriver(user.id);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id) {
+      const driverOrders = orders.filter(order => order.driverId === user.id);
+      const completedOrders = driverOrders.filter(order => order.status === 'delivered');
+      const totalEarnings = completedOrders.reduce((sum, order) => sum + order.price, 0);
+      
+      setDriverStats({
+        totalDeliveries: completedOrders.length,
+        earnings: totalEarnings,
+        rating: 4.8, // This would come from backend ratings
+        completionRate: driverOrders.length > 0 ? Math.round((completedOrders.length / driverOrders.length) * 100) : 96,
+        onTimeRate: 94 // This would be calculated from delivery times
+      });
+    }
+  }, [orders, user?.id]);
+
   const driverInfo = {
-    name: user?.name || "Peter Mwangi",
-    email: user?.email || "peter.mwangi@example.com",
+    name: user?.name || "Driver",
+    email: user?.email || "driver@example.com",
     phone: user?.phone || "+254712345678",
     vehicleType: "Motorcycle",
     plateNumber: "KCA 123D",
-    rating: 4.8,
-    totalDeliveries: 1247,
-    memberSince: "Mar 2023",
-    completionRate: 96,
-    onTimeRate: 94,
-    earnings: 125680,
+    rating: driverStats.rating,
+    totalDeliveries: driverStats.totalDeliveries,
+    memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "Mar 2023",
+    completionRate: driverStats.completionRate,
+    onTimeRate: driverStats.onTimeRate,
+    earnings: driverStats.earnings,
   };
 
   const achievements = [

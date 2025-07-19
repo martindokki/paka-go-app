@@ -142,7 +142,7 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
 export const useOrdersStore = create<OrdersState>()(
   persist(
     (set, get) => ({
-      orders: [],
+      orders: [], // Start with empty orders - no mock data
       isLoading: false,
       error: null,
       

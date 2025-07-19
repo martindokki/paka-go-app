@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Switch, Alert } from "react-native";
 import { router } from "expo-router";
-import { Package, Truck, DollarSign, Star, TrendingUp } from "lucide-react-native";
+import { Package, Truck, DollarSign, Star, TrendingUp, Zap, Power, Clock, MapPin, User } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
@@ -11,25 +11,76 @@ export default function DriverHomeScreen() {
   const { user } = useAuthStore();
   const { orders, getOrdersByDriver, getAllOrders, isLoading } = useOrdersStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+  const [todayStats, setTodayStats] = useState({
+    ordersCompleted: 0,
+    earnings: 0,
+    hoursWorked: 0,
+    averageRating: 4.8
+  });
 
   useEffect(() => {
     if (user?.id) {
       getOrdersByDriver(user.id);
-      getAllOrders(); // Also get available orders
+      if (isOnline) {
+        getAllOrders(); // Only get available orders when online
+      }
+      calculateTodayStats();
     }
-  }, [user?.id]);
+  }, [user?.id, isOnline]);
+
+  const calculateTodayStats = () => {
+    const today = new Date().toDateString();
+    const todayOrders = driverOrders.filter(order => 
+      new Date(order.updatedAt).toDateString() === today && order.status === 'delivered'
+    );
+    
+    setTodayStats({
+      ordersCompleted: todayOrders.length,
+      earnings: todayOrders.reduce((sum, order) => sum + order.price, 0),
+      hoursWorked: Math.max(1, todayOrders.length * 0.5), // Estimate 30 min per order
+      averageRating: todayOrders.length > 0 
+        ? todayOrders.reduce((sum, order) => sum + (order.driverInfo?.rating || 4.8), 0) / todayOrders.length 
+        : 4.8
+    });
+  };
+
+  const toggleOnlineStatus = () => {
+    if (isOnline) {
+      Alert.alert(
+        "Go Offline?",
+        "You won't receive new order notifications while offline.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { 
+            text: "Go Offline", 
+            style: "destructive",
+            onPress: () => setIsOnline(false)
+          }
+        ]
+      );
+    } else {
+      setIsOnline(true);
+      if (user?.id) {
+        getAllOrders(); // Refresh available orders when going online
+      }
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
     if (user?.id) {
       await getOrdersByDriver(user.id);
-      await getAllOrders();
+      if (isOnline) {
+        await getAllOrders();
+      }
+      calculateTodayStats();
     }
     setRefreshing(false);
   };
 
   const driverOrders = orders.filter(order => order.driverId === user?.id);
-  const availableOrders = orders.filter(order => order.status === 'pending' && !order.driverId);
+  const availableOrders = isOnline ? orders.filter(order => order.status === 'pending' && !order.driverId) : [];
   const activeOrders = driverOrders.filter(order => 
     !['delivered', 'cancelled'].includes(order.status)
   );
@@ -93,6 +144,32 @@ export default function DriverHomeScreen() {
             <Text style={styles.greeting}>Welcome back!</Text>
             <Text style={styles.userName}>{user?.name || "Driver"}</Text>
           </View>
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={() => router.push("/(driver)/profile")}
+          >
+            <User size={20} color={colors.background} />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Online/Offline Toggle */}
+        <View style={styles.statusToggle}>
+          <View style={styles.statusInfo}>
+            <View style={[
+              styles.statusIndicator, 
+              { backgroundColor: isOnline ? colors.success : colors.error }
+            ]} />
+            <Text style={styles.statusText}>
+              {isOnline ? "You're Online" : "You're Offline"}
+            </Text>
+          </View>
+          <Switch
+            value={isOnline}
+            onValueChange={toggleOnlineStatus}
+            trackColor={{ false: colors.border, true: colors.success + "40" }}
+            thumbColor={isOnline ? colors.success : colors.textMuted}
+            ios_backgroundColor={colors.border}
+          />
         </View>
       </LinearGradient>
 
@@ -107,19 +184,83 @@ export default function DriverHomeScreen() {
           />
         }
       >
+        {/* Today's Performance */}
+        <View style={styles.performanceSection}>
+          <Text style={styles.sectionTitle}>Today's Performance</Text>
+          <View style={styles.performanceGrid}>
+            <View style={styles.performanceCard}>
+              <LinearGradient
+                colors={[colors.success, "#10B981"]}
+                style={styles.performanceGradient}
+              >
+                <Package size={24} color={colors.background} />
+                <Text style={styles.performanceValue}>{todayStats.ordersCompleted}</Text>
+                <Text style={styles.performanceLabel}>Orders</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.performanceCard}>
+              <LinearGradient
+                colors={[colors.primary, colors.primaryDark]}
+                style={styles.performanceGradient}
+              >
+                <DollarSign size={24} color={colors.background} />
+                <Text style={styles.performanceValue}>KSh {todayStats.earnings.toLocaleString()}</Text>
+                <Text style={styles.performanceLabel}>Earned</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.performanceCard}>
+              <LinearGradient
+                colors={[colors.accent, colors.accentDark]}
+                style={styles.performanceGradient}
+              >
+                <Clock size={24} color={colors.background} />
+                <Text style={styles.performanceValue}>{todayStats.hoursWorked.toFixed(1)}h</Text>
+                <Text style={styles.performanceLabel}>Hours</Text>
+              </LinearGradient>
+            </View>
+            
+            <View style={styles.performanceCard}>
+              <LinearGradient
+                colors={[colors.warning, "#F59E0B"]}
+                style={styles.performanceGradient}
+              >
+                <Star size={24} color={colors.background} />
+                <Text style={styles.performanceValue}>{todayStats.averageRating.toFixed(1)}</Text>
+                <Text style={styles.performanceLabel}>Rating</Text>
+              </LinearGradient>
+            </View>
+          </View>
+        </View>
+
         {/* Stats */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => (
-            <TouchableOpacity key={index} style={styles.statCard} onPress={stat.onPress}>
+            <TouchableOpacity 
+              key={index} 
+              style={[
+                styles.statCard,
+                !isOnline && stat.label === "Available Orders" && styles.disabledCard
+              ]} 
+              onPress={isOnline || stat.label !== "Available Orders" ? stat.onPress : undefined}
+              disabled={!isOnline && stat.label === "Available Orders"}
+            >
               <LinearGradient
-                colors={stat.gradient}
+                colors={!isOnline && stat.label === "Available Orders" 
+                  ? [colors.textMuted, colors.border] 
+                  : stat.gradient
+                }
                 style={styles.statGradient}
               >
                 <View style={styles.statIcon}>
                   <stat.icon size={20} color={colors.background} />
                 </View>
                 <Text style={styles.statValue}>
-                  {typeof stat.value === 'string' ? stat.value : stat.value.toString()}
+                  {!isOnline && stat.label === "Available Orders" 
+                    ? "Offline" 
+                    : typeof stat.value === 'string' ? stat.value : stat.value.toString()
+                  }
                 </Text>
                 <Text style={styles.statLabel}>{stat.label}</Text>
               </LinearGradient>
@@ -132,15 +273,21 @@ export default function DriverHomeScreen() {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           
           <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => router.push("/(driver)/available-orders")}
+            style={[
+              styles.actionButton,
+              !isOnline && styles.disabledButton
+            ]}
+            onPress={isOnline ? () => router.push("/(driver)/available-orders") : undefined}
+            disabled={!isOnline}
           >
             <LinearGradient
-              colors={[colors.warning, "#F59E0B"]}
+              colors={!isOnline ? [colors.textMuted, colors.border] : [colors.warning, "#F59E0B"]}
               style={styles.actionGradient}
             >
               <Package size={24} color={colors.background} />
-              <Text style={styles.actionText}>Find New Orders ({availableOrders.length})</Text>
+              <Text style={styles.actionText}>
+                {!isOnline ? "Go Online to Find Orders" : `Find New Orders (${availableOrders.length})`}
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
           
@@ -283,6 +430,84 @@ const styles = StyleSheet.create({
     color: colors.background,
     letterSpacing: -0.5,
   },
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  statusToggle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginTop: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 16,
+    marginHorizontal: 20,
+  },
+  statusInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  statusIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  statusText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.background,
+  },
+  performanceSection: {
+    paddingHorizontal: 20,
+    marginTop: 24,
+  },
+  performanceGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  performanceCard: {
+    flex: 1,
+    minWidth: "22%",
+    borderRadius: 16,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  performanceGradient: {
+    padding: 12,
+    borderRadius: 16,
+    alignItems: "center",
+    minHeight: 80,
+    gap: 4,
+  },
+  performanceValue: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: colors.background,
+    textAlign: "center",
+  },
+  performanceLabel: {
+    fontSize: 10,
+    color: colors.background + "CC",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  disabledCard: {
+    opacity: 0.6,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
   content: {
     flex: 1,
   },
@@ -290,7 +515,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 24,
     gap: 12,
   },
   statCard: {
