@@ -82,13 +82,17 @@ export default function BookingScreen() {
   // Periodic auth check to prevent unexpected logouts
   useEffect(() => {
     const authCheckInterval = setInterval(() => {
-      if (isAuthenticated) {
-        checkAuthStatus();
+      if (isAuthenticated && user) {
+        // Only check auth status if we have a user and are authenticated
+        checkAuthStatus().catch(error => {
+          console.warn('Auth check failed in booking:', error);
+          // Don't logout on network errors, just log the issue
+        });
       }
-    }, 5 * 60 * 1000); // Check every 5 minutes
+    }, 10 * 60 * 1000); // Check every 10 minutes (less frequent)
 
     return () => clearInterval(authCheckInterval);
-  }, [isAuthenticated, checkAuthStatus]);
+  }, [isAuthenticated, user, checkAuthStatus]);
 
   const packageTypes = [
     { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },

@@ -5,9 +5,9 @@ import { AuthService } from '@/services/auth-service';
 
 const testUsers = [
   {
-    email: 'client@test.com',
+    email: 'customer@test.com',
     password: 'password123',
-    name: 'Test Client',
+    name: 'Test Customer',
     phone: '+254700000001',
     role: 'customer' as const,
   },

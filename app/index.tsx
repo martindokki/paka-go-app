@@ -23,7 +23,7 @@ export default function Index() {
 
   // Redirect based on user type
   switch (user.userType) {
-    case 'client':
+    case 'customer':
       return <Redirect href="/(client)" />;
     case 'driver':
       return <Redirect href="/(driver)" />;

@@ -100,7 +100,7 @@ export default function AuthScreen() {
   const createTestUser = async () => {
     if (authMode !== "login") return;
     
-    const testEmail = userType === "customer" ? "client@test.com" : 
+    const testEmail = userType === "customer" ? "customer@test.com" : 
                      userType === "driver" ? "driver@test.com" : "admin@test.com";
     const testPassword = "password123";
     const testName = userType === "customer" ? "Test Client" : 
@@ -682,14 +682,14 @@ export default function AuthScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.debugButton}
-                    onPress={() => router.push('/test-simple-auth')}
+                    onPress={() => router.push('/clear-all-data')}
                   >
-                    <Text style={styles.debugButtonText}>🧪 Simple Auth Test</Text>
+                    <Text style={styles.debugButtonText}>🗑️ Clear All Data</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
                     style={styles.debugButton}
                     onPress={() => {
-                      const testEmail = userType === "customer" ? "client@test.com" : 
+                      const testEmail = userType === "customer" ? "customer@test.com" : 
                                        userType === "driver" ? "driver@test.com" : "admin@test.com";
                       setFormData({
                         ...formData,
@@ -701,7 +701,7 @@ export default function AuthScreen() {
                     <Text style={styles.debugButtonText}>📝 Fill Test Credentials</Text>
                   </TouchableOpacity>
                   <View style={styles.testAccounts}>
-                    <Text style={styles.testAccount}>Client: client@test.com / password123</Text>
+                    <Text style={styles.testAccount}>Customer: customer@test.com / password123</Text>
                     <Text style={styles.testAccount}>Driver: driver@test.com / password123</Text>
                     <Text style={styles.testAccount}>Admin: admin@test.com / password123</Text>
                   </View>

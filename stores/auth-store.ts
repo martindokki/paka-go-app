@@ -410,13 +410,25 @@ export const useAuthStore = create<AuthState>()(
           set({ sessionExpiry });
         }
 
-        // Verify with backend if user exists
+        // Verify with backend if user exists (but be resilient to network errors)
         if (state.isAuthenticated && state.user) {
           try {
             const { user, profile, error } = await AuthService.getCurrentUser();
             if (error || !user || !profile) {
-              console.log('Backend auth check failed, logging out');
-              await get().logout();
+              // Only logout if it's a clear authentication error, not a network error
+              const isNetworkError = error && (
+                error.message?.includes('network') ||
+                error.message?.includes('fetch') ||
+                error.message?.includes('timeout') ||
+                error.code === 'NETWORK_ERROR'
+              );
+              
+              if (!isNetworkError) {
+                console.log('Backend auth check failed (not network error), logging out');
+                await get().logout();
+              } else {
+                console.log('Network error during auth check, keeping user logged in');
+              }
             }
           } catch (error) {
             console.log('Auth status check failed:', error);
