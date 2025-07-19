@@ -28,8 +28,9 @@ export default function TestAuthFinal() {
       );
 
       if (error) {
-        setResult(`❌ Signup failed: ${error.message || error}`);
-        Alert.alert('Signup Failed', error.message || String(error));
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setResult(`❌ Signup failed: ${errorMessage}`);
+        Alert.alert('Signup Failed', errorMessage);
       } else if (user && profile) {
         setResult(`✅ Signup successful!\nUser ID: ${user.id}\nProfile: ${JSON.stringify(profile, null, 2)}`);
         Alert.alert('Success', 'Account created successfully!');
@@ -55,14 +56,16 @@ export default function TestAuthFinal() {
       const { user, error } = await AuthService.signIn(email, password);
 
       if (error) {
-        setResult(`❌ Signin failed: ${error.message || error}`);
-        Alert.alert('Signin Failed', error.message || String(error));
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setResult(`❌ Signin failed: ${errorMessage}`);
+        Alert.alert('Signin Failed', errorMessage);
       } else if (user) {
         // Get current user profile
         const { profile, error: profileError } = await AuthService.getCurrentUser();
         
         if (profileError) {
-          setResult(`✅ Signin successful but profile error: ${profileError.message || profileError}\nUser: ${JSON.stringify(user, null, 2)}`);
+          const errorMessage = profileError instanceof Error ? profileError.message : String(profileError);
+          setResult(`✅ Signin successful but profile error: ${errorMessage}\nUser: ${JSON.stringify(user, null, 2)}`);
         } else {
           setResult(`✅ Signin successful!\nUser ID: ${user.id}\nProfile: ${JSON.stringify(profile, null, 2)}`);
         }
@@ -87,7 +90,8 @@ export default function TestAuthFinal() {
       const { user, profile, error } = await AuthService.getCurrentUser();
 
       if (error) {
-        setResult(`❌ Get current user failed: ${error.message || error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setResult(`❌ Get current user failed: ${errorMessage}`);
       } else if (user && profile) {
         setResult(`✅ Current user retrieved!\nUser ID: ${user.id}\nProfile: ${JSON.stringify(profile, null, 2)}`);
       } else {
@@ -109,7 +113,8 @@ export default function TestAuthFinal() {
       const { error } = await AuthService.signOut();
 
       if (error) {
-        setResult(`❌ Signout failed: ${error.message || error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        setResult(`❌ Signout failed: ${errorMessage}`);
       } else {
         setResult('✅ Signed out successfully!');
         Alert.alert('Success', 'Signed out successfully!');
