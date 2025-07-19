@@ -11,7 +11,7 @@ import {
 import { Search, Filter, User, Truck, Star, Phone, Mail } from "lucide-react-native";
 import colors from "@/constants/colors";
 
-type UserType = "client" | "driver";
+type UserType = "customer" | "driver";
 
 interface AdminUser {
   id: string;
@@ -36,7 +36,7 @@ export default function AdminUsersScreen() {
       name: "John Doe",
       email: "john.doe@example.com",
       phone: "+254712345678",
-      type: "client",
+      type: "customer",
       status: "active",
       joinDate: "2024-01-15",
       totalOrders: 24,
@@ -58,7 +58,7 @@ export default function AdminUsersScreen() {
       name: "Mary Smith",
       email: "mary.smith@example.com",
       phone: "+254734567890",
-      type: "client",
+      type: "customer",
       status: "active",
       joinDate: "2024-02-10",
       totalOrders: 18,
@@ -91,7 +91,7 @@ export default function AdminUsersScreen() {
 
   const userTypeOptions = [
     { key: "all", label: "All Users", count: users.length },
-    { key: "client", label: "Clients", count: users.filter(u => u.type === "client").length },
+    { key: "customer", label: "Clients", count: users.filter(u => u.type === "customer").length },
     { key: "driver", label: "Drivers", count: users.filter(u => u.type === "driver").length },
   ];
 

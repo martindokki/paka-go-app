@@ -34,7 +34,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store";
 
-type UserType = 'client' | 'driver' | 'admin';
+type UserType = 'customer' | 'driver' | 'admin';
 
 interface LoginRequest {
   email: string;
@@ -53,7 +53,7 @@ type AuthMode = "login" | "register";
 
 export default function AuthScreen() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
-  const [userType, setUserType] = useState<UserType>("client");
+  const [userType, setUserType] = useState<UserType>("customer");
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [formData, setFormData] = useState({
@@ -100,12 +100,12 @@ export default function AuthScreen() {
   const createTestUser = async () => {
     if (authMode !== "login") return;
     
-    const testEmail = userType === "client" ? "client@test.com" : 
+    const testEmail = userType === "customer" ? "client@test.com" : 
                      userType === "driver" ? "driver@test.com" : "admin@test.com";
     const testPassword = "password123";
-    const testName = userType === "client" ? "Test Client" : 
+    const testName = userType === "customer" ? "Test Client" : 
                     userType === "driver" ? "Test Driver" : "Test Admin";
-    const testPhone = userType === "client" ? "+254700000001" : 
+    const testPhone = userType === "customer" ? "+254700000001" : 
                      userType === "driver" ? "+254700000002" : "+254700000003";
     
     try {
@@ -114,7 +114,7 @@ export default function AuthScreen() {
         email: testEmail,
         phone: testPhone,
         password: testPassword,
-        userType: userType === "admin" ? "customer" : userType,
+        userType: userType,
       });
       
       if (success) {
@@ -203,7 +203,7 @@ export default function AuthScreen() {
         
         // Navigate based on user type
         switch (userType) {
-          case "client":
+          case "customer":
             router.replace("/(client)");
             break;
           case "driver":
@@ -231,39 +231,39 @@ export default function AuthScreen() {
         <TouchableOpacity
           style={[
             styles.userTypeButton,
-            userType === "client" && styles.userTypeButtonActive,
+            userType === "customer" && styles.userTypeButtonActive,
           ]}
-          onPress={() => setUserType("client")}
+          onPress={() => setUserType("customer")}
         >
           <LinearGradient
-            colors={userType === "client" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
+            colors={userType === "customer" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
             style={styles.userTypeGradient}
           >
             <View style={styles.userTypeIconContainer}>
               <View style={[
                 styles.userTypeIcon,
-                userType === "client" && styles.userTypeIconActive,
+                userType === "customer" && styles.userTypeIconActive,
               ]}>
                 <Send
                   size={32}
-                  color={userType === "client" ? colors.background : colors.primary}
+                  color={userType === "customer" ? colors.background : colors.primary}
                 />
               </View>
               <View style={styles.sparkleContainer}>
-                <Sparkles size={16} color={userType === "client" ? colors.background : colors.primary} />
+                <Sparkles size={16} color={userType === "customer" ? colors.background : colors.primary} />
               </View>
             </View>
             <Text
               style={[
                 styles.userTypeText,
-                userType === "client" && styles.userTypeTextActive,
+                userType === "customer" && styles.userTypeTextActive,
               ]}
             >
               Client
             </Text>
             <Text style={[
               styles.userTypeSubtext,
-              userType === "client" && styles.userTypeSubtextActive,
+              userType === "customer" && styles.userTypeSubtextActive,
             ]}>
               Send packages anywhere, anytime! 📦✨
             </Text>
@@ -689,7 +689,7 @@ export default function AuthScreen() {
                   <TouchableOpacity 
                     style={styles.debugButton}
                     onPress={() => {
-                      const testEmail = userType === "client" ? "client@test.com" : 
+                      const testEmail = userType === "customer" ? "client@test.com" : 
                                        userType === "driver" ? "driver@test.com" : "admin@test.com";
                       setFormData({
                         ...formData,
