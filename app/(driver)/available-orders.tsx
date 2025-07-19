@@ -10,6 +10,7 @@ import {
   Alert,
   Dimensions,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { 
   Package, 
   MapPin, 
@@ -30,6 +31,7 @@ const { width } = Dimensions.get("window");
 
 export default function AvailableOrdersScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
   const { user } = useAuthStore();
   const { orders, getAllOrders, assignDriver, isLoading } = useOrdersStore();
 
