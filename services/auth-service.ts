@@ -3,16 +3,25 @@ import { supabase, User } from './supabase';
 export class AuthService {
   static async signUp(email: string, password: string, fullName: string, phoneNumber?: string, role: 'customer' | 'driver' = 'customer') {
     try {
-      console.log('Starting signup process for:', email);
+      console.log('Starting signup process for:', { email, fullName, role });
       
+      // Validate inputs
+      if (!email || !password || !fullName) {
+        throw new Error('Email, password, and full name are required');
+      }
+
+      if (password.length < 6) {
+        throw new Error('Password must be at least 6 characters long');
+      }
+
       // First, sign up the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           data: {
-            full_name: fullName,
-            phone_number: phoneNumber || '',
+            full_name: fullName.trim(),
+            phone_number: phoneNumber?.trim() || '',
             role: role
           }
         }
@@ -20,7 +29,7 @@ export class AuthService {
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        throw new Error(authError.message);
+        throw new Error(`Authentication failed: ${authError.message}`);
       }
 
       if (!authData.user) {
@@ -29,69 +38,109 @@ export class AuthService {
 
       console.log('Auth user created successfully:', authData.user.id);
       
-      // Wait a moment for the trigger to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for the database trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Try to get the profile using our safe function
+      // Try multiple approaches to get/create the profile
+      let profile = null;
+      let profileError = null;
+
+      // Approach 1: Use our safe RPC function
       try {
-        const { data: profileData, error: profileError } = await supabase
+        console.log('Attempting to get profile via RPC function...');
+        const { data: profileData, error: rpcError } = await supabase
           .rpc('get_or_create_user_profile', { user_id: authData.user.id });
 
-        if (profileError) {
-          console.warn('Profile function failed:', profileError);
-        } else if (profileData && profileData.length > 0) {
-          const profile = profileData[0];
-          console.log('Profile retrieved/created successfully:', profile);
-          return { user: authData.user, profile, error: null };
+        if (!rpcError && profileData && profileData.length > 0) {
+          profile = profileData[0];
+          console.log('Profile retrieved via RPC:', profile);
+        } else {
+          console.warn('RPC function failed or returned no data:', rpcError);
         }
-      } catch (profileError) {
-        console.warn('Profile retrieval failed:', profileError);
+      } catch (rpcError) {
+        console.warn('RPC function exception:', rpcError);
       }
 
-      // Fallback: create profile manually if function fails
-      try {
-        const { data: manualProfile, error: manualError } = await supabase
-          .from('users')
-          .upsert({
+      // Approach 2: Direct database query if RPC failed
+      if (!profile) {
+        try {
+          console.log('Attempting direct database query...');
+          const { data: directProfile, error: directError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
+
+          if (!directError && directProfile) {
+            profile = directProfile;
+            console.log('Profile retrieved via direct query:', profile);
+          } else {
+            console.warn('Direct query failed:', directError);
+          }
+        } catch (directError) {
+          console.warn('Direct query exception:', directError);
+        }
+      }
+
+      // Approach 3: Manual profile creation if still no profile
+      if (!profile) {
+        try {
+          console.log('Attempting manual profile creation...');
+          const profileData = {
             id: authData.user.id,
-            full_name: fullName,
-            email: email,
-            phone_number: phoneNumber || '',
+            full_name: fullName.trim(),
+            email: email.trim().toLowerCase(),
+            phone_number: phoneNumber?.trim() || '',
             role: role,
-            status: 'active'
-          }, {
-            onConflict: 'id'
-          })
-          .select()
-          .single();
+            status: 'active' as const
+          };
 
-        if (manualProfile && !manualError) {
-          console.log('Manual profile creation successful:', manualProfile);
-          return { user: authData.user, profile: manualProfile, error: null };
+          const { data: manualProfile, error: manualError } = await supabase
+            .from('users')
+            .upsert(profileData, { onConflict: 'id' })
+            .select()
+            .single();
+
+          if (!manualError && manualProfile) {
+            profile = manualProfile;
+            console.log('Profile created manually:', profile);
+          } else {
+            console.warn('Manual profile creation failed:', manualError);
+            profileError = manualError;
+          }
+        } catch (manualError) {
+          console.warn('Manual profile creation exception:', manualError);
+          profileError = manualError;
         }
-      } catch (manualError) {
-        console.warn('Manual profile creation failed:', manualError);
       }
 
-      // Final fallback: return with in-memory profile
-      const fallbackProfile = {
-        id: authData.user.id,
-        full_name: fullName,
-        email: email,
-        phone_number: phoneNumber || '',
-        role: role,
-        status: 'active' as const,
-        profile_image: null,
-        created_at: authData.user.created_at,
-        updated_at: authData.user.created_at
-      };
+      // Approach 4: Create fallback profile if all else fails
+      if (!profile) {
+        console.log('Creating fallback profile...');
+        profile = {
+          id: authData.user.id,
+          full_name: fullName.trim(),
+          email: email.trim().toLowerCase(),
+          phone_number: phoneNumber?.trim() || '',
+          role: role,
+          status: 'active' as const,
+          profile_image: null,
+          created_at: authData.user.created_at,
+          updated_at: authData.user.created_at
+        };
+        console.log('Using fallback profile:', profile);
+      }
 
-      console.log('Using fallback profile for user:', authData.user.id);
-      return { user: authData.user, profile: fallbackProfile, error: null };
+      return { user: authData.user, profile, error: null };
       
     } catch (error: any) {
       console.error('SignUp error:', error);
-      return { user: null, profile: null, error };
+      const errorMessage = error?.message || String(error);
+      return { 
+        user: null, 
+        profile: null, 
+        error: new Error(`Registration failed: ${errorMessage}`)
+      };
     }
   }
 
@@ -123,67 +172,113 @@ export class AuthService {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       
-      if (error) throw error;
-      if (!user) return { user: null, profile: null, error: null };
+      if (error) {
+        console.error('Get user error:', error);
+        throw error;
+      }
+      
+      if (!user) {
+        return { user: null, profile: null, error: null };
+      }
 
-      // Try to get profile using our safe function first
+      console.log('Getting profile for user:', user.id);
+
+      // Try multiple approaches to get the profile
+      let profile = null;
+
+      // Approach 1: Use our safe RPC function
       try {
-        const { data: profileData, error: profileError } = await supabase
+        const { data: profileData, error: rpcError } = await supabase
           .rpc('get_or_create_user_profile', { user_id: user.id });
 
-        if (profileData && profileData.length > 0 && !profileError) {
-          const profile = profileData[0];
-          return { user, profile, error: null };
+        if (!rpcError && profileData && profileData.length > 0) {
+          profile = profileData[0];
+          console.log('Profile retrieved via RPC:', profile);
+        } else {
+          console.warn('RPC function failed:', rpcError);
         }
       } catch (rpcError) {
-        console.warn('RPC function failed, trying direct query:', rpcError);
+        console.warn('RPC function exception:', rpcError);
       }
 
-      // Fallback to direct query
-      const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      // Approach 2: Direct database query if RPC failed
+      if (!profile) {
+        try {
+          const { data: directProfile, error: directError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-      // If profile exists, return it
-      if (profile && !profileError) {
-        return { user, profile, error: null };
-      }
-
-      // If profile doesn't exist, create a fallback from auth user metadata
-      console.warn('Profile not found in database, creating fallback:', profileError);
-      
-      const fallbackProfile = {
-        id: user.id,
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-        email: user.email || '',
-        phone_number: user.user_metadata?.phone_number || '',
-        role: (user.user_metadata?.role as 'customer' | 'driver' | 'admin') || 'customer',
-        status: 'active' as const,
-        profile_image: null,
-        created_at: user.created_at,
-        updated_at: user.updated_at || user.created_at
-      };
-
-      // Try to create the profile in the database
-      try {
-        const { data: createdProfile, error: createError } = await supabase
-          .from('users')
-          .upsert(fallbackProfile, { onConflict: 'id' })
-          .select()
-          .single();
-
-        if (createdProfile && !createError) {
-          return { user, profile: createdProfile, error: null };
+          if (!directError && directProfile) {
+            profile = directProfile;
+            console.log('Profile retrieved via direct query:', profile);
+          } else {
+            console.warn('Direct query failed:', directError);
+          }
+        } catch (directError) {
+          console.warn('Direct query exception:', directError);
         }
-      } catch (createError) {
-        console.warn('Failed to create profile in database:', createError);
       }
 
-      // Return fallback profile if database creation fails
-      return { user, profile: fallbackProfile, error: null };
+      // Approach 3: Create profile from auth metadata if still no profile
+      if (!profile) {
+        console.log('Creating profile from auth metadata...');
+        
+        const profileData = {
+          id: user.id,
+          full_name: user.user_metadata?.full_name || 
+                    user.raw_user_meta_data?.full_name || 
+                    user.email?.split('@')[0] || 'User',
+          email: user.email || '',
+          phone_number: user.user_metadata?.phone_number || 
+                       user.raw_user_meta_data?.phone_number || '',
+          role: (user.user_metadata?.role || 
+                user.raw_user_meta_data?.role || 'customer') as 'customer' | 'driver' | 'admin',
+          status: 'active' as const
+        };
+
+        try {
+          const { data: createdProfile, error: createError } = await supabase
+            .from('users')
+            .upsert(profileData, { onConflict: 'id' })
+            .select()
+            .single();
+
+          if (!createError && createdProfile) {
+            profile = createdProfile;
+            console.log('Profile created from metadata:', profile);
+          } else {
+            console.warn('Failed to create profile from metadata:', createError);
+          }
+        } catch (createError) {
+          console.warn('Profile creation exception:', createError);
+        }
+      }
+
+      // Approach 4: Use fallback profile if all else fails
+      if (!profile) {
+        console.log('Using fallback profile...');
+        profile = {
+          id: user.id,
+          full_name: user.user_metadata?.full_name || 
+                    user.raw_user_meta_data?.full_name || 
+                    user.email?.split('@')[0] || 'User',
+          email: user.email || '',
+          phone_number: user.user_metadata?.phone_number || 
+                       user.raw_user_meta_data?.phone_number || '',
+          role: (user.user_metadata?.role || 
+                user.raw_user_meta_data?.role || 'customer') as 'customer' | 'driver' | 'admin',
+          status: 'active' as const,
+          profile_image: null,
+          created_at: user.created_at,
+          updated_at: user.updated_at || user.created_at
+        };
+      }
+
+      return { user, profile, error: null };
     } catch (error) {
+      console.error('Get current user error:', error);
       return { user: null, profile: null, error };
     }
   }
