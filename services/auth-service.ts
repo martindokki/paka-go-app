@@ -12,7 +12,7 @@ export class AuthService {
         options: {
           data: {
             full_name: fullName,
-            phone_number: phoneNumber,
+            phone_number: phoneNumber || '',
             role: role,
           }
         }
@@ -20,7 +20,8 @@ export class AuthService {
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        throw new Error(`Authentication failed: ${authError.message}`);
+        const errorMessage = authError.message || 'Authentication failed';
+        throw new Error(`Authentication failed: ${errorMessage}`);
       }
 
       if (!authData.user) {
@@ -30,18 +31,36 @@ export class AuthService {
       console.log('Auth user created successfully:', authData.user.id);
 
       // The user profile should be automatically created by the database trigger
-      // Let's wait a moment and then fetch the profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Let's wait and retry fetching the profile multiple times
+      let profileData = null;
+      let profileError = null;
+      let retries = 0;
+      const maxRetries = 5;
       
-      // Get the created user profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', authData.user.id)
-        .single();
+      while (retries < maxRetries && !profileData) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retries + 1))); // Increasing delay
+        
+        const result = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+          
+        profileData = result.data;
+        profileError = result.error;
+        
+        if (profileData) {
+          console.log(`Profile found on attempt ${retries + 1}`);
+          break;
+        }
+        
+        retries++;
+        console.log(`Profile not found, retry ${retries}/${maxRetries}`);
+      }
 
       if (profileError || !profileData) {
         console.error('Error fetching user profile after creation:', profileError);
+        console.log('Database trigger may not be working. Creating user profile manually...');
         
         // Try to create the profile manually if the trigger didn't work
         const { data: manualProfileData, error: manualError } = await supabase

@@ -243,7 +243,7 @@ export default function TestBackendScreen() {
           : typeof assignError === 'string' 
           ? assignError 
           : typeof assignError === 'object' && assignError && 'message' in assignError
-          ? (assignError as any).message
+          ? String((assignError as any).message)
           : 'Unknown error';
         addResult(`❌ Driver assignment failed: ${errorMessage}`);
         return false;
@@ -297,7 +297,7 @@ export default function TestBackendScreen() {
           : typeof updateError === 'string' 
           ? updateError 
           : typeof updateError === 'object' && updateError && 'message' in updateError
-          ? (updateError as any).message
+          ? String((updateError as any).message)
           : 'Unknown error';
         addResult(`❌ Delivery status update failed: ${errorMessage}`);
         return false;
@@ -314,7 +314,7 @@ export default function TestBackendScreen() {
           : typeof deliveredError === 'string' 
           ? deliveredError 
           : typeof deliveredError === 'object' && deliveredError && 'message' in deliveredError
-          ? (deliveredError as any).message
+          ? String((deliveredError as any).message)
           : 'Unknown error';
         addResult(`❌ Delivery completion failed: ${errorMessage}`);
         return false;
@@ -360,7 +360,7 @@ export default function TestBackendScreen() {
           : typeof driversError === 'string' 
           ? driversError 
           : typeof driversError === 'object' && driversError && 'message' in driversError
-          ? (driversError as any).message
+          ? String((driversError as any).message)
           : 'Unknown error';
         addResult(`❌ Admin: Failed to fetch drivers: ${errorMessage}`);
         return false;

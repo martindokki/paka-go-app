@@ -289,7 +289,7 @@ export const useOrdersStore = create<OrdersState>()(
               : typeof error === 'string' 
               ? error 
               : typeof error === 'object' && error && 'message' in error
-              ? (error as any).message
+              ? String((error as any).message)
               : 'Failed to create parcel';
             throw new Error(errorMessage);
           }
@@ -332,7 +332,7 @@ export const useOrdersStore = create<OrdersState>()(
             : typeof error === 'string' 
             ? error 
             : typeof error === 'object' && error && 'message' in error
-            ? (error as any).message
+            ? String((error as any).message)
             : 'Unknown error';
           set({ error: errorMessage, isLoading: false });
           throw error;
@@ -356,7 +356,7 @@ export const useOrdersStore = create<OrdersState>()(
               : typeof error === 'string' 
               ? error 
               : typeof error === 'object' && error && 'message' in error
-              ? (error as any).message
+              ? String((error as any).message)
               : 'Failed to update status';
             throw new Error(errorMessage);
           }
@@ -382,7 +382,7 @@ export const useOrdersStore = create<OrdersState>()(
             : typeof error === 'string' 
             ? error 
             : typeof error === 'object' && error && 'message' in error
-            ? (error as any).message
+            ? String((error as any).message)
             : 'Failed to update order status';
           set({ error: errorMessage, isLoading: false });
         }
@@ -438,7 +438,7 @@ export const useOrdersStore = create<OrdersState>()(
             : typeof error === 'string' 
             ? error 
             : typeof error === 'object' && error && 'message' in error
-            ? (error as any).message
+            ? String((error as any).message)
             : 'Failed to assign driver';
           set({ error: errorMessage, isLoading: false });
         }
@@ -552,7 +552,7 @@ export const useOrdersStore = create<OrdersState>()(
           
           if (error) {
             const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
+              ? String((error as any).message) 
               : 'Failed to fetch all parcels';
             throw new Error(errorMessage);
           }
@@ -589,7 +589,7 @@ export const useOrdersStore = create<OrdersState>()(
         } catch (error: any) {
           console.error("Error fetching all orders:", error);
           const errorMessage = error && typeof error === 'object' && 'message' in error 
-            ? (error as any).message 
+            ? String((error as any).message) 
             : 'Failed to fetch all orders';
           set({ error: errorMessage, isLoading: false });
         }
