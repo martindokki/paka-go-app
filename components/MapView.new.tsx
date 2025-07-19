@@ -70,7 +70,7 @@ export const MapViewComponent: React.FC<MapViewProps> = ({
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   
   const mapRef = useRef<MapView>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get user's current location
   useEffect(() => {
@@ -161,7 +161,7 @@ export const MapViewComponent: React.FC<MapViewProps> = ({
     
     searchTimeoutRef.current = setTimeout(() => {
       searchLocations(text);
-    }, 500);
+    }, 500) as NodeJS.Timeout;
   };
 
   // Select a location from search results
