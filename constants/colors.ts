@@ -34,7 +34,6 @@ const colors = {
   warning: "#F59E0B",
   warningLight: "#FEF3C7",
   error: "#EF4444",
-  successLight: "#D1FAE5",
   info: accentBlue,
   tint: primaryOrange,
   tabIconDefault: "#9CA3AF",

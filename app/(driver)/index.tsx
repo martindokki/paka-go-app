@@ -341,7 +341,7 @@ export default function DriverHomeScreen() {
                     { backgroundColor: getStatusColor(order.status) + "20" }
                   ]}>
                     <Text style={[
-                      styles.statusText,
+                      styles.orderStatusText,
                       { color: getStatusColor(order.status) }
                     ]}>
                       {getStatusText(order.status)}
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
   },
-  statusText: {
+  orderStatusText: {
     fontSize: 10,
     fontWeight: "700",
   },

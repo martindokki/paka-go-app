@@ -33,8 +33,8 @@ import { MapViewComponent } from "@/components/MapView";
 // import { MapService, Coordinates } from "@/services/map-service";
 
 type Coordinates = {
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
 };
 
 export default function TrackingScreen() {
@@ -83,8 +83,8 @@ export default function TrackingScreen() {
     
     try {
       // Mock coordinates for now
-      const pickup = { lat: -1.2921, lng: 36.8219 }; // Nairobi
-      const delivery = { lat: -1.2841, lng: 36.8155 }; // Nairobi CBD
+      const pickup = { latitude: -1.2921, longitude: 36.8219 }; // Nairobi
+      const delivery = { latitude: -1.2841, longitude: 36.8155 }; // Nairobi CBD
       
       setPickupCoords(pickup);
       setDeliveryCoords(delivery);

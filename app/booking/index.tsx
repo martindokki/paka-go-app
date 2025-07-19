@@ -42,7 +42,7 @@ import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
 import { LocationSearchModal } from "@/components/LocationSearchModal";
 import { PriceBreakdownModal } from "@/components/PriceBreakdownModal";
-import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/constants/pricing";
+import { PricingService, PriceCalculationOptions, PriceBreakdown, PRICING_CONFIG } from "@/constants/pricing";
 
 export default function BookingScreen() {
   const { user, isAuthenticated } = useAuthStore();
@@ -271,7 +271,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'client') {
+    if (user.userType !== 'customer') {
       Alert.alert(
         "Access Denied", 
         "Only clients can book deliveries. Please log in with a client account.",
