@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { useOrdersStore } from '@/stores/orders-store';
 
 export const useAppInitialization = () => {
   const [isAppReady, setIsAppReady] = useState(false);
   const { isInitialized: authInitialized } = useAuthStore();
-  const { initializeSampleData } = useOrdersStore();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -16,15 +14,19 @@ export const useAppInitialization = () => {
         if (authInitialized) {
           console.log('Auth store initialized');
           
-          // Initialize sample data
-          initializeSampleData();
-          console.log('Sample data initialized');
-          
           // Small delay to ensure everything is ready
           setTimeout(() => {
             setIsAppReady(true);
             console.log('App initialization completed');
           }, 500);
+        } else {
+          // If auth is not initialized after a timeout, force initialization
+          setTimeout(() => {
+            if (!authInitialized) {
+              console.log('Auth store initialization timeout, forcing app ready state');
+              setIsAppReady(true);
+            }
+          }, 3000);
         }
       } catch (error) {
         console.error('App initialization error:', error);
@@ -34,7 +36,7 @@ export const useAppInitialization = () => {
     };
 
     initializeApp();
-  }, [authInitialized, initializeSampleData]);
+  }, [authInitialized]);
 
   return { isAppReady };
 };

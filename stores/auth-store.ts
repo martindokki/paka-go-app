@@ -344,11 +344,18 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
         console.log('Auth store rehydrating:', state ? 'success' : 'failed');
+        if (error) {
+          console.error('Auth store rehydration error:', error);
+        }
         if (state) {
           console.log('Rehydrated user:', state.user?.email, 'isAuthenticated:', state.isAuthenticated);
           state.setInitialized(true);
+        } else {
+          // Even if rehydration fails, mark as initialized to prevent infinite loading
+          console.log('Auth store rehydration failed, marking as initialized');
+          useAuthStore.getState().setInitialized(true);
         }
       },
     }

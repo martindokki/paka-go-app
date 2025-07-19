@@ -22,7 +22,7 @@ import {
   Navigation
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import { safeColors as colors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
 import { useOrdersStore } from "@/stores/orders-store";
 
