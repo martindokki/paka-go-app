@@ -271,7 +271,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'client') {
+    if (user.userType !== 'client' as UserType) {
       Alert.alert(
         "Access Denied", 
         "Only clients can book deliveries. Please log in with a client account.",
