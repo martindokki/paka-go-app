@@ -271,10 +271,10 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'customer') {
+    if (user.userType !== 'client') {
       Alert.alert(
         "Access Denied", 
-        "Only customers can book deliveries. Please log in with a customer account.",
+        "Only clients can book deliveries. Please log in with a client account.",
         [
           {
             text: "OK",
@@ -329,7 +329,7 @@ export default function BookingScreen() {
       console.log("Creating order with data:", orderData);
       
       // Add to local store
-      const createdOrderId = await createOrder(orderData);
+      const createdOrderId = createOrder(orderData);
       
       console.log("Order created successfully:", { createdOrderId, trackingCode });
       
@@ -413,7 +413,7 @@ export default function BookingScreen() {
   };
 
   return (
-    <AuthGuard requiredUserType="customer">
+    <AuthGuard requiredUserType="client">
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>

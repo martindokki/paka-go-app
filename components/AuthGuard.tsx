@@ -6,7 +6,7 @@ import colors from '@/constants/colors';
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  requiredUserType?: 'customer' | 'driver' | 'admin';
+  requiredUserType?: 'client' | 'driver' | 'admin';
 }
 
 export const AuthGuard: React.FC<AuthGuardProps> = ({ 
@@ -45,7 +45,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       // User is authenticated but wrong type - redirect to appropriate dashboard
       setTimeout(() => {
         switch (user.userType) {
-          case 'customer':
+          case 'client':
             router.replace('/(client)');
             break;
           case 'driver':
