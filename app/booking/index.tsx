@@ -45,7 +45,7 @@ import { PriceBreakdownModal } from "@/components/PriceBreakdownModal";
 import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/constants/pricing";
 
 export default function BookingScreen() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, checkAuthStatus } = useAuthStore();
   const { createOrder } = useOrdersStore();
 
   const { userLocation, destination, routePoints, clearRoute } = useMapStore();
@@ -78,6 +78,17 @@ export default function BookingScreen() {
   useEffect(() => {
     calculatePrice();
   }, []);
+
+  // Periodic auth check to prevent unexpected logouts
+  useEffect(() => {
+    const authCheckInterval = setInterval(() => {
+      if (isAuthenticated) {
+        checkAuthStatus();
+      }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+
+    return () => clearInterval(authCheckInterval);
+  }, [isAuthenticated, checkAuthStatus]);
 
   const packageTypes = [
     { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },
@@ -283,14 +294,20 @@ export default function BookingScreen() {
       return;
     }
 
-    // Check authentication status
+    // Check authentication status and refresh session if needed
     console.log("Auth check:", { user, isAuthenticated, userType: user?.userType, userId: user?.id });
     
-    if (!isAuthenticated || !user) {
+    // Refresh authentication status before proceeding
+    const { checkAuthStatus } = useAuthStore.getState();
+    await checkAuthStatus();
+    
+    // Re-check after status update
+    const currentState = useAuthStore.getState();
+    if (!currentState.isAuthenticated || !currentState.user) {
       console.log("Authentication failed - redirecting to login");
       Alert.alert(
         "Authentication Required", 
-        "Please log in to book a delivery. You will be redirected to the login page.",
+        "Your session has expired. Please log in again to book a delivery.",
         [
           {
             text: "Cancel",
@@ -309,7 +326,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'customer') {
+    if (currentState.user.userType !== 'customer') {
       Alert.alert(
         "Access Denied", 
         "Only customers can book deliveries. Please log in with a customer account.",
@@ -327,8 +344,8 @@ export default function BookingScreen() {
     }
 
     try {
-      // Get customer ID from user - ensure we have a valid user ID
-      const customerId = user.id;
+      // Get customer ID from current state - ensure we have a valid user ID
+      const customerId = currentState.user.id;
       console.log("Creating order for customer:", customerId);
       
       // Create the order locally first

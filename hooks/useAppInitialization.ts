@@ -1,18 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
+import { AuthService } from '@/services/auth-service';
 
 export const useAppInitialization = () => {
   const [isAppReady, setIsAppReady] = useState(false);
-  const { isInitialized: authInitialized } = useAuthStore();
+  const { isInitialized: authInitialized, checkAuthStatus, logout } = useAuthStore();
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
         console.log('App initialization started');
         
+        // Set up auth state listener
+        const { data: { subscription } } = AuthService.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event, session?.user?.id);
+          
+          if (event === 'SIGNED_OUT' || !session) {
+            console.log('User signed out, clearing auth state');
+            await logout();
+          } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            console.log('User signed in or token refreshed, checking auth status');
+            await checkAuthStatus();
+          }
+        });
+
         // Wait for auth store to be ready
         if (authInitialized) {
           console.log('Auth store initialized');
+          
+          // Check auth status on app start
+          await checkAuthStatus();
           
           // Small delay to ensure everything is ready
           setTimeout(() => {
@@ -28,6 +45,11 @@ export const useAppInitialization = () => {
             }
           }, 3000);
         }
+
+        // Cleanup subscription on unmount
+        return () => {
+          subscription?.unsubscribe();
+        };
       } catch (error) {
         console.error('App initialization error:', error);
         // Still mark as ready to prevent infinite loading
@@ -36,7 +58,7 @@ export const useAppInitialization = () => {
     };
 
     initializeApp();
-  }, [authInitialized]);
+  }, [authInitialized, checkAuthStatus, logout]);
 
   return { isAppReady };
 };

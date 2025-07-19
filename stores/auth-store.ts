@@ -37,6 +37,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isInitialized: boolean;
+  sessionExpiry: number | null;
   
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
@@ -45,6 +46,8 @@ interface AuthState {
   clearError: () => void;
   updateProfile: (profileData: Partial<User>) => Promise<boolean>;
   deleteAccount: () => Promise<boolean>;
+  refreshSession: () => Promise<boolean>;
+  checkAuthStatus: () => Promise<void>;
   
   // Internal actions
   setUser: (userData: User) => void;
@@ -63,6 +66,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       isInitialized: false,
+      sessionExpiry: null,
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
@@ -100,6 +104,9 @@ export const useAuthStore = create<AuthState>()(
             updatedAt: profile.created_at,
           };
           
+          // Set session expiry to 24 hours from now
+          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+          
           console.log('Setting user data:', userData);
           
           set({
@@ -108,6 +115,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            sessionExpiry,
           });
           
           console.log('Login successful', { userType: userData.userType, userId: userData.id });
@@ -122,6 +130,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             user: null,
             token: null,
+            sessionExpiry: null,
           });
           
           console.error('Login failed', error);
@@ -173,12 +182,16 @@ export const useAuthStore = create<AuthState>()(
           
           console.log('Setting user data:', userDataForStore);
           
+          // Set session expiry to 24 hours from now
+          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+          
           set({
             user: userDataForStore,
             token: 'authenticated',
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            sessionExpiry,
           });
           
           console.log('Registration successful', { userType: userDataForStore.userType, email: userData.email, userId: userDataForStore.id });
@@ -232,6 +245,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
             error: null,
+            sessionExpiry: null,
           });
         }
       },
@@ -291,6 +305,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
             error: null,
+            sessionExpiry: null,
           });
           
           console.log('Account deleted successfully');
@@ -301,6 +316,82 @@ export const useAuthStore = create<AuthState>()(
           
           console.error('Account deletion error:', error);
           return false;
+        }
+      },
+
+      refreshSession: async (): Promise<boolean> => {
+        try {
+          console.log('Refreshing session...');
+          const { user, profile, error } = await AuthService.getCurrentUser();
+          
+          if (error || !user || !profile) {
+            console.log('Session refresh failed, logging out');
+            await get().logout();
+            return false;
+          }
+
+          const userData: User = {
+            id: profile.id,
+            name: profile.full_name,
+            email: profile.email,
+            phone: profile.phone_number || '',
+            userType: profile.role as UserType,
+            token: 'authenticated',
+            createdAt: profile.created_at,
+            updatedAt: profile.created_at,
+          };
+
+          // Extend session expiry
+          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+
+          set({
+            user: userData,
+            token: 'authenticated',
+            isAuthenticated: true,
+            sessionExpiry,
+            error: null,
+          });
+
+          console.log('Session refreshed successfully');
+          return true;
+        } catch (error) {
+          console.error('Session refresh error:', error);
+          await get().logout();
+          return false;
+        }
+      },
+
+      checkAuthStatus: async (): Promise<void> => {
+        const state = get();
+        
+        // Check if session has expired
+        if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
+          console.log('Session expired, attempting refresh');
+          const refreshed = await get().refreshSession();
+          if (!refreshed) {
+            console.log('Session refresh failed, user will need to login again');
+            return;
+          }
+        }
+
+        // If user is authenticated but no session expiry, set one
+        if (state.isAuthenticated && state.user && !state.sessionExpiry) {
+          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+          set({ sessionExpiry });
+        }
+
+        // Verify with backend if user exists
+        if (state.isAuthenticated && state.user) {
+          try {
+            const { user, profile, error } = await AuthService.getCurrentUser();
+            if (error || !user || !profile) {
+              console.log('Backend auth check failed, logging out');
+              await get().logout();
+            }
+          } catch (error) {
+            console.log('Auth status check failed:', error);
+            // Don't logout on network errors, just log the issue
+          }
         }
       },
       
@@ -363,6 +454,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        sessionExpiry: state.sessionExpiry,
       }),
       onRehydrateStorage: () => (state, error) => {
         console.log('Auth store rehydrating:', state ? 'success' : 'failed');
@@ -371,6 +463,16 @@ export const useAuthStore = create<AuthState>()(
         }
         if (state) {
           console.log('Rehydrated user:', state.user?.email, 'isAuthenticated:', state.isAuthenticated);
+          
+          // Check if session has expired
+          if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
+            console.log('Session expired during rehydration, clearing auth state');
+            state.logout();
+          } else {
+            // Check auth status with backend
+            state.checkAuthStatus();
+          }
+          
           state.setInitialized(true);
         } else {
           // Even if rehydration fails, mark as initialized to prevent infinite loading

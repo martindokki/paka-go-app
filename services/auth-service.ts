@@ -170,17 +170,20 @@ export class AuthService {
 
   static async getCurrentUser() {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      // First check if we have a valid session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (error) {
-        console.error('Get user error:', error);
-        throw error;
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw sessionError;
       }
-      
-      if (!user) {
+
+      if (!session || !session.user) {
+        console.log('No active session found');
         return { user: null, profile: null, error: null };
       }
 
+      const user = session.user;
       console.log('Getting profile for user:', user.id);
 
       // Try multiple approaches to get the profile
@@ -304,6 +307,22 @@ export class AuthService {
     } catch (error) {
       console.error('Profile update exception:', error);
       return { data: null, error };
+    }
+  }
+
+  static async refreshSession() {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      
+      if (error) {
+        console.error('Session refresh error:', error);
+        throw error;
+      }
+
+      return { session: data.session, error: null };
+    } catch (error) {
+      console.error('Session refresh exception:', error);
+      return { session: null, error };
     }
   }
 

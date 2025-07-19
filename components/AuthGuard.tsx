@@ -13,15 +13,23 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children, 
   requiredUserType 
 }) => {
-  const { isAuthenticated, user, isLoading, isInitialized } = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized, checkAuthStatus, sessionExpiry } = useAuthStore();
 
   console.log("AuthGuard check:", { 
     isAuthenticated, 
     user: user?.userType, 
     isLoading, 
     isInitialized,
-    requiredUserType 
+    requiredUserType,
+    sessionExpiry: sessionExpiry ? new Date(sessionExpiry).toISOString() : null
   });
+
+  // Check session expiry on mount
+  React.useEffect(() => {
+    if (isInitialized && isAuthenticated) {
+      checkAuthStatus();
+    }
+  }, [isInitialized, isAuthenticated, checkAuthStatus]);
 
   // Show loading while auth is being initialized or checked
   if (isLoading || !isInitialized) {
