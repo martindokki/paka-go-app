@@ -51,7 +51,10 @@ export default function AvailableOrdersScreen() {
   );
 
   const handleAcceptOrder = async (orderId: string) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      Alert.alert("Error", "Please log in to accept orders.");
+      return;
+    }
 
     Alert.alert(
       "Accept Order",
@@ -62,15 +65,47 @@ export default function AvailableOrdersScreen() {
           text: "Accept",
           onPress: async () => {
             try {
+              console.log("Accepting order:", orderId, "for driver:", user.id);
+              
               await assignDriver(orderId, user.id, {
                 name: user.name || "Driver",
                 phone: user.phone || "",
                 rating: 4.5,
               });
-              Alert.alert("Success", "Order accepted successfully!");
-              getAllOrders(); // Refresh the list
+              
+              Alert.alert(
+                "Success! 🎉", 
+                "Order accepted successfully! You can now view it in your active orders.",
+                [
+                  {
+                    text: "View Order",
+                    onPress: () => router.push(`/order-details/${orderId}`)
+                  },
+                  {
+                    text: "OK",
+                    style: "default"
+                  }
+                ]
+              );
+              
+              // Refresh the orders list
+              await getAllOrders();
             } catch (error) {
-              Alert.alert("Error", "Failed to accept order. Please try again.");
+              console.error("Error accepting order:", error);
+              Alert.alert(
+                "Error", 
+                "Failed to accept order. Please check your connection and try again.",
+                [
+                  {
+                    text: "Retry",
+                    onPress: () => handleAcceptOrder(orderId)
+                  },
+                  {
+                    text: "Cancel",
+                    style: "cancel"
+                  }
+                ]
+              );
             }
           },
         },

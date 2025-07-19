@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Ref
 import { router } from "expo-router";
 import { Package, Truck, DollarSign, Star, TrendingUp, Zap, Power, Clock, MapPin, User } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "@/constants/colors";
+import { safeColors as colors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
 import { useOrdersStore } from "@/stores/orders-store";
 
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
   },
   orderStatusText: {
     fontSize: 10,
-    fontWeight: "700",
+    fontWeight: "700" as const,
   },
   orderTime: {
     fontSize: 12,

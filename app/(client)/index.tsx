@@ -34,7 +34,7 @@ import {
   Award
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 import { useOrdersStore } from "@/stores/orders-store";
 import colors from "@/constants/colors";
 

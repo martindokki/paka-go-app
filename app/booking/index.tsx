@@ -34,7 +34,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store-simple";
 import { AuthGuard } from "@/components/AuthGuard";
 
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
@@ -271,7 +271,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'customer') {
+    if (user.userType !== 'client') {
       Alert.alert(
         "Access Denied", 
         "Only clients can book deliveries. Please log in with a client account.",
@@ -332,7 +332,7 @@ export default function BookingScreen() {
       }
       
       // Update order data with final price
-      orderData.price = priceBreakdown?.total || PRICING_CONFIG.minimumCharge;
+      orderData.price = priceBreakdown?.total || 200;
       
       // Add to local store
       const createdOrderId = await createOrder(orderData);
