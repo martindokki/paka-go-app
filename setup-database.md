@@ -22,6 +22,20 @@ This will create:
 - Database triggers for automatic user profile creation
 - Proper indexes for performance
 
+### Step 2.1: Apply the Fix (IMPORTANT)
+
+If you're still getting "Database error saving new user" errors after Step 2:
+
+1. Copy the entire content from `supabase-schema-fix.sql` file
+2. Paste it into the SQL Editor
+3. Click "Run" to execute the fix script
+
+This fix will:
+- Remove the problematic trigger that causes signup failures
+- Create a more robust trigger with error handling
+- Make the users table more flexible
+- Add better RLS policies for user registration
+
 ### Step 3: Verify Setup
 
 After running the script, you should see these tables in your database:
