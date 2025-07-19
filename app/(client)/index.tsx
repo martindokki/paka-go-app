@@ -75,7 +75,7 @@ export default function ClientHomeScreen() {
       title: "Book Delivery",
       subtitle: "Send packages anywhere",
       icon: Package,
-      gradient: [colors.primary, colors.primaryDark],
+      gradient: [colors.primary, colors.primaryDark] as const,
       route: "/booking",
       featured: true
     },
@@ -84,7 +84,7 @@ export default function ClientHomeScreen() {
       title: "Track Order",
       subtitle: "Follow your package",
       icon: MapPin,
-      gradient: [colors.accent, colors.accentDark],
+      gradient: [colors.accent, colors.accentDark] as const,
       route: "/tracking"
     },
     {
@@ -92,7 +92,7 @@ export default function ClientHomeScreen() {
       title: "Order History",
       subtitle: "View past deliveries",
       icon: History,
-      gradient: [colors.info, "#3B82F6"],
+      gradient: [colors.info, "#3B82F6"] as const,
       route: "/(client)/orders"
     },
     {
@@ -100,7 +100,7 @@ export default function ClientHomeScreen() {
       title: "Get Help",
       subtitle: "24/7 customer support",
       icon: Shield,
-      gradient: [colors.success, "#10B981"],
+      gradient: [colors.success, "#10B981"] as const,
       route: "/chat"
     }
   ];
