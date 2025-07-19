@@ -146,15 +146,30 @@ export class AuthService {
 
   static async signIn(email: string, password: string) {
     try {
+      console.log('Attempting sign in for:', email);
+      
+      if (!email || !password) {
+        throw new Error('Email and password are required');
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase auth error:', error);
+        throw error;
+      }
 
+      if (!data.user) {
+        throw new Error('No user returned from authentication');
+      }
+
+      console.log('Sign in successful for user:', data.user.id);
       return { user: data.user, error: null };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Sign in error:', error);
       return { user: null, error };
     }
   }

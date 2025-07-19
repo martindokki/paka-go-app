@@ -73,9 +73,15 @@ export const useAuthStore = create<AuthState>()(
         console.log('Login attempt:', { email: credentials.email, userType: credentials.userType });
         
         try {
-          const { user: authUser, error } = await AuthService.signIn(credentials.email, credentials.password);
+          // Validate credentials
+          if (!credentials.email || !credentials.password) {
+            throw new Error('Email and password are required');
+          }
+
+          const { user: authUser, error } = await AuthService.signIn(credentials.email.trim(), credentials.password);
           
-          if (error || !authUser) {
+          if (error) {
+            console.error('Auth service error:', error);
             const errorMessage = error instanceof Error 
               ? error.message 
               : typeof error === 'string' 
@@ -86,12 +92,36 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(errorMessage);
           }
 
-          // Get user profile
-          const { profile, error: profileError } = await AuthService.getCurrentUser();
-          
-          if (profileError || !profile) {
-            throw new Error('Failed to get user profile');
+          if (!authUser) {
+            throw new Error('No user returned from authentication');
           }
+
+          console.log('Auth user obtained:', authUser.id);
+
+          // Get user profile with retry logic
+          let profile = null;
+          let profileError = null;
+          
+          for (let attempt = 0; attempt < 3; attempt++) {
+            const result = await AuthService.getCurrentUser();
+            if (result.profile && !result.error) {
+              profile = result.profile;
+              break;
+            }
+            profileError = result.error;
+            console.warn(`Profile fetch attempt ${attempt + 1} failed:`, result.error);
+            
+            if (attempt < 2) {
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+          
+          if (!profile) {
+            console.error('Failed to get user profile after 3 attempts:', profileError);
+            throw new Error('Failed to get user profile. Please try again.');
+          }
+
+          console.log('Profile obtained:', profile);
 
           const userData: User = {
             id: profile.id,
@@ -101,7 +131,7 @@ export const useAuthStore = create<AuthState>()(
             userType: profile.role as UserType,
             token: 'authenticated',
             createdAt: profile.created_at,
-            updatedAt: profile.created_at,
+            updatedAt: profile.updated_at || profile.created_at,
           };
           
           // Set session expiry to 24 hours from now
@@ -122,7 +152,7 @@ export const useAuthStore = create<AuthState>()(
           
           return true;
         } catch (error: any) {
-          const errorMsg = error.message || 'Login failed. Please try again.';
+          const errorMsg = error?.message || 'Login failed. Please check your credentials and try again.';
           
           set({ 
             error: errorMsg, 

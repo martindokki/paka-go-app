@@ -39,7 +39,7 @@ type UserType = 'client' | 'driver' | 'admin';
 interface LoginRequest {
   email: string;
   password: string;
-  userType: UserType;
+  userType?: UserType;
 }
 
 interface RegisterRequest extends LoginRequest {
@@ -97,6 +97,50 @@ export default function AuthScreen() {
     return Object.keys(errors).length === 0;
   };
 
+  const createTestUser = async () => {
+    if (authMode !== "login") return;
+    
+    const testEmail = userType === "client" ? "client@test.com" : 
+                     userType === "driver" ? "driver@test.com" : "admin@test.com";
+    const testPassword = "password123";
+    const testName = userType === "client" ? "Test Client" : 
+                    userType === "driver" ? "Test Driver" : "Test Admin";
+    const testPhone = userType === "client" ? "+254700000001" : 
+                     userType === "driver" ? "+254700000002" : "+254700000003";
+    
+    try {
+      const success = await register({
+        name: testName,
+        email: testEmail,
+        phone: testPhone,
+        password: testPassword,
+        userType: userType === "admin" ? "customer" : userType,
+      });
+      
+      if (success) {
+        Alert.alert(
+          "Test User Created", 
+          `Test ${userType} user created successfully! You can now login with:\n\nEmail: ${testEmail}\nPassword: ${testPassword}`,
+          [
+            {
+              text: "Login Now",
+              onPress: () => {
+                setFormData({
+                  ...formData,
+                  email: testEmail,
+                  password: testPassword,
+                });
+              }
+            },
+            { text: "OK" }
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('Test user creation error:', error);
+    }
+  };
+
   const handleAuth = async () => {
     // Clear previous errors
     clearError();
@@ -125,6 +169,25 @@ export default function AuthScreen() {
           password: formData.password,
           userType,
         });
+        
+        // If login fails and this looks like a test account, offer to create it
+        if (!success && authError && authError.includes('Invalid login credentials')) {
+          const isTestEmail = formData.email.includes('@test.com') && formData.password === 'password123';
+          if (isTestEmail) {
+            Alert.alert(
+              "Test User Not Found",
+              "It looks like you're trying to use a test account that doesn't exist yet. Would you like to create it?",
+              [
+                {
+                  text: "Create Test User",
+                  onPress: createTestUser
+                },
+                { text: "Cancel" }
+              ]
+            );
+            return;
+          }
+        }
       } else {
         success = await register({
           name: formData.name.trim(),
@@ -610,19 +673,38 @@ export default function AuthScreen() {
               {__DEV__ && (
                 <View style={styles.testAccountsContainer}>
                   <Text style={styles.testAccountsTitle}>🧪 Test Accounts (Dev Only)</Text>
+                  <Text style={styles.testAccount}>⚠️ Test users need to be created first!</Text>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={() => router.push('/create-test-users-auth')}
+                  >
+                    <Text style={styles.debugButtonText}>🔧 Create Test Users</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={() => router.push('/test-simple-auth')}
+                  >
+                    <Text style={styles.debugButtonText}>🧪 Simple Auth Test</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={() => {
+                      const testEmail = userType === "client" ? "client@test.com" : 
+                                       userType === "driver" ? "driver@test.com" : "admin@test.com";
+                      setFormData({
+                        ...formData,
+                        email: testEmail,
+                        password: "password123",
+                      });
+                    }}
+                  >
+                    <Text style={styles.debugButtonText}>📝 Fill Test Credentials</Text>
+                  </TouchableOpacity>
                   <View style={styles.testAccounts}>
                     <Text style={styles.testAccount}>Client: client@test.com / password123</Text>
                     <Text style={styles.testAccount}>Driver: driver@test.com / password123</Text>
                     <Text style={styles.testAccount}>Admin: admin@test.com / password123</Text>
                   </View>
-                  <Text style={styles.testAccountsTitle}>✨ Real Registration Active</Text>
-                  <Text style={styles.testAccount}>Create new accounts with real data!</Text>
-                  <TouchableOpacity 
-                    style={styles.debugButton}
-                    onPress={() => router.push('/debug-auth')}
-                  >
-                    <Text style={styles.debugButtonText}>🔧 Debug Auth</Text>
-                  </TouchableOpacity>
                 </View>
               )}
             </View>
