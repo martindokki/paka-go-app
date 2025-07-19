@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 import colors from '@/constants/colors';
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  requiredUserType?: 'client' | 'driver' | 'admin';
+  requiredUserType?: 'customer' | 'driver' | 'admin';
 }
 
 export const AuthGuard: React.FC<AuthGuardProps> = ({ 
@@ -45,7 +45,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       // User is authenticated but wrong type - redirect to appropriate dashboard
       setTimeout(() => {
         switch (user.userType) {
-          case 'client':
+          case 'customer':
             router.replace('/(client)');
             break;
           case 'driver':

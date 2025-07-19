@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 import { View, ActivityIndicator } from 'react-native';
 import colors from '@/constants/colors';
 
@@ -23,7 +23,7 @@ export default function Index() {
 
   // Redirect based on user type
   switch (user.userType) {
-    case 'client':
+    case 'customer':
       return <Redirect href="/(client)" />;
     case 'driver':
       return <Redirect href="/(driver)" />;

@@ -271,10 +271,10 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'client') {
+    if (user.userType !== 'customer') {
       Alert.alert(
         "Access Denied", 
-        "Only clients can book deliveries. Please log in with a client account.",
+        "Only customers can book deliveries. Please log in with a customer account.",
         [
           {
             text: "OK",
@@ -435,7 +435,7 @@ export default function BookingScreen() {
   };
 
   return (
-    <AuthGuard requiredUserType="client">
+    <AuthGuard requiredUserType="customer">
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>

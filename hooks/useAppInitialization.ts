@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store-simple';
 
 export const useAppInitialization = () => {
   const [isAppReady, setIsAppReady] = useState(false);

@@ -243,17 +243,36 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          // Update locally
+          console.log('Updating profile in database:', profileData);
+          
+          // Update in database first
+          const { data, error } = await AuthService.updateProfile(user.id, {
+            full_name: profileData.name,
+            email: profileData.email,
+            phone_number: profileData.phone,
+          });
+          
+          if (error) {
+            throw new Error(error.message || 'Failed to update profile in database');
+          }
+          
+          // Update locally after successful database update
+          const updatedUser = { 
+            ...user, 
+            ...profileData, 
+            updatedAt: new Date().toISOString() 
+          };
+          
           set({
-            user: { ...user, ...profileData, updatedAt: new Date().toISOString() },
+            user: updatedUser,
             isLoading: false,
             error: null,
           });
           
-          console.log('Profile updated successfully');
+          console.log('Profile updated successfully in database and locally');
           return true;
-        } catch (error) {
-          const errorMsg = 'Profile update failed. Please try again.';
+        } catch (error: any) {
+          const errorMsg = error.message || 'Profile update failed. Please try again.';
           set({ error: errorMsg, isLoading: false });
           
           console.error('Profile update error:', error);
