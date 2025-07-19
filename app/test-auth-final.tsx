@@ -53,18 +53,18 @@ export default function TestAuthFinal() {
     try {
       console.log('Testing signin with:', { email });
       
-      const { user, error } = await AuthService.signIn(email, password);
+      const result = await AuthService.signIn(email, password);
 
-      if (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+      if (result.error) {
+        const errorMessage = result.error instanceof Error ? result.error.message : String(result.error);
         setResult(`❌ Signin failed: ${errorMessage}`);
         Alert.alert('Signin Failed', errorMessage);
-      } else if (user) {
+      } else if (result.user) {
         // Get current user profile
-        const { profile, error: profileError } = await AuthService.getCurrentUser();
+        const profileResult = await AuthService.getCurrentUser();
         
-        if (profileError) {
-          const errorMessage = profileError instanceof Error ? profileError.message : String(profileError);
+        if (profileResult.error) {
+          const errorMessage = profileResult.error instanceof Error ? profileResult.error.message : String(profileResult.error);
           setResult(`✅ Signin successful but profile error: ${errorMessage}\nUser: ${JSON.stringify(user, null, 2)}`);
         } else {
           setResult(`✅ Signin successful!\nUser ID: ${user.id}\nProfile: ${JSON.stringify(profile, null, 2)}`);
