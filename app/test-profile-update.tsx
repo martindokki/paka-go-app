@@ -30,7 +30,7 @@ export default function TestProfileUpdate() {
       const { user: authUser, profile, error: getUserError } = await AuthService.getCurrentUser();
       
       if (getUserError) {
-        setTestResult(prev => prev + `ERROR: Failed to get user profile: ${getUserError.message}\n`);
+        setTestResult(prev => prev + `ERROR: Failed to get user profile: ${getUserError instanceof Error ? getUserError.message : JSON.stringify(getUserError)}\n`);
         return;
       }
       
@@ -70,7 +70,7 @@ export default function TestProfileUpdate() {
       const { profile: verifyProfile, error: verifyError } = await AuthService.getCurrentUser();
       
       if (verifyError || !verifyProfile) {
-        setTestResult(prev => prev + `ERROR: Failed to verify update: ${verifyError?.message}\n`);
+        setTestResult(prev => prev + `ERROR: Failed to verify update: ${verifyError instanceof Error ? verifyError.message : JSON.stringify(verifyError)}\n`);
         return;
       }
       
