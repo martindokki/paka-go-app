@@ -521,7 +521,7 @@ export default function AuthScreen() {
                   <View style={styles.errorContainer}>
                     <Text style={styles.errorText}>{authError}</Text>
                     {(authError.includes('already exists') || authError.includes('already registered')) && (
-                      <>
+                      <View>
                         <Text style={styles.errorHelpText}>
                           💡 {authError.includes('already registered') 
                             ? 'This email is registered with a different account type. Try switching the account type or use a different email.'
@@ -562,7 +562,7 @@ export default function AuthScreen() {
                             </TouchableOpacity>
                           )}
                         </View>
-                      </>
+                      </View>
                     )}
                   </View>
                 )}
@@ -596,9 +596,7 @@ export default function AuthScreen() {
                 {authMode === "register" && (
                   <View style={styles.termsContainer}>
                     <Text style={styles.termsText}>
-                      By joining PAKA HOME, you agree to our{" "}
-                      <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
-                      <Text style={styles.termsLink}>Privacy Policy</Text>
+                      By joining PAKA HOME, you agree to our <Text style={styles.termsLink}>Terms of Service</Text> and <Text style={styles.termsLink}>Privacy Policy</Text>
                     </Text>
                   </View>
                 )}

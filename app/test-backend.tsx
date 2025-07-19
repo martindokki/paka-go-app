@@ -243,7 +243,7 @@ export default function TestBackendScreen() {
           : typeof assignError === 'string' 
           ? assignError 
           : typeof assignError === 'object' && assignError && 'message' in assignError
-          ? String((assignError as { message: unknown }).message)
+          ? String((assignError as any).message)
           : 'Unknown error';
         addResult(`❌ Driver assignment failed: ${errorMessage}`);
         return false;
