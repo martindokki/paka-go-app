@@ -65,7 +65,7 @@ function RootLayoutNav() {
               <Stack.Screen name="(admin)" options={{ headerShown: false }} />
               <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
               <Stack.Screen 
-                name="booking" 
+                name="booking/index" 
                 options={{ 
                   presentation: 'modal',
                   title: 'Book Delivery',
@@ -73,7 +73,7 @@ function RootLayoutNav() {
                 }} 
               />
               <Stack.Screen 
-                name="payment" 
+                name="payment/index" 
                 options={{ 
                   presentation: 'modal',
                   title: 'Payment',
@@ -89,7 +89,7 @@ function RootLayoutNav() {
                 }} 
               />
               <Stack.Screen 
-                name="tracking" 
+                name="tracking/index" 
                 options={{ 
                   presentation: 'modal',
                   title: 'Track Order',
@@ -97,7 +97,7 @@ function RootLayoutNav() {
                 }} 
               />
               <Stack.Screen 
-                name="chat" 
+                name="chat/index" 
                 options={{ 
                   presentation: 'modal',
                   title: 'Chat',
@@ -105,11 +105,19 @@ function RootLayoutNav() {
                 }} 
               />
               <Stack.Screen 
-                name="map" 
+                name="map/index" 
                 options={{ 
                   presentation: 'fullScreenModal',
                   title: 'Map',
                   headerShown: false,
+                }} 
+              />
+              <Stack.Screen 
+                name="order-details/[id]" 
+                options={{ 
+                  presentation: 'modal',
+                  title: 'Order Details',
+                  headerShown: true,
                 }} 
               />
 

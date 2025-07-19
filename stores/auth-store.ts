@@ -21,6 +21,7 @@ export interface User {
 export interface LoginRequest {
   email: string;
   password: string;
+  userType?: UserType;
 }
 
 export interface RegisterRequest extends LoginRequest {
