@@ -65,9 +65,9 @@ export default function TestAuthFinal() {
         
         if (profileResult.error) {
           const errorMessage = profileResult.error instanceof Error ? profileResult.error.message : String(profileResult.error);
-          setResult(`✅ Signin successful but profile error: ${errorMessage}\nUser: ${JSON.stringify(user, null, 2)}`);
+          setResult(`✅ Signin successful but profile error: ${errorMessage}\nUser: ${JSON.stringify(result.user, null, 2)}`);
         } else {
-          setResult(`✅ Signin successful!\nUser ID: ${user.id}\nProfile: ${JSON.stringify(profile, null, 2)}`);
+          setResult(`✅ Signin successful!\nUser ID: ${result.user.id}\nProfile: ${JSON.stringify(profileResult.profile, null, 2)}`);
         }
         Alert.alert('Success', 'Signed in successfully!');
       } else {
