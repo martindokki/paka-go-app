@@ -141,9 +141,17 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
 // Helper function to calculate price from parcel data
 const calculateParcelPrice = (parcel: any): number => {
   try {
-    // If price is already stored in the database, use it
+    console.log('Calculating price for parcel:', {
+      id: parcel.id,
+      storedPrice: parcel.price,
+      estimatedDistance: parcel.estimated_distance,
+      hasCoords: !!(parcel.pickup_latitude && parcel.pickup_longitude && parcel.dropoff_latitude && parcel.dropoff_longitude)
+    });
+
+    // If price is already stored in the database and is valid, use it
     if (parcel.price && parcel.price > 0) {
-      return parcel.price;
+      console.log('Using stored price:', parcel.price);
+      return Math.round(parcel.price);
     }
     
     // Calculate distance
@@ -152,6 +160,7 @@ const calculateParcelPrice = (parcel: any): number => {
     // Use stored estimated distance if available
     if (parcel.estimated_distance && parcel.estimated_distance > 0) {
       distance = parcel.estimated_distance;
+      console.log('Using stored estimated distance:', distance);
     } else if (parcel.pickup_latitude && parcel.pickup_longitude && 
                parcel.dropoff_latitude && parcel.dropoff_longitude) {
       // Calculate actual distance using coordinates
@@ -168,6 +177,7 @@ const calculateParcelPrice = (parcel: any): number => {
                 Math.sin(dLon/2) * Math.sin(dLon/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       distance = R * c;
+      console.log('Calculated distance from coordinates:', distance);
     } else {
       // Estimate distance based on address patterns
       const pickupAddress = (parcel.pickup_address || '').toLowerCase();
@@ -186,6 +196,7 @@ const calculateParcelPrice = (parcel: any): number => {
       } else if (parcel.weight_kg && parcel.weight_kg > 5) {
         distance = 7; // Heavier packages might be longer distance
       }
+      console.log('Estimated distance from addresses:', distance);
     }
     
     // Use stored fragile flag or determine from description
@@ -219,8 +230,20 @@ const calculateParcelPrice = (parcel: any): number => {
       isWeekend,
     };
     
+    console.log('Price calculation options:', options);
+    
     const breakdown = PricingService.calculatePrice(options);
-    return breakdown.total;
+    const finalPrice = Math.round(breakdown.total);
+    
+    console.log('Calculated price breakdown:', {
+      baseFare: breakdown.baseFare,
+      distanceFee: breakdown.distanceFee,
+      subtotal: breakdown.subtotal,
+      total: breakdown.total,
+      finalPrice
+    });
+    
+    return finalPrice;
   } catch (error) {
     console.error('Error calculating parcel price:', error);
     // Fallback to minimum charge if calculation fails
@@ -257,7 +280,7 @@ export const useOrdersStore = create<OrdersState>()(
               dropoff_address: orderData.deliveryAddress || orderData.to,
               parcel_description: orderData.packageDescription,
               weight_kg: orderData.weight || 1,
-              price: orderData.price || 0,
+              price: Math.round(orderData.price || 0), // Ensure price is stored as integer
               pickup_latitude: orderData.pickupLatitude,
               pickup_longitude: orderData.pickupLongitude,
               dropoff_latitude: orderData.deliveryLatitude,
@@ -267,6 +290,8 @@ export const useOrdersStore = create<OrdersState>()(
               is_fragile: orderData.isFragile || false,
               has_insurance: orderData.hasInsurance || false,
             };
+
+            console.log('Creating parcel in Supabase with data:', parcelData);
 
             const { data: parcel, error } = await ParcelService.createParcel(parcelData);
             if (parcel && !error) {

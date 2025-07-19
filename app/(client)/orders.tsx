@@ -105,7 +105,7 @@ export default function OrdersScreen() {
     },
     {
       label: "Total Spent",
-      value: `KSh ${allOrders.reduce((sum, order) => sum + order.price, 0).toLocaleString()}`,
+      value: `KSh ${allOrders.reduce((sum, order) => sum + Math.round(order.price || 0), 0).toLocaleString()}`,
       icon: DollarSign,
       color: colors.info,
       gradient: [colors.info, "#3B82F6"] as const
@@ -233,7 +233,7 @@ export default function OrdersScreen() {
             </View>
             
             <View style={styles.orderMeta}>
-              <Text style={styles.orderPrice}>KSh {item.price.toLocaleString()}</Text>
+              <Text style={styles.orderPrice}>KSh {Math.round(item.price || 0).toLocaleString()}</Text>
               <Text style={styles.orderTime}>
                 {new Date(item.createdAt).toLocaleDateString('en-US', {
                   month: 'short',

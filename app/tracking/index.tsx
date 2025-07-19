@@ -303,7 +303,7 @@ export default function TrackingScreen() {
         <View style={styles.routeCard}>
           <View style={styles.routeHeader}>
             <Text style={styles.routeTitle}>Delivery Route</Text>
-            <Text style={styles.routePrice}>KSh {order.price}</Text>
+            <Text style={styles.routePrice}>KSh {Math.round(order.price || 0).toLocaleString()}</Text>
           </View>
           
           <View style={styles.route}>

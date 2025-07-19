@@ -74,6 +74,11 @@ export default function BookingScreen() {
   const [showDropoffSearch, setShowDropoffSearch] = useState(false);
   const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
 
+  // Calculate initial price when component mounts
+  useEffect(() => {
+    calculatePrice();
+  }, []);
+
   const packageTypes = [
     { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },
     { id: "small", label: "Small Package", icon: "📦", isFragileDefault: false },
@@ -160,15 +165,33 @@ export default function BookingScreen() {
   };
 
   const calculatePrice = async () => {
-    if (!bookingData.pickupCoords || !bookingData.dropoffCoords) {
-      setPriceBreakdown(null);
-      setEstimatedTime("25-35 mins");
-      return;
-    }
-
     setIsCalculatingPrice(true);
     try {
-      const distance = MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords);
+      let distance = 5; // Default fallback distance in km
+      
+      if (bookingData.pickupCoords && bookingData.dropoffCoords) {
+        distance = MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords);
+        console.log('Calculated distance from coordinates:', distance);
+      } else if (bookingData.pickupLocation && bookingData.dropoffLocation) {
+        // Estimate distance based on addresses if coordinates not available
+        const pickupAddress = bookingData.pickupLocation.toLowerCase();
+        const dropoffAddress = bookingData.dropoffLocation.toLowerCase();
+        
+        // Simple heuristic for distance estimation
+        const commonAreas = ['nairobi', 'westlands', 'karen', 'kilimani', 'lavington', 'kileleshwa', 'parklands'];
+        const pickupArea = commonAreas.find(area => pickupAddress.includes(area));
+        const dropoffArea = commonAreas.find(area => dropoffAddress.includes(area));
+        
+        if (pickupArea && dropoffArea && pickupArea !== dropoffArea) {
+          distance = 8; // Different areas, longer distance
+        } else if (pickupAddress.includes('cbd') || dropoffAddress.includes('cbd') || 
+                   pickupAddress.includes('town') || dropoffAddress.includes('town')) {
+          distance = 6; // CBD deliveries are typically medium distance
+        }
+        console.log('Estimated distance from addresses:', distance);
+      } else {
+        console.log('Using default distance for price calculation:', distance);
+      }
       
       const options: PriceCalculationOptions = {
         distance,
@@ -178,7 +201,10 @@ export default function BookingScreen() {
         isWeekend: PricingService.isWeekend(),
       };
       
+      console.log('Price calculation options:', options);
+      
       const breakdown = PricingService.calculatePrice(options);
+      console.log('Price breakdown calculated:', breakdown);
       setPriceBreakdown(breakdown);
       
       // Estimate time based on distance (assuming 30 km/h average speed)
@@ -187,7 +213,15 @@ export default function BookingScreen() {
       
     } catch (error) {
       console.error('Price calculation error:', error);
-      setPriceBreakdown(null);
+      // Set a fallback price breakdown
+      const fallbackBreakdown = PricingService.calculatePrice({
+        distance: 5,
+        isFragile: bookingData.isFragile,
+        hasInsurance: bookingData.hasInsurance,
+        isAfterHours: PricingService.isAfterHours(),
+        isWeekend: PricingService.isWeekend(),
+      });
+      setPriceBreakdown(fallbackBreakdown);
       setEstimatedTime("25-35 mins");
     } finally {
       setIsCalculatingPrice(false);
@@ -195,21 +229,25 @@ export default function BookingScreen() {
   };
 
   const handlePickupLocationSelect = (address: string, coordinates: Coordinates) => {
+    console.log('Pickup location selected:', { address, coordinates });
     setBookingData(prev => ({ 
       ...prev, 
       pickupLocation: address,
       pickupCoords: coordinates 
     }));
-    calculatePrice();
+    // Delay calculation to ensure state is updated
+    setTimeout(() => calculatePrice(), 100);
   };
 
   const handleDropoffLocationSelect = (address: string, coordinates: Coordinates) => {
+    console.log('Dropoff location selected:', { address, coordinates });
     setBookingData(prev => ({ 
       ...prev, 
       dropoffLocation: address,
       dropoffCoords: coordinates 
     }));
-    calculatePrice();
+    // Delay calculation to ensure state is updated
+    setTimeout(() => calculatePrice(), 100);
   };
 
   const handleLocationSelect = async (location: Coordinates) => {
@@ -297,6 +335,17 @@ export default function BookingScreen() {
       const orderId = `ORD-${Date.now()}`;
       const trackingCode = `TRK${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
       
+      // Ensure we have a valid price
+      const calculatedPrice = priceBreakdown?.total || 0;
+      console.log('Order price details:', {
+        priceBreakdown: priceBreakdown,
+        calculatedPrice,
+        hasCoords: !!(bookingData.pickupCoords && bookingData.dropoffCoords),
+        distance: bookingData.pickupCoords && bookingData.dropoffCoords 
+          ? MapService.calculateDistance(bookingData.pickupCoords, bookingData.dropoffCoords)
+          : 'No coordinates'
+      });
+      
       const orderData = {
         id: orderId,
         trackingCode,
@@ -321,7 +370,7 @@ export default function BookingScreen() {
         estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        price: priceBreakdown?.total || 0,
+        price: Math.round(calculatedPrice), // Ensure price is rounded to whole number
         isFragile: bookingData.isFragile,
         hasInsurance: bookingData.hasInsurance,
       };
