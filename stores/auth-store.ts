@@ -418,10 +418,10 @@ export const useAuthStore = create<AuthState>()(
               // Only logout if it's a clear authentication error, not a network error
               const errorObj = error as any;
               const isNetworkError = error && (
-                (errorObj?.message && errorObj.message.includes('network')) ||
-                (errorObj?.message && errorObj.message.includes('fetch')) ||
-                (errorObj?.message && errorObj.message.includes('timeout')) ||
-                errorObj?.code === 'NETWORK_ERROR'
+                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('network')) ||
+                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('fetch')) ||
+                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('timeout')) ||
+                (typeof errorObj === 'object' && errorObj?.code === 'NETWORK_ERROR')
               );
               
               if (!isNetworkError) {
