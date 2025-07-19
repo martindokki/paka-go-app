@@ -12,8 +12,7 @@ export default function DebugAuthScreen() {
   const handleTestLogin = async () => {
     const success = await authState.login({
       email: 'test@client.com',
-      password: 'password123',
-      userType: 'client'
+      password: 'password123'
     });
     console.log('Test login result:', success);
   };
