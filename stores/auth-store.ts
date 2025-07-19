@@ -416,11 +416,12 @@ export const useAuthStore = create<AuthState>()(
             const { user, profile, error } = await AuthService.getCurrentUser();
             if (error || !user || !profile) {
               // Only logout if it's a clear authentication error, not a network error
+              const errorObj = error as any;
               const isNetworkError = error && (
-                error.message?.includes('network') ||
-                error.message?.includes('fetch') ||
-                error.message?.includes('timeout') ||
-                error.code === 'NETWORK_ERROR'
+                errorObj.message?.includes('network') ||
+                errorObj.message?.includes('fetch') ||
+                errorObj.message?.includes('timeout') ||
+                errorObj.code === 'NETWORK_ERROR'
               );
               
               if (!isNetworkError) {
