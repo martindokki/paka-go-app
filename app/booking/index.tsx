@@ -271,7 +271,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'client' as UserType) {
+    if (user.userType !== 'client') {
       Alert.alert(
         "Access Denied", 
         "Only clients can book deliveries. Please log in with a client account.",
@@ -329,10 +329,26 @@ export default function BookingScreen() {
       // Ensure price is calculated correctly before creating order
       if (!priceBreakdown && bookingData.pickupCoords && bookingData.dropoffCoords) {
         await calculatePrice();
+        // Wait a moment for the price calculation to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
       
-      // Update order data with final price
-      orderData.price = priceBreakdown?.total || 200;
+      // Get the latest price breakdown after calculation
+      const currentPriceBreakdown = priceBreakdown || (bookingData.pickupCoords && bookingData.dropoffCoords ? 
+        (() => {
+          const distance = MapService.calculateDistance(bookingData.pickupCoords!, bookingData.dropoffCoords!);
+          const options = {
+            distance,
+            isFragile: bookingData.isFragile,
+            hasInsurance: bookingData.hasInsurance,
+            isAfterHours: PricingService.isAfterHours(),
+            isWeekend: PricingService.isWeekend(),
+          };
+          return PricingService.calculatePrice(options);
+        })() : null);
+      
+      // Update order data with calculated price
+      orderData.price = currentPriceBreakdown?.total || 150; // Use minimum charge as fallback
       
       // Add to local store
       const createdOrderId = await createOrder(orderData);

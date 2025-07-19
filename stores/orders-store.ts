@@ -166,6 +166,7 @@ export const useOrdersStore = create<OrdersState>()(
               dropoff_address: orderData.deliveryAddress || orderData.to,
               parcel_description: orderData.packageDescription,
               weight_kg: orderData.weight || 1,
+              price: orderData.price || 150, // Use calculated price or minimum charge
             };
 
             const { data: parcel, error } = await ParcelService.createParcel(parcelData);
@@ -364,7 +365,7 @@ export const useOrdersStore = create<OrdersState>()(
             paymentMethod: 'mpesa' as PaymentMethod,
             paymentTerm: 'pay_now' as PaymentTerm,
             paymentStatus: 'pending' as Order['paymentStatus'],
-            price: parcel.price || 500,
+            price: parcel.price || 150, // Use minimum charge as fallback
             createdAt: parcel.created_at,
             updatedAt: parcel.created_at,
             timeline: createTimeline(parcel.status as OrderStatus),
@@ -465,7 +466,7 @@ export const useOrdersStore = create<OrdersState>()(
             paymentMethod: 'mpesa' as PaymentMethod,
             paymentTerm: 'pay_now' as PaymentTerm,
             paymentStatus: 'pending' as Order['paymentStatus'],
-            price: parcel.price || 500,
+            price: parcel.price || 150, // Use minimum charge as fallback
             createdAt: parcel.created_at,
             updatedAt: parcel.created_at,
             timeline: createTimeline(parcel.status as OrderStatus),
