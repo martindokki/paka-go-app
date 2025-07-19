@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { ParcelService } from '@/services/parcel-service';
 import { Parcel, Delivery } from '@/services/supabase';
+import { PricingService, PriceCalculationOptions } from '@/constants/pricing';
 
 export type OrderStatus = 'pending' | 'assigned' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled';
 export type PaymentMethod = 'mpesa' | 'card' | 'cash';
@@ -137,6 +138,96 @@ const createTimeline = (status: OrderStatus): Order['timeline'] => {
   return baseTimeline;
 };
 
+// Helper function to calculate price from parcel data
+const calculateParcelPrice = (parcel: any): number => {
+  try {
+    // If price is already stored in the database, use it
+    if (parcel.price && parcel.price > 0) {
+      return parcel.price;
+    }
+    
+    // Calculate distance
+    let distance = 5; // Default fallback distance in km
+    
+    // Use stored estimated distance if available
+    if (parcel.estimated_distance && parcel.estimated_distance > 0) {
+      distance = parcel.estimated_distance;
+    } else if (parcel.pickup_latitude && parcel.pickup_longitude && 
+               parcel.dropoff_latitude && parcel.dropoff_longitude) {
+      // Calculate actual distance using coordinates
+      const lat1 = parcel.pickup_latitude;
+      const lon1 = parcel.pickup_longitude;
+      const lat2 = parcel.dropoff_latitude;
+      const lon2 = parcel.dropoff_longitude;
+      
+      const R = 6371; // Earth's radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      distance = R * c;
+    } else {
+      // Estimate distance based on address patterns
+      const pickupAddress = (parcel.pickup_address || '').toLowerCase();
+      const dropoffAddress = (parcel.dropoff_address || '').toLowerCase();
+      
+      // Simple heuristic: if addresses contain different areas/neighborhoods, increase distance
+      const commonAreas = ['nairobi', 'westlands', 'karen', 'kilimani', 'lavington', 'kileleshwa', 'parklands'];
+      const pickupArea = commonAreas.find(area => pickupAddress.includes(area));
+      const dropoffArea = commonAreas.find(area => dropoffAddress.includes(area));
+      
+      if (pickupArea && dropoffArea && pickupArea !== dropoffArea) {
+        distance = 8; // Different areas, longer distance
+      } else if (pickupAddress.includes('cbd') || dropoffAddress.includes('cbd') || 
+                 pickupAddress.includes('town') || dropoffAddress.includes('town')) {
+        distance = 6; // CBD deliveries are typically medium distance
+      } else if (parcel.weight_kg && parcel.weight_kg > 5) {
+        distance = 7; // Heavier packages might be longer distance
+      }
+    }
+    
+    // Use stored fragile flag or determine from description
+    let isFragile = parcel.is_fragile || false;
+    if (!isFragile) {
+      const description = (parcel.parcel_description || '').toLowerCase();
+      isFragile = description.includes('fragile') || 
+                  description.includes('electronics') || 
+                  description.includes('glass') ||
+                  description.includes('delicate') ||
+                  description.includes('phone') ||
+                  description.includes('laptop') ||
+                  description.includes('computer');
+    }
+    
+    // Use stored insurance flag
+    const hasInsurance = parcel.has_insurance || false;
+    
+    // Check if it's after hours or weekend based on creation time
+    const createdAt = new Date(parcel.created_at);
+    const hour = createdAt.getHours();
+    const day = createdAt.getDay();
+    const isAfterHours = hour >= 19 || hour < 6; // After 7 PM or before 6 AM
+    const isWeekend = day === 0 || day === 6; // Sunday or Saturday
+    
+    const options: PriceCalculationOptions = {
+      distance,
+      isFragile,
+      hasInsurance,
+      isAfterHours,
+      isWeekend,
+    };
+    
+    const breakdown = PricingService.calculatePrice(options);
+    return breakdown.total;
+  } catch (error) {
+    console.error('Error calculating parcel price:', error);
+    // Fallback to minimum charge if calculation fails
+    return 150;
+  }
+};
+
 
 
 export const useOrdersStore = create<OrdersState>()(
@@ -166,6 +257,15 @@ export const useOrdersStore = create<OrdersState>()(
               dropoff_address: orderData.deliveryAddress || orderData.to,
               parcel_description: orderData.packageDescription,
               weight_kg: orderData.weight || 1,
+              price: orderData.price || 0,
+              pickup_latitude: orderData.pickupLatitude,
+              pickup_longitude: orderData.pickupLongitude,
+              dropoff_latitude: orderData.deliveryLatitude,
+              dropoff_longitude: orderData.deliveryLongitude,
+              estimated_distance: orderData.estimatedDistance,
+              package_type: orderData.packageType || 'documents',
+              is_fragile: orderData.isFragile || false,
+              has_insurance: orderData.hasInsurance || false,
             };
 
             const { data: parcel, error } = await ParcelService.createParcel(parcelData);
@@ -365,7 +465,7 @@ export const useOrdersStore = create<OrdersState>()(
             paymentMethod: 'mpesa' as PaymentMethod,
             paymentTerm: 'pay_now' as PaymentTerm,
             paymentStatus: 'pending' as Order['paymentStatus'],
-            price: 500,
+            price: calculateParcelPrice(parcel),
             createdAt: parcel.created_at,
             updatedAt: parcel.created_at,
             timeline: createTimeline(parcel.status as OrderStatus),
@@ -419,7 +519,7 @@ export const useOrdersStore = create<OrdersState>()(
             paymentMethod: 'mpesa' as PaymentMethod,
             paymentTerm: 'pay_now' as PaymentTerm,
             paymentStatus: 'pending' as Order['paymentStatus'],
-            price: 500,
+            price: calculateParcelPrice(delivery.parcel),
             createdAt: delivery.parcel.created_at,
             updatedAt: delivery.parcel.created_at,
             timeline: createTimeline(delivery.parcel.status as OrderStatus),
@@ -466,7 +566,7 @@ export const useOrdersStore = create<OrdersState>()(
             paymentMethod: 'mpesa' as PaymentMethod,
             paymentTerm: 'pay_now' as PaymentTerm,
             paymentStatus: 'pending' as Order['paymentStatus'],
-            price: 500,
+            price: calculateParcelPrice(parcel),
             createdAt: parcel.created_at,
             updatedAt: parcel.created_at,
             timeline: createTimeline(parcel.status as OrderStatus),

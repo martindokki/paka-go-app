@@ -9,6 +9,15 @@ export class ParcelService {
     dropoff_address: string;
     parcel_description?: string;
     weight_kg?: number;
+    price?: number;
+    pickup_latitude?: number;
+    pickup_longitude?: number;
+    dropoff_latitude?: number;
+    dropoff_longitude?: number;
+    estimated_distance?: number;
+    package_type?: string;
+    is_fragile?: boolean;
+    has_insurance?: boolean;
   }) {
     try {
       const { data, error } = await supabase

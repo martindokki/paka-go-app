@@ -322,6 +322,8 @@ export default function BookingScreen() {
         status: 'pending',
         createdAt: new Date().toISOString(),
         price: priceBreakdown?.total || 0,
+        isFragile: bookingData.isFragile,
+        hasInsurance: bookingData.hasInsurance,
       };
       
       console.log("Creating order with data:", orderData);
