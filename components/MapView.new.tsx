@@ -33,7 +33,7 @@ interface RoutePoint {
   longitude: number;
 }
 
-export interface MapViewComponentProps {
+interface MapViewProps {
   onLocationSelect?: (location: Coordinates & { address: string }) => void;
   showSearch?: boolean;
   showRoute?: boolean;
@@ -50,7 +50,7 @@ const MAPTILER_API_KEY = '79OLLNisYXbzUxnyeyMB';
 const LOCATIONIQ_API_KEY = 'pk.660be2665aac44ed24823d543f20a67a';
 const GRAPHHOPPER_API_KEY = '5ee3d9d9-8d55-40b5-b9d4-92edffb415d9';
 
-export const MapViewComponent: React.FC<MapViewComponentProps> = ({
+export const MapViewComponent: React.FC<MapViewProps> = ({
   onLocationSelect,
   showSearch = true,
   showRoute = false,
@@ -261,33 +261,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     </TouchableOpacity>
   );
 
-  // For web compatibility, show a fallback message
-  if (Platform.OS === 'web') {
-    return (
-      <View style={[styles.container, { height }]}>
-        <View style={styles.webFallback}>
-          <MapPin size={48} color={colors.primary} />
-          <Text style={styles.webFallbackTitle}>Map View</Text>
-          <Text style={styles.webFallbackText}>
-            Interactive map with location search and routing is available on mobile devices.
-          </Text>
-          {showSearch && (
-            <View style={styles.searchInputContainer}>
-              <Search size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search for a location..."
-                value={searchQuery}
-                onChangeText={handleSearchInput}
-                placeholderTextColor={colors.textMuted}
-              />
-            </View>
-          )}
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.container, { height }]}>
       {/* Search Bar */}
@@ -409,25 +382,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  webFallback: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: colors.backgroundSecondary,
-    gap: 16,
-  },
-  webFallbackTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  webFallbackText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
   searchContainer: {
     position: 'absolute',
     top: 10,
@@ -535,3 +489,5 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
 });
+
+export default MapViewComponent;

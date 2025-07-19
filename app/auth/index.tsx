@@ -114,7 +114,7 @@ export default function AuthScreen() {
         email: testEmail,
         phone: testPhone,
         password: testPassword,
-        userType: userType,
+        userType: userType as UserType,
       });
       
       if (success) {
@@ -167,7 +167,7 @@ export default function AuthScreen() {
         success = await login({
           email: formData.email.trim(),
           password: formData.password,
-          userType,
+          userType: userType as UserType,
         });
         
         // If login fails and this looks like a test account, offer to create it
@@ -194,7 +194,7 @@ export default function AuthScreen() {
           email: formData.email.trim(),
           phone: formData.phone.trim(),
           password: formData.password,
-          userType,
+          userType: userType as UserType,
         });
       }
       
