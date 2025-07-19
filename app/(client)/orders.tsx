@@ -442,7 +442,7 @@ export default function OrdersScreen() {
   );
 
   return (
-    <AuthGuard requiredUserType="client">
+    <AuthGuard requiredUserType="customer">
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundSecondary} />
         
