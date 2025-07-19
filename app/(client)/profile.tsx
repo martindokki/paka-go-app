@@ -52,11 +52,11 @@ export default function ProfileScreen() {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const userInfo = {
-    name: user?.name || "John Doe",
-    email: user?.email || "john.doe@example.com",
-    phone: user?.phone || "+254712345678",
+    name: user?.name || "User",
+    email: user?.email || "user@example.com",
+    phone: user?.phone || "+254700000000",
     totalOrders: 24,
-    memberSince: "Jan 2024",
+    memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "Jan 2024",
     rating: 4.8,
     totalSpent: 8200,
   };

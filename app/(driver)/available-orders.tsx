@@ -77,7 +77,10 @@ export default function AvailableOrdersScreen() {
   };
 
   const renderOrderCard = ({ item }: { item: any }) => (
-    <View style={styles.orderCard}>
+    <TouchableOpacity 
+      style={styles.orderCard}
+      onPress={() => router.push(`/order-details/${item.id}`)}
+    >
       <LinearGradient
         colors={[colors.background, colors.backgroundSecondary]}
         style={styles.orderGradient}
@@ -441,7 +444,7 @@ const styles = StyleSheet.create({
   instructionsContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: colors.warningLight,
+    backgroundColor: colors.warning + "20",
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
@@ -463,7 +466,7 @@ const styles = StyleSheet.create({
   paymentMethod: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.successLight,
+    backgroundColor: colors.success + "20",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,

@@ -9,12 +9,13 @@ import { useOrdersStore } from "@/stores/orders-store";
 
 export default function DriverHomeScreen() {
   const { user } = useAuthStore();
-  const { orders, getOrdersByDriver, isLoading } = useOrdersStore();
+  const { orders, getOrdersByDriver, getAllOrders, isLoading } = useOrdersStore();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
       getOrdersByDriver(user.id);
+      getAllOrders(); // Also get available orders
     }
   }, [user?.id]);
 
@@ -22,11 +23,13 @@ export default function DriverHomeScreen() {
     setRefreshing(true);
     if (user?.id) {
       await getOrdersByDriver(user.id);
+      await getAllOrders();
     }
     setRefreshing(false);
   };
 
   const driverOrders = orders.filter(order => order.driverId === user?.id);
+  const availableOrders = orders.filter(order => order.status === 'pending' && !order.driverId);
   const activeOrders = driverOrders.filter(order => 
     !['delivered', 'cancelled'].includes(order.status)
   );
@@ -38,35 +41,39 @@ export default function DriverHomeScreen() {
 
   const stats = [
     {
+      label: "Available Orders",
+      value: availableOrders.length,
+      icon: Package,
+      color: colors.warning,
+      gradient: [colors.warning, "#F59E0B"] as const,
+      onPress: () => router.push("/(driver)/available-orders")
+    },
+    {
       label: "Active Orders",
       value: activeOrders.length,
       icon: Truck,
       color: colors.primary,
-      gradient: [colors.primary, colors.primaryDark] as const
+      gradient: [colors.primary, colors.primaryDark] as const,
+      onPress: () => router.push("/(driver)/orders")
     },
     {
-      label: "Completed Today",
-      value: completedOrders.filter(order => {
+      label: "Today's Earnings",
+      value: `KSh ${completedOrders.filter(order => {
         const today = new Date().toDateString();
         return new Date(order.updatedAt).toDateString() === today;
-      }).length,
-      icon: Package,
-      color: colors.success,
-      gradient: [colors.success, "#10B981"] as const
-    },
-    {
-      label: "Total Earnings",
-      value: `KSh ${totalEarnings.toLocaleString()}`,
+      }).reduce((sum, order) => sum + order.price, 0).toLocaleString()}`,
       icon: DollarSign,
-      color: colors.warning,
-      gradient: [colors.warning, "#F59E0B"] as const
+      color: colors.success,
+      gradient: [colors.success, "#10B981"] as const,
+      onPress: () => router.push("/(driver)/earnings")
     },
     {
-      label: "Rating",
+      label: "Your Rating",
       value: `${averageRating.toFixed(1)}⭐`,
       icon: Star,
       color: colors.accent,
-      gradient: [colors.accent, colors.accentDark] as const
+      gradient: [colors.accent, colors.accentDark] as const,
+      onPress: () => router.push("/(driver)/profile")
     }
   ];
 
@@ -103,7 +110,7 @@ export default function DriverHomeScreen() {
         {/* Stats */}
         <View style={styles.statsContainer}>
           {stats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
+            <TouchableOpacity key={index} style={styles.statCard} onPress={stat.onPress}>
               <LinearGradient
                 colors={stat.gradient}
                 style={styles.statGradient}
@@ -116,7 +123,7 @@ export default function DriverHomeScreen() {
                 </Text>
                 <Text style={styles.statLabel}>{stat.label}</Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -126,14 +133,27 @@ export default function DriverHomeScreen() {
           
           <TouchableOpacity 
             style={styles.actionButton}
+            onPress={() => router.push("/(driver)/available-orders")}
+          >
+            <LinearGradient
+              colors={[colors.warning, "#F59E0B"]}
+              style={styles.actionGradient}
+            >
+              <Package size={24} color={colors.background} />
+              <Text style={styles.actionText}>Find New Orders ({availableOrders.length})</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
             onPress={() => router.push("/(driver)/orders")}
           >
             <LinearGradient
               colors={[colors.primary, colors.primaryDark]}
               style={styles.actionGradient}
             >
-              <Package size={24} color={colors.background} />
-              <Text style={styles.actionText}>View All Orders</Text>
+              <Truck size={24} color={colors.background} />
+              <Text style={styles.actionText}>My Active Orders</Text>
             </LinearGradient>
           </TouchableOpacity>
           

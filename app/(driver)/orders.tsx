@@ -130,9 +130,10 @@ export default function DriverOrdersScreen() {
     const canUpdateStatus = nextStatus && !['delivered', 'cancelled'].includes(item.status);
     
     return (
-    <TouchableOpacity style={styles.orderCard} onPress={() => {
-        // Navigate to order details or tracking
-      }}>
+    <TouchableOpacity 
+      style={styles.orderCard} 
+      onPress={() => router.push(`/order-details/${item.id}`)}
+    >
       <View style={styles.orderHeader}>
         <View style={styles.orderRoute}>
           <View style={styles.routePoint}>

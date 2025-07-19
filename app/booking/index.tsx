@@ -321,7 +321,7 @@ export default function BookingScreen() {
         estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        price: priceBreakdown?.total || 0,
+        price: priceBreakdown?.total || 500,
       };
       
       console.log("Creating order with data:", orderData);
