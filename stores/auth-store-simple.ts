@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-export type UserType = 'customer' | 'driver' | 'admin';
+export type UserType = 'client' | 'driver' | 'admin';
 
 export interface User {
   id: string;

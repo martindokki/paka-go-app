@@ -64,7 +64,7 @@ export default function TestOrdersScreen() {
           )}
         </View>
 
-        {user?.userType === 'customer' && (
+        {user?.userType === 'client' && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>My Orders ({clientOrders.length})</Text>
             {clientOrders.length === 0 ? (

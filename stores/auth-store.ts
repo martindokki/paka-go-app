@@ -21,7 +21,6 @@ export interface User {
 export interface LoginRequest {
   email: string;
   password: string;
-  userType?: UserType;
 }
 
 export interface RegisterRequest extends LoginRequest {
@@ -243,36 +242,17 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         
         try {
-          console.log('Updating profile in database:', profileData);
-          
-          // Update in database first
-          const { data, error } = await AuthService.updateProfile(user.id, {
-            full_name: profileData.name,
-            email: profileData.email,
-            phone_number: profileData.phone,
-          });
-          
-          if (error) {
-            throw new Error((error as any)?.message || 'Failed to update profile in database');
-          }
-          
-          // Update locally after successful database update
-          const updatedUser = { 
-            ...user, 
-            ...profileData, 
-            updatedAt: new Date().toISOString() 
-          };
-          
+          // Update locally
           set({
-            user: updatedUser,
+            user: { ...user, ...profileData, updatedAt: new Date().toISOString() },
             isLoading: false,
             error: null,
           });
           
-          console.log('Profile updated successfully in database and locally');
+          console.log('Profile updated successfully');
           return true;
-        } catch (error: any) {
-          const errorMsg = error.message || 'Profile update failed. Please try again.';
+        } catch (error) {
+          const errorMsg = 'Profile update failed. Please try again.';
           set({ error: errorMsg, isLoading: false });
           
           console.error('Profile update error:', error);

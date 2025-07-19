@@ -10,7 +10,6 @@ import {
   Alert,
   Dimensions,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { 
   Package, 
   MapPin, 
@@ -31,7 +30,6 @@ const { width } = Dimensions.get("window");
 
 export default function AvailableOrdersScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const router = useRouter();
   const { user } = useAuthStore();
   const { orders, getAllOrders, assignDriver, isLoading } = useOrdersStore();
 
@@ -51,10 +49,7 @@ export default function AvailableOrdersScreen() {
   );
 
   const handleAcceptOrder = async (orderId: string) => {
-    if (!user?.id) {
-      Alert.alert("Error", "Please log in to accept orders.");
-      return;
-    }
+    if (!user?.id) return;
 
     Alert.alert(
       "Accept Order",
@@ -65,47 +60,15 @@ export default function AvailableOrdersScreen() {
           text: "Accept",
           onPress: async () => {
             try {
-              console.log("Accepting order:", orderId, "for driver:", user.id);
-              
               await assignDriver(orderId, user.id, {
                 name: user.name || "Driver",
                 phone: user.phone || "",
                 rating: 4.5,
               });
-              
-              Alert.alert(
-                "Success! 🎉", 
-                "Order accepted successfully! You can now view it in your active orders.",
-                [
-                  {
-                    text: "View Order",
-                    onPress: () => router.push(`/order-details/${orderId}`)
-                  },
-                  {
-                    text: "OK",
-                    style: "default"
-                  }
-                ]
-              );
-              
-              // Refresh the orders list
-              await getAllOrders();
+              Alert.alert("Success", "Order accepted successfully!");
+              getAllOrders(); // Refresh the list
             } catch (error) {
-              console.error("Error accepting order:", error);
-              Alert.alert(
-                "Error", 
-                "Failed to accept order. Please check your connection and try again.",
-                [
-                  {
-                    text: "Retry",
-                    onPress: () => handleAcceptOrder(orderId)
-                  },
-                  {
-                    text: "Cancel",
-                    style: "cancel"
-                  }
-                ]
-              );
+              Alert.alert("Error", "Failed to accept order. Please try again.");
             }
           },
         },
@@ -114,10 +77,7 @@ export default function AvailableOrdersScreen() {
   };
 
   const renderOrderCard = ({ item }: { item: any }) => (
-    <TouchableOpacity 
-      style={styles.orderCard}
-      onPress={() => router.push(`/order-details/${item.id}`)}
-    >
+    <View style={styles.orderCard}>
       <LinearGradient
         colors={[colors.background, colors.backgroundSecondary]}
         style={styles.orderGradient}
@@ -239,7 +199,7 @@ export default function AvailableOrdersScreen() {
           </Text>
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+    </View>
   );
 
   const EmptyState = () => (
@@ -481,7 +441,7 @@ const styles = StyleSheet.create({
   instructionsContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: colors.warning + "20",
+    backgroundColor: colors.warningLight,
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
@@ -503,7 +463,7 @@ const styles = StyleSheet.create({
   paymentMethod: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.success + "20",
+    backgroundColor: colors.successLight,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,

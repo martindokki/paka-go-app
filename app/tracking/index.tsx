@@ -30,12 +30,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
 import { useOrdersStore, OrderStatus } from "@/stores/orders-store";
 import { MapViewComponent } from "@/components/MapView";
-// import { MapService, Coordinates } from "@/services/map-service";
-
-type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
+import { MapService, Coordinates } from "@/services/map-service";
 
 export default function TrackingScreen() {
   const { orderId, trackingCode } = useLocalSearchParams<{ orderId?: string; trackingCode?: string }>();
@@ -82,12 +77,13 @@ export default function TrackingScreen() {
     if (!order) return;
     
     try {
-      // Mock coordinates for now
-      const pickup = { latitude: -1.2921, longitude: 36.8219 }; // Nairobi
-      const delivery = { latitude: -1.2841, longitude: 36.8155 }; // Nairobi CBD
+      const [pickup, delivery] = await Promise.all([
+        MapService.geocodeAddress(order.from),
+        MapService.geocodeAddress(order.to)
+      ]);
       
-      setPickupCoords(pickup);
-      setDeliveryCoords(delivery);
+      if (pickup) setPickupCoords(pickup as any);
+      if (delivery) setDeliveryCoords(delivery as any);
     } catch (error) {
       console.error('Geocoding error:', error);
     }

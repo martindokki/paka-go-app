@@ -32,7 +32,9 @@ import {
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "@/constants/colors";
-import { useAuthStore, UserType } from "@/stores/auth-store";
+import { useAuthStore } from "@/stores/auth-store";
+
+type UserType = 'client' | 'driver' | 'admin';
 
 interface LoginRequest {
   email: string;
@@ -51,7 +53,7 @@ type AuthMode = "login" | "register";
 
 export default function AuthScreen() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
-  const [userType, setUserType] = useState<UserType>("customer");
+  const [userType, setUserType] = useState<UserType>("client");
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
   const [formData, setFormData] = useState({
@@ -138,7 +140,7 @@ export default function AuthScreen() {
         
         // Navigate based on user type
         switch (userType) {
-          case "customer":
+          case "client":
             router.replace("/(client)");
             break;
           case "driver":
@@ -166,39 +168,39 @@ export default function AuthScreen() {
         <TouchableOpacity
           style={[
             styles.userTypeButton,
-            userType === "customer" && styles.userTypeButtonActive,
+            userType === "client" && styles.userTypeButtonActive,
           ]}
-          onPress={() => setUserType("customer")}
+          onPress={() => setUserType("client")}
         >
           <LinearGradient
-            colors={userType === "customer" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
+            colors={userType === "client" ? [colors.primary, colors.primaryDark] : ["transparent", "transparent"]}
             style={styles.userTypeGradient}
           >
             <View style={styles.userTypeIconContainer}>
               <View style={[
                 styles.userTypeIcon,
-                userType === "customer" && styles.userTypeIconActive,
+                userType === "client" && styles.userTypeIconActive,
               ]}>
                 <Send
                   size={32}
-                  color={userType === "customer" ? colors.background : colors.primary}
+                  color={userType === "client" ? colors.background : colors.primary}
                 />
               </View>
               <View style={styles.sparkleContainer}>
-                <Sparkles size={16} color={userType === "customer" ? colors.background : colors.primary} />
+                <Sparkles size={16} color={userType === "client" ? colors.background : colors.primary} />
               </View>
             </View>
             <Text
               style={[
                 styles.userTypeText,
-                userType === "customer" && styles.userTypeTextActive,
+                userType === "client" && styles.userTypeTextActive,
               ]}
             >
               Client
             </Text>
             <Text style={[
               styles.userTypeSubtext,
-              userType === "customer" && styles.userTypeSubtextActive,
+              userType === "client" && styles.userTypeSubtextActive,
             ]}>
               Send packages anywhere, anytime! 📦✨
             </Text>

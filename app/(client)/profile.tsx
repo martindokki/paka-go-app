@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -32,7 +32,6 @@ import {
 } from "lucide-react-native";
 import colors, { safeColors } from "@/constants/colors";
 import { useAuthStore } from "@/stores/auth-store-simple";
-import { useOrdersStore } from "@/stores/orders-store";
 import { SettingsSection, SettingsItem } from "@/components/settings/SettingsSection";
 import { PrivacyPolicyModal } from "@/components/settings/PrivacyPolicyModal";
 import { TermsOfServiceModal } from "@/components/settings/TermsOfServiceModal";
@@ -52,41 +51,14 @@ export default function ProfileScreen() {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-  const { orders, getOrdersByClient } = useOrdersStore();
-  const [userStats, setUserStats] = useState({
-    totalOrders: 0,
-    totalSpent: 0,
-    rating: 4.8
-  });
-
-  useEffect(() => {
-    if (user?.id) {
-      getOrdersByClient(user.id);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (user?.id) {
-      const userOrders = orders.filter(order => order.clientId === user.id);
-      const completedOrders = userOrders.filter(order => order.status === 'delivered');
-      const totalSpent = completedOrders.reduce((sum, order) => sum + order.price, 0);
-      
-      setUserStats({
-        totalOrders: userOrders.length,
-        totalSpent,
-        rating: 4.8 // This would come from backend ratings
-      });
-    }
-  }, [orders, user?.id]);
-
   const userInfo = {
-    name: user?.name || "User",
-    email: user?.email || "user@example.com",
-    phone: user?.phone || "+254700000000",
-    totalOrders: userStats.totalOrders,
-    memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "Jan 2024",
-    rating: userStats.rating,
-    totalSpent: userStats.totalSpent,
+    name: user?.name || "John Doe",
+    email: user?.email || "john.doe@example.com",
+    phone: user?.phone || "+254712345678",
+    totalOrders: 24,
+    memberSince: "Jan 2024",
+    rating: 4.8,
+    totalSpent: 8200,
   };
 
   const menuItems = [

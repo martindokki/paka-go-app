@@ -34,7 +34,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import colors, { safeColors } from "@/constants/colors";
 import { useOrdersStore, PackageType, PaymentMethod, PaymentTerm } from "@/stores/orders-store";
-import { useAuthStore, UserType } from "@/stores/auth-store-simple";
+import { useAuthStore } from "@/stores/auth-store";
 import { AuthGuard } from "@/components/AuthGuard";
 
 import { MapViewComponent, MapViewComponentProps } from "@/components/MapView";
@@ -42,7 +42,7 @@ import { useMapStore } from "@/stores/map-store";
 import { MapService, Coordinates } from "@/services/map-service";
 import { LocationSearchModal } from "@/components/LocationSearchModal";
 import { PriceBreakdownModal } from "@/components/PriceBreakdownModal";
-import { PricingService, PriceCalculationOptions, PriceBreakdown, PRICING_CONFIG } from "@/constants/pricing";
+import { PricingService, PriceCalculationOptions, PriceBreakdown } from "@/constants/pricing";
 
 export default function BookingScreen() {
   const { user, isAuthenticated } = useAuthStore();
@@ -271,10 +271,10 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (user.userType !== 'customer') {
+    if (user.userType !== 'client') {
       Alert.alert(
         "Access Denied", 
-        "Only customers can book deliveries. Please log in with a customer account.",
+        "Only clients can book deliveries. Please log in with a client account.",
         [
           {
             text: "OK",
@@ -321,37 +321,13 @@ export default function BookingScreen() {
         estimatedDuration: estimatedTime ? parseInt(estimatedTime.split('-')[0]) : undefined,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        price: priceBreakdown?.total || 150, // Use minimum charge as fallback
+        price: priceBreakdown?.total || 0,
       };
       
       console.log("Creating order with data:", orderData);
       
-      // Ensure price is calculated correctly before creating order
-      if (!priceBreakdown && bookingData.pickupCoords && bookingData.dropoffCoords) {
-        await calculatePrice();
-        // Wait a moment for the price calculation to complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      
-      // Get the latest price breakdown after calculation
-      const currentPriceBreakdown = priceBreakdown || (bookingData.pickupCoords && bookingData.dropoffCoords ? 
-        (() => {
-          const distance = MapService.calculateDistance(bookingData.pickupCoords!, bookingData.dropoffCoords!);
-          const options = {
-            distance,
-            isFragile: bookingData.isFragile,
-            hasInsurance: bookingData.hasInsurance,
-            isAfterHours: PricingService.isAfterHours(),
-            isWeekend: PricingService.isWeekend(),
-          };
-          return PricingService.calculatePrice(options);
-        })() : null);
-      
-      // Update order data with calculated price
-      orderData.price = currentPriceBreakdown?.total || 150; // Use minimum charge as fallback
-      
       // Add to local store
-      const createdOrderId = await createOrder(orderData);
+      const createdOrderId = createOrder(orderData);
       
       console.log("Order created successfully:", { createdOrderId, trackingCode });
       
@@ -435,7 +411,7 @@ export default function BookingScreen() {
   };
 
   return (
-    <AuthGuard requiredUserType="customer">
+    <AuthGuard requiredUserType="client">
       <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>

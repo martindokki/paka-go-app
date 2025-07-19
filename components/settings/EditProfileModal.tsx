@@ -60,14 +60,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setIsLoading(true);
     
     try {
-      console.log('Updating profile with data:', formData);
-      const success = await updateProfile({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-      });
-      
-      console.log('Profile update result:', success);
+      const success = await updateProfile(formData);
       
       if (success) {
         showAlert('Success', 'Profile updated successfully!', [
@@ -80,7 +73,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         showAlert('Error', 'Failed to update profile. Please try again.');
       }
     } catch (error) {
-      console.error('Profile update error:', error);
       showAlert('Error', 'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -94,20 +86,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       email: user?.email || '',
       phone: user?.phone || '',
     });
-    setIsLoading(false);
     onClose();
   };
-
-  // Update form data when user changes
-  React.useEffect(() => {
-    if (user && visible) {
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-      });
-    }
-  }, [user, visible]);
 
   return (
     <Modal
