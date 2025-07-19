@@ -238,8 +238,10 @@ export default function TestBackendScreen() {
       const { data: assignData, error: assignError } = await ParcelService.assignDriverToParcel(parcelId, authData.user.id);
       
       if (assignError) {
-        const errorMessage = assignError && typeof assignError === 'object' && assignError !== null && 'message' in assignError 
-          ? (assignError as any).message 
+        const errorMessage = assignError instanceof Error 
+          ? assignError.message 
+          : typeof assignError === 'string' 
+          ? assignError 
           : 'Unknown error';
         addResult(`❌ Driver assignment failed: ${errorMessage}`);
         return false;
@@ -288,8 +290,10 @@ export default function TestBackendScreen() {
       const { data: updateData, error: updateError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'picked');
       
       if (updateError) {
-        const errorMessage = updateError && typeof updateError === 'object' && updateError !== null && 'message' in updateError 
-          ? (updateError as any).message 
+        const errorMessage = updateError instanceof Error 
+          ? updateError.message 
+          : typeof updateError === 'string' 
+          ? updateError 
           : 'Unknown error';
         addResult(`❌ Delivery status update failed: ${errorMessage}`);
         return false;
@@ -301,8 +305,10 @@ export default function TestBackendScreen() {
       const { data: deliveredData, error: deliveredError } = await ParcelService.updateDeliveryStatus(deliveryData.id, 'delivered');
       
       if (deliveredError) {
-        const errorMessage = deliveredError && typeof deliveredError === 'object' && deliveredError !== null && 'message' in deliveredError 
-          ? (deliveredError as any).message 
+        const errorMessage = deliveredError instanceof Error 
+          ? deliveredError.message 
+          : typeof deliveredError === 'string' 
+          ? deliveredError 
           : 'Unknown error';
         addResult(`❌ Delivery completion failed: ${errorMessage}`);
         return false;
@@ -343,8 +349,10 @@ export default function TestBackendScreen() {
       const { data: drivers, error: driversError } = await ParcelService.getDrivers();
       
       if (driversError) {
-        const errorMessage = driversError && typeof driversError === 'object' && driversError !== null && 'message' in driversError 
-          ? (driversError as any).message 
+        const errorMessage = driversError instanceof Error 
+          ? driversError.message 
+          : typeof driversError === 'string' 
+          ? driversError 
           : 'Unknown error';
         addResult(`❌ Admin: Failed to fetch drivers: ${errorMessage}`);
         return false;

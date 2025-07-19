@@ -29,40 +29,54 @@ export class AuthService {
 
       console.log('Auth user created successfully:', authData.user.id);
 
-      // Create user profile in public.users table
+      // The user profile should be automatically created by the database trigger
+      // Let's wait a moment and then fetch the profile
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Get the created user profile
       const { data: profileData, error: profileError } = await supabase
         .from('users')
-        .insert({
-          id: authData.user.id,
-          full_name: fullName,
-          email: email,
-          phone_number: phoneNumber || '',
-          role: role,
-          status: 'active'
-        })
-        .select()
+        .select('*')
+        .eq('id', authData.user.id)
         .single();
 
-      if (profileError) {
-        console.error('Error creating user profile:', profileError);
-        // Profile creation failed - this might be due to RLS policies or missing table
-        // For now, we'll continue with auth user only and create profile later
-        console.warn('Profile creation failed, continuing with auth user only');
+      if (profileError || !profileData) {
+        console.error('Error fetching user profile after creation:', profileError);
         
-        // Return success with auth user data
-        return { 
-          user: authData.user, 
-          profile: {
+        // Try to create the profile manually if the trigger didn't work
+        const { data: manualProfileData, error: manualError } = await supabase
+          .from('users')
+          .insert({
             id: authData.user.id,
             full_name: fullName,
             email: email,
             phone_number: phoneNumber || '',
             role: role,
-            status: 'active',
-            created_at: new Date().toISOString()
-          }, 
-          error: null 
-        };
+            status: 'active'
+          })
+          .select()
+          .single();
+          
+        if (manualError) {
+          console.error('Manual profile creation also failed:', manualError);
+          // Return success with auth user data only
+          return { 
+            user: authData.user, 
+            profile: {
+              id: authData.user.id,
+              full_name: fullName,
+              email: email,
+              phone_number: phoneNumber || '',
+              role: role,
+              status: 'active',
+              created_at: new Date().toISOString()
+            }, 
+            error: null 
+          };
+        }
+        
+        console.log('Manual user profile created successfully:', manualProfileData);
+        return { user: authData.user, profile: manualProfileData, error: null };
       }
 
       console.log('User profile created successfully:', profileData);

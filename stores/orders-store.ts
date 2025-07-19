@@ -286,8 +286,8 @@ export const useOrdersStore = create<OrdersState>()(
           if (error || !parcel) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error !== null && 'message' in error
-              ? String((error as any).message)
+              : typeof error === 'string' 
+              ? error 
               : 'Failed to create parcel';
             throw new Error(errorMessage);
           }
@@ -344,8 +344,8 @@ export const useOrdersStore = create<OrdersState>()(
           if (error) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error && 'message' in error
-              ? String((error as any).message)
+              : typeof error === 'string' 
+              ? error 
               : 'Failed to update status';
             throw new Error(errorMessage);
           }
@@ -368,8 +368,8 @@ export const useOrdersStore = create<OrdersState>()(
           console.error("Error updating order status:", error);
           const errorMessage = error instanceof Error 
             ? error.message 
-            : typeof error === 'object' && error && 'message' in error
-            ? String((error as any).message)
+            : typeof error === 'string' 
+            ? error 
             : 'Failed to update order status';
           set({ error: errorMessage, isLoading: false });
         }
@@ -397,8 +397,8 @@ export const useOrdersStore = create<OrdersState>()(
           if (error) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error && 'message' in error
-              ? String((error as any).message)
+              : typeof error === 'string' 
+              ? error 
               : 'Failed to assign driver';
             throw new Error(errorMessage);
           }
@@ -420,8 +420,10 @@ export const useOrdersStore = create<OrdersState>()(
           }));
         } catch (error: any) {
           console.error("Error assigning driver:", error);
-          const errorMessage = error && typeof error === 'object' && 'message' in error 
-            ? (error as any).message 
+          const errorMessage = error instanceof Error 
+            ? error.message 
+            : typeof error === 'string' 
+            ? error 
             : 'Failed to assign driver';
           set({ error: errorMessage, isLoading: false });
         }
@@ -433,8 +435,10 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: parcels, error } = await ParcelService.getUserParcels(clientId);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
+            const errorMessage = error instanceof Error 
+              ? error.message 
+              : typeof error === 'string' 
+              ? error 
               : 'Failed to fetch user parcels';
             throw new Error(errorMessage);
           }
@@ -468,8 +472,10 @@ export const useOrdersStore = create<OrdersState>()(
           set({ orders, isLoading: false });
         } catch (error: any) {
           console.error("Error fetching user orders:", error);
-          const errorMessage = error && typeof error === 'object' && 'message' in error 
-            ? (error as any).message 
+          const errorMessage = error instanceof Error 
+            ? error.message 
+            : typeof error === 'string' 
+            ? error 
             : 'Failed to fetch user orders';
           set({ error: errorMessage, isLoading: false });
         }
@@ -481,8 +487,10 @@ export const useOrdersStore = create<OrdersState>()(
           const { data: deliveries, error } = await ParcelService.getDriverDeliveries(driverId);
           
           if (error) {
-            const errorMessage = error && typeof error === 'object' && 'message' in error 
-              ? (error as any).message 
+            const errorMessage = error instanceof Error 
+              ? error.message 
+              : typeof error === 'string' 
+              ? error 
               : 'Failed to fetch driver deliveries';
             throw new Error(errorMessage);
           }
@@ -513,8 +521,10 @@ export const useOrdersStore = create<OrdersState>()(
           set({ orders, isLoading: false });
         } catch (error: any) {
           console.error("Error fetching driver orders:", error);
-          const errorMessage = error && typeof error === 'object' && 'message' in error 
-            ? (error as any).message 
+          const errorMessage = error instanceof Error 
+            ? error.message 
+            : typeof error === 'string' 
+            ? error 
             : 'Failed to fetch driver orders';
           set({ error: errorMessage, isLoading: false });
         }

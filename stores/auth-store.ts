@@ -73,8 +73,8 @@ export const useAuthStore = create<AuthState>()(
           if (error || !authUser) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error !== null && 'message' in error
-              ? String((error as any).message)
+              : typeof error === 'string' 
+              ? error 
               : 'Login failed';
             throw new Error(errorMessage);
           }
@@ -142,8 +142,8 @@ export const useAuthStore = create<AuthState>()(
           if (error || !authUser) {
             const errorMessage = error instanceof Error 
               ? error.message 
-              : typeof error === 'object' && error !== null && 'message' in error
-              ? String((error as any).message)
+              : typeof error === 'string' 
+              ? error 
               : 'Registration failed';
             throw new Error(`Authentication failed: ${errorMessage}`);
           }
