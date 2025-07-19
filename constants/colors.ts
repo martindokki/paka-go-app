@@ -120,6 +120,7 @@ const Colors = {
     warningLight: "#FEF3C7",
     error: "#EF4444",
     errorLight: "#FEE2E2",
+    errorDark: "#DC2626",
     info: accentBlue,
     tint: primaryOrange,
     tabIconDefault: "#6B7280",
