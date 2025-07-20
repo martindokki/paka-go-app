@@ -15,20 +15,6 @@ import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import axios from 'axios';
 import colors from '@/constants/colors';
 
-// Platform-specific imports
-let MapView: any = null;
-let Marker: any = null;
-let Polyline: any = null;
-let UrlTile: any = null;
-
-if (Platform.OS !== 'web') {
-  const maps = require('react-native-maps');
-  MapView = maps.default;
-  Marker = maps.Marker;
-  Polyline = maps.Polyline;
-  UrlTile = maps.UrlTile;
-}
-
 interface Coordinates {
   latitude: number;
   longitude: number;
@@ -82,8 +68,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   
-  const mapRef = useRef<any>(null);
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get user's current location
   useEffect(() => {
@@ -94,6 +79,31 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     try {
       setIsLoadingLocation(true);
       
+      if (Platform.OS === 'web') {
+        // Use web geolocation API
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const coords = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              };
+              setCurrentLocation(coords);
+              setIsLoadingLocation(false);
+            },
+            (error) => {
+              console.error('Web geolocation error:', error);
+              Alert.alert('Error', 'Failed to get your current location');
+              setIsLoadingLocation(false);
+            }
+          );
+        } else {
+          Alert.alert('Error', 'Geolocation is not supported by this browser');
+          setIsLoadingLocation(false);
+        }
+        return;
+      }
+
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -113,15 +123,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
       };
 
       setCurrentLocation(coords);
-      
-      // Animate to current location
-      if (mapRef.current) {
-        mapRef.current.animateToRegion({
-          ...coords,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }, 1000);
-      }
     } catch (error) {
       console.error('Error getting current location:', error);
       Alert.alert('Error', 'Failed to get your current location');
@@ -188,15 +189,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     setSearchQuery(result.display_name);
     setShowSearchResults(false);
 
-    // Animate to selected location
-    if (mapRef.current) {
-      mapRef.current.animateToRegion({
-        ...coords,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      }, 1000);
-    }
-
     // Call the callback if provided
     if (onLocationSelect) {
       onLocationSelect({
@@ -236,14 +228,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         }));
         
         setRouteCoordinates(coordinates);
-        
-        // Fit the route in view
-        if (mapRef.current && coordinates.length > 0) {
-          mapRef.current.fitToCoordinates(coordinates, {
-            edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-            animated: true,
-          });
-        }
       }
     } catch (error) {
       console.error('Route error:', error);
@@ -274,54 +258,74 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     </TouchableOpacity>
   );
 
-  // For web compatibility, show a fallback message
-  if (Platform.OS === 'web' || !MapView) {
-    return (
-      <View style={[styles.container, { height }]}>
-        <View style={styles.webFallback}>
+  // Native Map Component - only rendered on native platforms
+  const renderNativeMap = () => {
+    if (Platform.OS === 'web') {
+      return null;
+    }
+
+    // Use require with try-catch to avoid bundling issues
+    try {
+      const MapView = require('react-native-maps').default;
+      const { Marker, Polyline, UrlTile } = require('react-native-maps');
+
+      return (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            ...NAIROBI_LOCATION,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          showsUserLocation={true}
+          showsMyLocationButton={false}
+          showsCompass={true}
+          showsScale={true}
+        >
+          <UrlTile
+            urlTemplate={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`}
+            maximumZ={19}
+            flipY={false}
+          />
+
+          {currentLocation && (
+            <Marker
+              coordinate={currentLocation}
+              title="Your Location"
+              description="You are here"
+              pinColor={colors.primary}
+            />
+          )}
+
+          {destination && (
+            <Marker
+              coordinate={destination}
+              title="Destination"
+              description="Selected location"
+              pinColor={colors.accent}
+            />
+          )}
+
+          {routeCoordinates.length > 0 && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeColor={colors.primary}
+              strokeWidth={4}
+              lineDashPattern={[1]}
+            />
+          )}
+        </MapView>
+      );
+    } catch (error) {
+      console.warn('react-native-maps not available:', error);
+      return (
+        <View style={styles.mapPlaceholder}>
           <MapPin size={48} color={colors.primary} />
-          <Text style={styles.webFallbackTitle}>Map View</Text>
-          <Text style={styles.webFallbackText}>
-            Interactive map with location search and routing is available on mobile devices.
-          </Text>
-          {showSearch && (
-            <View style={styles.searchInputContainer}>
-              <Search size={20} color={colors.textMuted} />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search for a location..."
-                value={searchQuery}
-                onChangeText={handleSearchInput}
-                placeholderTextColor={colors.textMuted}
-              />
-              {(searchQuery || isSearching) && (
-                <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-                  {isSearching ? (
-                    <ActivityIndicator size="small" color={colors.primary} />
-                  ) : (
-                    <X size={20} color={colors.textMuted} />
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          
-          {/* Search Results for Web */}
-          {showSearchResults && searchResults.length > 0 && (
-            <View style={styles.searchResults}>
-              <FlatList
-                data={searchResults}
-                renderItem={renderSearchResult}
-                keyExtractor={(item) => item.place_id}
-                style={styles.searchResultsList}
-                keyboardShouldPersistTaps="handled"
-              />
-            </View>
-          )}
+          <Text style={styles.mapPlaceholderText}>Map not available</Text>
         </View>
-      </View>
-    );
-  }
+      );
+    }
+  };
 
   return (
     <View style={[styles.container, { height }]}>
@@ -363,57 +367,32 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         </View>
       )}
 
-      {/* Map */}
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={{
-          ...NAIROBI_LOCATION,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        showsUserLocation={true}
-        showsMyLocationButton={false}
-        showsCompass={true}
-        showsScale={true}
-      >
-        {/* MapTiler Tiles */}
-        <UrlTile
-          urlTemplate={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`}
-          maximumZ={19}
-          flipY={false}
-        />
-
-        {/* Current Location Marker */}
-        {currentLocation && (
-          <Marker
-            coordinate={currentLocation}
-            title="Your Location"
-            description="You are here"
-            pinColor={colors.primary}
-          />
-        )}
-
-        {/* Destination Marker */}
-        {destination && (
-          <Marker
-            coordinate={destination}
-            title="Destination"
-            description="Selected location"
-            pinColor={colors.accent}
-          />
-        )}
-
-        {/* Route Polyline */}
-        {routeCoordinates.length > 0 && (
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeColor={colors.primary}
-            strokeWidth={4}
-            lineDashPattern={[1]}
-          />
-        )}
-      </MapView>
+      {/* Map or Web Fallback */}
+      {Platform.OS === 'web' ? (
+        <View style={styles.webFallback}>
+          <MapPin size={48} color={colors.primary} />
+          <Text style={styles.webFallbackTitle}>Map View</Text>
+          <Text style={styles.webFallbackText}>
+            Interactive map with location search and routing is available on mobile devices.
+          </Text>
+          {currentLocation && (
+            <View style={styles.locationInfo}>
+              <Text style={styles.locationInfoText}>
+                Current Location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
+              </Text>
+            </View>
+          )}
+          {destination && (
+            <View style={styles.locationInfo}>
+              <Text style={styles.locationInfoText}>
+                Destination: {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
+              </Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        renderNativeMap()
+      )}
 
       {/* Loading Indicators */}
       {(isLoadingLocation || isLoadingRoute) && (
@@ -454,7 +433,7 @@ const styles = StyleSheet.create({
   },
   webFallbackTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     color: colors.text,
   },
   webFallbackText: {
@@ -462,6 +441,17 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  locationInfo: {
+    backgroundColor: colors.background,
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  locationInfoText: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '500' as const,
   },
   searchContainer: {
     position: 'absolute',
@@ -488,7 +478,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: '500' as const,
   },
   clearButton: {
     padding: 4,
@@ -519,10 +509,22 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: colors.text,
-    fontWeight: '500',
+    fontWeight: '500' as const,
   },
   map: {
     flex: 1,
+  },
+  mapPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.backgroundSecondary,
+    gap: 16,
+  },
+  mapPlaceholderText: {
+    fontSize: 16,
+    color: colors.textMuted,
+    fontWeight: '500' as const,
   },
   loadingOverlay: {
     position: 'absolute',
@@ -550,7 +552,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   locationButton: {
     position: 'absolute',
