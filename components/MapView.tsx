@@ -10,11 +10,24 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import MapView, { Marker, Polyline, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import axios from 'axios';
 import colors from '@/constants/colors';
+
+// Platform-specific imports
+let MapView: any = null;
+let Marker: any = null;
+let Polyline: any = null;
+let UrlTile: any = null;
+
+if (Platform.OS !== 'web') {
+  const maps = require('react-native-maps');
+  MapView = maps.default;
+  Marker = maps.Marker;
+  Polyline = maps.Polyline;
+  UrlTile = maps.UrlTile;
+}
 
 interface Coordinates {
   latitude: number;
@@ -69,7 +82,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Get user's current location
@@ -262,7 +275,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   );
 
   // For web compatibility, show a fallback message
-  if (Platform.OS === 'web') {
+  if (Platform.OS === 'web' || !MapView) {
     return (
       <View style={[styles.container, { height }]}>
         <View style={styles.webFallback}>
@@ -280,6 +293,28 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
                 value={searchQuery}
                 onChangeText={handleSearchInput}
                 placeholderTextColor={colors.textMuted}
+              />
+              {(searchQuery || isSearching) && (
+                <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+                  {isSearching ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <X size={20} color={colors.textMuted} />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          
+          {/* Search Results for Web */}
+          {showSearchResults && searchResults.length > 0 && (
+            <View style={styles.searchResults}>
+              <FlatList
+                data={searchResults}
+                renderItem={renderSearchResult}
+                keyExtractor={(item) => item.place_id}
+                style={styles.searchResultsList}
+                keyboardShouldPersistTaps="handled"
               />
             </View>
           )}
