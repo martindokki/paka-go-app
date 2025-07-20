@@ -42,7 +42,7 @@ interface AuthState {
   // Actions
   login: (credentials: LoginRequest) => Promise<boolean>;
   register: (userData: RegisterRequest) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: (isUserInitiated?: boolean) => Promise<void>;
   clearError: () => void;
   updateProfile: (profileData: Partial<User>) => Promise<boolean>;
   deleteAccount: () => Promise<boolean>;
@@ -243,11 +243,9 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       
-      logout: async (): Promise<void> => {
+      logout: async (isUserInitiated: boolean = false): Promise<void> => {
         // Only set loading state if this is a user-initiated logout
         // For automatic logouts (session expiry, auth errors), don't show loading
-        const isUserInitiated = arguments.length > 0 && arguments[0] === true;
-        
         if (isUserInitiated) {
           set({ isLoading: true });
         }
