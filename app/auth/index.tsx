@@ -56,6 +56,7 @@ export default function AuthScreen() {
   const [userType, setUserType] = useState<UserType>("customer");
   const [showPassword, setShowPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // Local button loading state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -65,6 +66,9 @@ export default function AuthScreen() {
 
   // Use real auth store
   const { login, register, isLoading: authLoading, error: authError, clearError } = useAuthStore();
+  
+  // Use local submitting state for button display, but fall back to auth loading if needed
+  const isButtonLoading = isSubmitting || authLoading;
 
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
@@ -142,25 +146,28 @@ export default function AuthScreen() {
   };
 
   const handleAuth = async () => {
+    // Set local loading state immediately when user clicks
+    setIsSubmitting(true);
+    
     // Clear previous errors
     clearError();
     setValidationErrors({});
     
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
-
-    // Admin access only on web
-    if (userType === "admin" && Platform.OS !== "web") {
-      Alert.alert(
-        "Access Restricted", 
-        "Admin dashboard is only available on web. Please use a web browser to access admin features."
-      );
-      return;
-    }
-    
     try {
+      // Validate form
+      if (!validateForm()) {
+        return;
+      }
+
+      // Admin access only on web
+      if (userType === "admin" && Platform.OS !== "web") {
+        Alert.alert(
+          "Access Restricted", 
+          "Admin dashboard is only available on web. Please use a web browser to access admin features."
+        );
+        return;
+      }
+      
       let success = false;
       
       if (authMode === "login") {
@@ -220,6 +227,9 @@ export default function AuthScreen() {
         "Authentication Error", 
         "Something went wrong. Please try again."
       );
+    } finally {
+      // Always clear local loading state
+      setIsSubmitting(false);
     }
   };
 
@@ -424,6 +434,7 @@ export default function AuthScreen() {
                     setAuthMode("login");
                     clearError();
                     setValidationErrors({});
+                    setIsSubmitting(false); // Reset local loading state
                   }}
                 >
                   <Text
@@ -631,16 +642,16 @@ export default function AuthScreen() {
                 )}
 
                 <TouchableOpacity 
-                  style={[styles.authButton, authLoading && styles.authButtonLoading]} 
+                  style={[styles.authButton, isButtonLoading && styles.authButtonLoading]} 
                   onPress={handleAuth}
-                  disabled={authLoading}
+                  disabled={isButtonLoading}
                 >
                   <LinearGradient
                     colors={[colors.background, "#FFFFFF"]}
                     style={styles.authButtonGradient}
                   >
                     <View style={styles.authButtonContent}>
-                      {authLoading ? (
+                      {isButtonLoading ? (
                         <Text style={styles.authButtonText}>
                           {authMode === "login" ? "Signing In... ✨" : "Creating Account... 🎉"}
                         </Text>

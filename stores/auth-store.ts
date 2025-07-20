@@ -244,7 +244,13 @@ export const useAuthStore = create<AuthState>()(
       },
       
       logout: async (): Promise<void> => {
-        set({ isLoading: true });
+        // Only set loading state if this is a user-initiated logout
+        // For automatic logouts (session expiry, auth errors), don't show loading
+        const isUserInitiated = arguments.length > 0 && arguments[0] === true;
+        
+        if (isUserInitiated) {
+          set({ isLoading: true });
+        }
         
         try {
           await AuthService.signOut();
@@ -374,12 +380,15 @@ export const useAuthStore = create<AuthState>()(
           // Extend session expiry
           const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
 
+          // Don't set loading state during session refresh to avoid UI issues
           set({
             user: userData,
             token: 'authenticated',
             isAuthenticated: true,
             sessionExpiry,
             error: null,
+            // Preserve current loading state
+            isLoading: get().isLoading,
           });
 
           console.log('Session refreshed successfully');
@@ -411,6 +420,7 @@ export const useAuthStore = create<AuthState>()(
         }
 
         // Verify with backend if user exists (but be resilient to network errors)
+        // IMPORTANT: Don't set loading state during auth status checks to avoid UI issues
         if (state.isAuthenticated && state.user) {
           try {
             const { user, profile, error } = await AuthService.getCurrentUser();
@@ -507,12 +517,15 @@ export const useAuthStore = create<AuthState>()(
         if (state) {
           console.log('Rehydrated user:', state.user?.email, 'isAuthenticated:', state.isAuthenticated);
           
+          // Ensure loading state is false after rehydration
+          state.setLoading(false);
+          
           // Check if session has expired
           if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
             console.log('Session expired during rehydration, clearing auth state');
             state.logout();
           } else {
-            // Check auth status with backend
+            // Check auth status with backend (without setting loading state)
             state.checkAuthStatus();
           }
           
@@ -520,7 +533,9 @@ export const useAuthStore = create<AuthState>()(
         } else {
           // Even if rehydration fails, mark as initialized to prevent infinite loading
           console.log('Auth store rehydration failed, marking as initialized');
-          useAuthStore.getState().setInitialized(true);
+          const storeState = useAuthStore.getState();
+          storeState.setLoading(false);
+          storeState.setInitialized(true);
         }
       },
     }
@@ -531,6 +546,7 @@ export const useAuthStore = create<AuthState>()(
 setTimeout(() => {
   const state = useAuthStore.getState();
   if (!state.isInitialized) {
+    state.setLoading(false); // Ensure loading is false
     state.setInitialized(true);
     console.log('Auth store initialized via timeout fallback');
   }
@@ -544,8 +560,13 @@ if (typeof window !== 'undefined') {
     console.log('Auth store state on web:', { 
       isAuthenticated: state.isAuthenticated, 
       user: state.user?.email,
-      isInitialized: state.isInitialized 
+      isInitialized: state.isInitialized,
+      isLoading: state.isLoading
     });
+    // Ensure loading is false on initialization
+    if (state.isLoading && !state.isAuthenticated) {
+      state.setLoading(false);
+    }
   }, 100);
 } else {
   // Mobile initialization
@@ -554,7 +575,12 @@ if (typeof window !== 'undefined') {
     console.log('Auth store state on mobile:', { 
       isAuthenticated: state.isAuthenticated, 
       user: state.user?.email,
-      isInitialized: state.isInitialized 
+      isInitialized: state.isInitialized,
+      isLoading: state.isLoading
     });
+    // Ensure loading is false on initialization
+    if (state.isLoading && !state.isAuthenticated) {
+      state.setLoading(false);
+    }
   }, 100);
 }

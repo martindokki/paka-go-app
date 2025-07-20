@@ -20,6 +20,7 @@ export const useAppInitialization = () => {
             await logout();
           } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
             console.log('User signed in or token refreshed, checking auth status');
+            // Don't trigger loading states during automatic auth checks
             await checkAuthStatus();
           }
         });
