@@ -79,13 +79,13 @@ export default function BookingScreen() {
     calculatePrice();
   }, []);
 
-  // Minimal auth check - only on mount and when needed
+  // Skip auth checks in booking screen to prevent logout
   useEffect(() => {
-    // Only check auth status once on mount if user is authenticated
+    // Only log authentication status, don't check
     if (isAuthenticated && user) {
       console.log('Booking screen mounted - user is authenticated:', user.userType);
     }
-  }, []); // Remove dependencies to prevent frequent checks
+  }, []); // No auth checks to prevent logout
 
   const packageTypes = [
     { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },

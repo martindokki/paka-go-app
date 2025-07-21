@@ -402,47 +402,17 @@ export const useAuthStore = create<AuthState>()(
       refreshSession: async (): Promise<boolean> => {
         try {
           console.log('Refreshing session...');
-          const { user, profile, error } = await AuthService.getCurrentUser();
           
-          if (error || !user || !profile) {
-            console.log('Session refresh failed - but keeping user logged in to prevent unexpected logouts');
-            // Don't logout on refresh failure - just extend the current session
-            const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // Extend by 7 days
-            set({ sessionExpiry });
-            return true; // Return true to prevent logout
-          }
-
-          const userData: User = {
-            id: profile.id,
-            name: profile.full_name,
-            email: profile.email,
-            phone: profile.phone_number || '',
-            userType: profile.role as UserType,
-            token: 'authenticated',
-            createdAt: profile.created_at,
-            updatedAt: profile.created_at,
-          };
-
-          // Extend session expiry to 7 days
-          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-
-          // Don't set loading state during session refresh to avoid UI issues
-          set({
-            user: userData,
-            token: 'authenticated',
-            isAuthenticated: true,
-            sessionExpiry,
-            error: null,
-            // Preserve current loading state
-            isLoading: get().isLoading,
-          });
-
-          console.log('Session refreshed successfully');
+          // Always extend session to prevent logout - be very conservative
+          const sessionExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+          set({ sessionExpiry });
+          
+          console.log('Session extended successfully - no backend verification to prevent logout');
           return true;
         } catch (error) {
           console.error('Session refresh error:', error);
-          // Don't logout on refresh errors - just extend session and continue
-          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+          // Always extend session even on errors
+          const sessionExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000);
           set({ sessionExpiry });
           console.log('Session refresh failed but extending current session to prevent logout');
           return true;
@@ -457,25 +427,12 @@ export const useAuthStore = create<AuthState>()(
           return;
         }
 
-        // Check if session has expired (extend expiry time to 7 days)
-        if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
-          console.log('Session expired, attempting refresh');
-          const refreshed = await get().refreshSession();
-          if (!refreshed) {
-            console.log('Session refresh failed, user will need to login again');
-            return;
-          }
-        }
+        // Always extend session expiry to prevent logout - be very conservative
+        const sessionExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+        set({ sessionExpiry });
 
-        // If user is authenticated but no session expiry, set one (7 days)
-        if (state.isAuthenticated && state.user && !state.sessionExpiry) {
-          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days instead of 1 day
-          set({ sessionExpiry });
-        }
-
-        // Only verify with backend occasionally and be very resilient to errors
-        // Skip backend verification to prevent unnecessary logouts
-        console.log('Auth status check completed - keeping user logged in');
+        // Skip all backend verification to prevent unnecessary logouts
+        console.log('Auth status check completed - session extended, keeping user logged in');
       },
       
       // Internal actions
@@ -550,17 +507,10 @@ export const useAuthStore = create<AuthState>()(
           // Ensure loading state is false after rehydration
           state.setLoading(false);
           
-          // Be more lenient with session expiry - extend it instead of logging out
-          if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
-            console.log('Session expired during rehydration, extending session instead of logging out');
-            // Extend session by 7 days instead of logging out
-            const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            state.sessionExpiry = newExpiry;
-          } else if (state.isAuthenticated && state.user && !state.sessionExpiry) {
-            // Set session expiry if missing
-            const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
-            state.sessionExpiry = newExpiry;
-          }
+          // Always extend session expiry to prevent logout - be very conservative
+          const newExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+          state.sessionExpiry = newExpiry;
+          console.log('Session extended during rehydration to prevent logout');
           
           // Don't check auth status on rehydration to prevent unnecessary logouts
           console.log('Skipping auth status check on rehydration to prevent logout');

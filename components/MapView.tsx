@@ -14,6 +14,9 @@ import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import axios from 'axios';
 import colors from '@/constants/colors';
 
+// Import WebMapFallback for web compatibility
+import { WebMapFallback } from '@/components/WebMapFallback';
+
 interface Coordinates {
   latitude: number;
   longitude: number;
@@ -278,30 +281,14 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
     </TouchableOpacity>
   );
 
-  // Web Map Fallback
+  // Web Map Fallback using dedicated component
   const renderWebFallback = () => {
     return (
-      <View style={styles.webFallback}>
-        <MapPin size={48} color={colors.primary} />
-        <Text style={styles.webFallbackTitle}>Map View</Text>
-        <Text style={styles.webFallbackText}>
-          Interactive map with location search and routing is available on mobile devices.
-        </Text>
-        {currentLocation && (
-          <View style={styles.locationInfo}>
-            <Text style={styles.locationInfoText}>
-              Current Location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
-            </Text>
-          </View>
-        )}
-        {destination && (
-          <View style={styles.locationInfo}>
-            <Text style={styles.locationInfoText}>
-              Destination: {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
-            </Text>
-          </View>
-        )}
-      </View>
+      <WebMapFallback
+        height={height - 100} // Account for search bar
+        currentLocation={currentLocation}
+        destination={destination}
+      />
     );
   };
 
@@ -377,36 +364,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  webFallback: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: colors.backgroundSecondary,
-    gap: 16,
-  },
-  webFallbackTitle: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    color: colors.text,
-  },
-  webFallbackText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  locationInfo: {
-    backgroundColor: colors.background,
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  locationInfoText: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '500' as const,
-  },
+
   searchContainer: {
     position: 'absolute',
     top: 10,

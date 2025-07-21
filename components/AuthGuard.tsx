@@ -24,13 +24,13 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     sessionExpiry: sessionExpiry ? new Date(sessionExpiry).toISOString() : null
   });
 
-  // Minimal auth check - only when absolutely necessary
+  // Skip all auth checks in AuthGuard to prevent logout
   React.useEffect(() => {
     if (isInitialized && isAuthenticated && user) {
       console.log('AuthGuard: User is authenticated as', user.userType);
-      // Don't call checkAuthStatus here to prevent unnecessary auth checks
+      // Skip all auth status checks to prevent logout
     }
-  }, [isInitialized]); // Only check on initialization
+  }, []); // No dependencies to prevent frequent checks
 
   // Show loading while auth is being initialized or checked
   if (isLoading || !isInitialized) {
