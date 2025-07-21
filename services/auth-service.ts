@@ -212,20 +212,19 @@ export class AuthService {
     try {
       console.log('👤 AuthService.getCurrentUser - Starting...');
       
-      // Skip session check to prevent logout - return cached data instead
-      console.log('📞 AuthService.getCurrentUser - Skipping session check to prevent logout');
+      // Get the current session
+      console.log('📞 AuthService.getCurrentUser - Getting current session...');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      // Return a minimal success response to prevent logout
-      return { 
-        user: { id: 'cached-user' }, 
-        profile: { 
-          id: 'cached-user',
-          full_name: 'User',
-          email: 'user@example.com',
-          role: 'customer'
-        }, 
-        error: null 
-      };
+      if (sessionError) {
+        console.error('❌ AuthService.getCurrentUser - Session error:', sessionError);
+        return { user: null, profile: null, error: sessionError };
+      }
+
+      if (!session || !session.user) {
+        console.log('❌ AuthService.getCurrentUser - No active session');
+        return { user: null, profile: null, error: new Error('No active session') };
+      }
 
       const user = session.user;
       console.log('👤 AuthService.getCurrentUser - Getting profile for user:', user.id);
