@@ -154,8 +154,18 @@ export default function AuthScreen() {
     setValidationErrors({});
     
     try {
+      console.log(`🚀 Starting ${authMode} process...`);
+      console.log('📋 Form data:', { 
+        email: formData.email, 
+        hasPassword: !!formData.password, 
+        name: formData.name, 
+        phone: formData.phone,
+        userType 
+      });
+      
       // Validate form
       if (!validateForm()) {
+        console.log('❌ Form validation failed');
         return;
       }
 
@@ -171,11 +181,20 @@ export default function AuthScreen() {
       let success = false;
       
       if (authMode === "login") {
+        console.log('🔐 Attempting login...');
+        console.log('🔐 Login credentials:', { 
+          email: formData.email.trim(), 
+          userType: userType as UserType 
+        });
+        
         success = await login({
           email: formData.email.trim(),
           password: formData.password,
           userType: userType as UserType,
         });
+        
+        console.log('🔐 Login result:', success);
+        console.log('🔐 Auth error after login:', authError);
         
         // If login fails and this looks like a test account, offer to create it
         if (!success && authError && authError.includes('Invalid login credentials')) {
@@ -196,6 +215,14 @@ export default function AuthScreen() {
           }
         }
       } else {
+        console.log('📝 Attempting registration...');
+        console.log('📝 Registration data:', { 
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          userType: userType as UserType 
+        });
+        
         success = await register({
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -203,33 +230,58 @@ export default function AuthScreen() {
           password: formData.password,
           userType: userType as UserType,
         });
+        
+        console.log('📝 Registration result:', success);
+        console.log('📝 Auth error after registration:', authError);
       }
       
       if (success) {
-        console.log(`${authMode} successful`, { userType, email: formData.email });
+        console.log(`✅ ${authMode} successful!`, { userType, email: formData.email });
+        
+        // Small delay to ensure state is updated
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         // Navigate based on user type
         switch (userType) {
           case "customer":
+            console.log('🧭 Navigating to client dashboard...');
             router.replace("/(client)");
             break;
           case "driver":
+            console.log('🧭 Navigating to driver dashboard...');
             router.replace("/(driver)");
             break;
           case "admin":
+            console.log('🧭 Navigating to admin dashboard...');
             router.replace("/(admin)");
             break;
         }
+      } else {
+        console.log(`❌ ${authMode} failed. Error:`, authError);
+        
+        // Show detailed error to user
+        if (authError) {
+          Alert.alert(
+            `${authMode === 'login' ? 'Login' : 'Registration'} Failed`, 
+            authError
+          );
+        } else {
+          Alert.alert(
+            "Authentication Error", 
+            `${authMode === 'login' ? 'Login' : 'Registration'} failed. Please try again.`
+          );
+        }
       }
     } catch (error) {
-      console.error('Auth error:', error);
+      console.error('❌ Auth error:', error);
       Alert.alert(
         "Authentication Error", 
-        "Something went wrong. Please try again."
+        `Something went wrong during ${authMode}. Please try again.`
       );
     } finally {
       // Always clear local loading state
       setIsSubmitting(false);
+      console.log('🏁 Auth process completed');
     }
   };
 
@@ -697,6 +749,48 @@ export default function AuthScreen() {
                     }}
                   >
                     <Text style={styles.debugButtonText}>📝 Fill Test Credentials</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={async () => {
+                      try {
+                        const { supabase } = await import('@/services/supabase');
+                        const { data, error } = await supabase.auth.getSession();
+                        Alert.alert(
+                          "Supabase Connection Test",
+                          error 
+                            ? `❌ Error: ${error.message}` 
+                            : `✅ Connected! Session: ${data.session ? 'Active' : 'None'}`
+                        );
+                      } catch (error: any) {
+                        Alert.alert("Connection Test Failed", error.message);
+                      }
+                    }}
+                  >
+                    <Text style={styles.debugButtonText}>🔧 Test Supabase Connection</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.debugButton}
+                    onPress={async () => {
+                      try {
+                        console.log('🧪 Testing auth store functions...');
+                        const { AuthService } = await import('@/services/auth-service');
+                        
+                        // Test with a simple email/password
+                        const testResult = await AuthService.signIn('test@example.com', 'wrongpassword');
+                        
+                        Alert.alert(
+                          "Auth Service Test",
+                          testResult.error 
+                            ? `✅ Service working! Error (expected): ${testResult.error.message}` 
+                            : `❓ Unexpected success: ${testResult.user?.id}`
+                        );
+                      } catch (error: any) {
+                        Alert.alert("Auth Service Test Failed", error.message);
+                      }
+                    }}
+                  >
+                    <Text style={styles.debugButtonText}>🧪 Test Auth Service</Text>
                   </TouchableOpacity>
                   <View style={styles.testAccounts}>
                     <Text style={styles.testAccount}>Customer: customer@test.com / password123</Text>

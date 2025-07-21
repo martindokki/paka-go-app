@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (credentials: LoginRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
-        console.log('Login attempt:', { email: credentials.email, userType: credentials.userType });
+        console.log('🔐 Login attempt started:', { email: credentials.email, userType: credentials.userType });
         
         try {
           // Validate credentials
@@ -78,10 +78,18 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('Email and password are required');
           }
 
+          console.log('📞 Calling AuthService.signIn...');
           const { user: authUser, error } = await AuthService.signIn(credentials.email.trim(), credentials.password);
           
+          console.log('📞 AuthService.signIn response:', { 
+            hasUser: !!authUser, 
+            userId: authUser?.id, 
+            hasError: !!error,
+            errorMessage: error?.message || error
+          });
+          
           if (error) {
-            console.error('Auth service error:', error);
+            console.error('❌ Auth service error:', error);
             const errorMessage = error instanceof Error 
               ? error.message 
               : typeof error === 'string' 
@@ -93,35 +101,46 @@ export const useAuthStore = create<AuthState>()(
           }
 
           if (!authUser) {
+            console.error('❌ No user returned from authentication');
             throw new Error('No user returned from authentication');
           }
 
-          console.log('Auth user obtained:', authUser.id);
+          console.log('✅ Auth user obtained:', authUser.id);
 
           // Get user profile with retry logic
           let profile = null;
           let profileError = null;
           
+          console.log('👤 Fetching user profile...');
           for (let attempt = 0; attempt < 3; attempt++) {
+            console.log(`👤 Profile fetch attempt ${attempt + 1}/3`);
             const result = await AuthService.getCurrentUser();
+            console.log(`👤 Profile fetch result:`, { 
+              hasProfile: !!result.profile, 
+              hasError: !!result.error,
+              errorMessage: result.error?.message || result.error
+            });
+            
             if (result.profile && !result.error) {
               profile = result.profile;
+              console.log('✅ Profile obtained successfully:', profile);
               break;
             }
             profileError = result.error;
-            console.warn(`Profile fetch attempt ${attempt + 1} failed:`, result.error);
+            console.warn(`⚠️ Profile fetch attempt ${attempt + 1} failed:`, result.error);
             
             if (attempt < 2) {
+              console.log('⏳ Waiting 1 second before retry...');
               await new Promise(resolve => setTimeout(resolve, 1000));
             }
           }
           
           if (!profile) {
-            console.error('Failed to get user profile after 3 attempts:', profileError);
+            console.error('❌ Failed to get user profile after 3 attempts:', profileError);
             throw new Error('Failed to get user profile. Please try again.');
           }
 
-          console.log('Profile obtained:', profile);
+          console.log('✅ Profile obtained:', profile);
 
           const userData: User = {
             id: profile.id,
@@ -137,7 +156,7 @@ export const useAuthStore = create<AuthState>()(
           // Set session expiry to 24 hours from now
           const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
           
-          console.log('Setting user data:', userData);
+          console.log('💾 Setting user data in store:', userData);
           
           set({
             user: userData,
@@ -148,11 +167,14 @@ export const useAuthStore = create<AuthState>()(
             sessionExpiry,
           });
           
-          console.log('Login successful', { userType: userData.userType, userId: userData.id });
+          console.log('🎉 Login successful!', { userType: userData.userType, userId: userData.id });
           
           return true;
         } catch (error: any) {
           const errorMsg = error?.message || 'Login failed. Please check your credentials and try again.';
+          
+          console.error('❌ Login failed with error:', error);
+          console.error('❌ Error message:', errorMsg);
           
           set({ 
             error: errorMsg, 
@@ -163,16 +185,16 @@ export const useAuthStore = create<AuthState>()(
             sessionExpiry: null,
           });
           
-          console.error('Login failed', error);
           return false;
         }
       },
       
       register: async (userData: RegisterRequest): Promise<boolean> => {
         set({ isLoading: true, error: null });
-        console.log('Registration attempt:', { email: userData.email, userType: userData.userType });
+        console.log('🔐 Registration attempt started:', { email: userData.email, userType: userData.userType });
         
         try {
+          console.log('📞 Calling AuthService.signUp...');
           const { user: authUser, error } = await AuthService.signUp(
             userData.email, 
             userData.password, 
@@ -180,6 +202,13 @@ export const useAuthStore = create<AuthState>()(
             userData.phone, 
             userData.userType === 'admin' ? 'customer' : userData.userType as 'customer' | 'driver'
           );
+          
+          console.log('📞 AuthService.signUp response:', { 
+            hasUser: !!authUser, 
+            userId: authUser?.id, 
+            hasError: !!error,
+            errorMessage: error?.message || error
+          });
           
           if (error || !authUser) {
             const errorMessage = error instanceof Error 
@@ -189,13 +218,24 @@ export const useAuthStore = create<AuthState>()(
               : typeof error === 'object' && error && 'message' in error
               ? String((error as any).message)
               : 'Registration failed';
+            console.error('❌ Registration auth error:', errorMessage);
             throw new Error(`Authentication failed: ${errorMessage}`);
           }
 
+          console.log('✅ Auth user created:', authUser.id);
+
           // Get updated user profile
+          console.log('👤 Fetching user profile after registration...');
           const { profile, error: profileError } = await AuthService.getCurrentUser();
           
+          console.log('👤 Profile fetch result:', { 
+            hasProfile: !!profile, 
+            hasError: !!profileError,
+            errorMessage: profileError?.message || profileError
+          });
+          
           if (profileError || !profile) {
+            console.error('❌ Failed to get user profile after registration:', profileError);
             throw new Error('Failed to get user profile after registration');
           }
 
@@ -210,7 +250,7 @@ export const useAuthStore = create<AuthState>()(
             updatedAt: profile.created_at,
           };
           
-          console.log('Setting user data:', userDataForStore);
+          console.log('💾 Setting user data in store:', userDataForStore);
           
           // Set session expiry to 24 hours from now
           const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
@@ -224,11 +264,14 @@ export const useAuthStore = create<AuthState>()(
             sessionExpiry,
           });
           
-          console.log('Registration successful', { userType: userDataForStore.userType, email: userData.email, userId: userDataForStore.id });
+          console.log('🎉 Registration successful!', { userType: userDataForStore.userType, email: userData.email, userId: userDataForStore.id });
           
           return true;
         } catch (error: any) {
           const errorMsg = error.message || 'Registration failed. Please check your details and try again.';
+          
+          console.error('❌ Registration failed with error:', error);
+          console.error('❌ Error message:', errorMsg);
           
           set({ 
             error: errorMsg, 
@@ -238,7 +281,6 @@ export const useAuthStore = create<AuthState>()(
             token: null,
           });
           
-          console.error('Registration error:', error);
           return false;
         }
       },

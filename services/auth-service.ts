@@ -3,18 +3,21 @@ import { supabase, User } from './supabase';
 export class AuthService {
   static async signUp(email: string, password: string, fullName: string, phoneNumber?: string, role: 'customer' | 'driver' = 'customer') {
     try {
-      console.log('Starting signup process for:', { email, fullName, role });
+      console.log('🔐 AuthService.signUp - Starting signup process for:', { email, fullName, role });
       
       // Validate inputs
       if (!email || !password || !fullName) {
+        console.error('❌ AuthService.signUp - Missing required fields');
         throw new Error('Email, password, and full name are required');
       }
 
       if (password.length < 6) {
+        console.error('❌ AuthService.signUp - Password too short');
         throw new Error('Password must be at least 6 characters long');
       }
 
       // First, sign up the user with Supabase Auth
+      console.log('📞 AuthService.signUp - Calling supabase.auth.signUp...');
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
@@ -27,16 +30,26 @@ export class AuthService {
         }
       });
 
+      console.log('📞 AuthService.signUp - Supabase response:', { 
+        hasData: !!authData, 
+        hasUser: !!authData?.user, 
+        userId: authData?.user?.id,
+        hasError: !!authError,
+        errorMessage: authError?.message,
+        errorCode: (authError as any)?.code
+      });
+
       if (authError) {
-        console.error('Auth signup error:', authError);
+        console.error('❌ AuthService.signUp - Auth signup error:', authError);
         throw new Error(`Authentication failed: ${authError.message}`);
       }
 
       if (!authData.user) {
+        console.error('❌ AuthService.signUp - No user returned from signup');
         throw new Error('No user returned from signup');
       }
 
-      console.log('Auth user created successfully:', authData.user.id);
+      console.log('✅ AuthService.signUp - Auth user created successfully:', authData.user.id);
       
       // Wait for the database trigger to complete
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -146,30 +159,42 @@ export class AuthService {
 
   static async signIn(email: string, password: string) {
     try {
-      console.log('Attempting sign in for:', email);
+      console.log('🔐 AuthService.signIn - Attempting sign in for:', email);
       
       if (!email || !password) {
+        console.error('❌ AuthService.signIn - Missing credentials');
         throw new Error('Email and password are required');
       }
 
+      console.log('📞 AuthService.signIn - Calling supabase.auth.signInWithPassword...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
         password,
       });
 
+      console.log('📞 AuthService.signIn - Supabase response:', { 
+        hasData: !!data, 
+        hasUser: !!data?.user, 
+        userId: data?.user?.id,
+        hasError: !!error,
+        errorMessage: error?.message,
+        errorCode: (error as any)?.code
+      });
+
       if (error) {
-        console.error('Supabase auth error:', error);
+        console.error('❌ AuthService.signIn - Supabase auth error:', error);
         throw error;
       }
 
       if (!data.user) {
+        console.error('❌ AuthService.signIn - No user returned from authentication');
         throw new Error('No user returned from authentication');
       }
 
-      console.log('Sign in successful for user:', data.user.id);
+      console.log('✅ AuthService.signIn - Sign in successful for user:', data.user.id);
       return { user: data.user, error: null };
     } catch (error: any) {
-      console.error('Sign in error:', error);
+      console.error('❌ AuthService.signIn - Sign in error:', error);
       return { user: null, error };
     }
   }
@@ -185,63 +210,90 @@ export class AuthService {
 
   static async getCurrentUser() {
     try {
+      console.log('👤 AuthService.getCurrentUser - Starting...');
+      
       // First check if we have a valid session
+      console.log('📞 AuthService.getCurrentUser - Getting session...');
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
+      console.log('📞 AuthService.getCurrentUser - Session result:', { 
+        hasSession: !!session, 
+        hasUser: !!session?.user, 
+        userId: session?.user?.id,
+        hasError: !!sessionError,
+        errorMessage: sessionError?.message
+      });
+      
       if (sessionError) {
-        console.error('Session error:', sessionError);
+        console.error('❌ AuthService.getCurrentUser - Session error:', sessionError);
         throw sessionError;
       }
 
       if (!session || !session.user) {
-        console.log('No active session found');
+        console.log('ℹ️ AuthService.getCurrentUser - No active session found');
         return { user: null, profile: null, error: null };
       }
 
       const user = session.user;
-      console.log('Getting profile for user:', user.id);
+      console.log('👤 AuthService.getCurrentUser - Getting profile for user:', user.id);
 
       // Try multiple approaches to get the profile
       let profile = null;
 
       // Approach 1: Use our safe RPC function
       try {
+        console.log('📞 AuthService.getCurrentUser - Trying RPC function...');
         const { data: profileData, error: rpcError } = await supabase
           .rpc('get_or_create_user_profile', { user_id: user.id });
 
+        console.log('📞 AuthService.getCurrentUser - RPC result:', { 
+          hasData: !!profileData, 
+          dataLength: profileData?.length,
+          hasError: !!rpcError,
+          errorMessage: rpcError?.message
+        });
+
         if (!rpcError && profileData && profileData.length > 0) {
           profile = profileData[0];
-          console.log('Profile retrieved via RPC:', profile);
+          console.log('✅ AuthService.getCurrentUser - Profile retrieved via RPC:', profile);
         } else {
-          console.warn('RPC function failed:', rpcError);
+          console.warn('⚠️ AuthService.getCurrentUser - RPC function failed:', rpcError);
         }
       } catch (rpcError) {
-        console.warn('RPC function exception:', rpcError);
+        console.warn('⚠️ AuthService.getCurrentUser - RPC function exception:', rpcError);
       }
 
       // Approach 2: Direct database query if RPC failed
       if (!profile) {
         try {
+          console.log('📞 AuthService.getCurrentUser - Trying direct query...');
           const { data: directProfile, error: directError } = await supabase
             .from('users')
             .select('*')
             .eq('id', user.id)
             .single();
 
+          console.log('📞 AuthService.getCurrentUser - Direct query result:', { 
+            hasData: !!directProfile, 
+            hasError: !!directError,
+            errorMessage: directError?.message,
+            errorCode: (directError as any)?.code
+          });
+
           if (!directError && directProfile) {
             profile = directProfile;
-            console.log('Profile retrieved via direct query:', profile);
+            console.log('✅ AuthService.getCurrentUser - Profile retrieved via direct query:', profile);
           } else {
-            console.warn('Direct query failed:', directError);
+            console.warn('⚠️ AuthService.getCurrentUser - Direct query failed:', directError);
           }
         } catch (directError) {
-          console.warn('Direct query exception:', directError);
+          console.warn('⚠️ AuthService.getCurrentUser - Direct query exception:', directError);
         }
       }
 
       // Approach 3: Create profile from auth metadata if still no profile
       if (!profile) {
-        console.log('Creating profile from auth metadata...');
+        console.log('🔧 AuthService.getCurrentUser - Creating profile from auth metadata...');
         
         const profileData = {
           id: user.id,
@@ -253,27 +305,37 @@ export class AuthService {
           status: 'active' as const
         };
 
+        console.log('🔧 AuthService.getCurrentUser - Profile data to create:', profileData);
+
         try {
+          console.log('📞 AuthService.getCurrentUser - Upserting profile...');
           const { data: createdProfile, error: createError } = await supabase
             .from('users')
             .upsert(profileData, { onConflict: 'id' })
             .select()
             .single();
 
+          console.log('📞 AuthService.getCurrentUser - Upsert result:', { 
+            hasData: !!createdProfile, 
+            hasError: !!createError,
+            errorMessage: createError?.message,
+            errorCode: (createError as any)?.code
+          });
+
           if (!createError && createdProfile) {
             profile = createdProfile;
-            console.log('Profile created from metadata:', profile);
+            console.log('✅ AuthService.getCurrentUser - Profile created from metadata:', profile);
           } else {
-            console.warn('Failed to create profile from metadata:', createError);
+            console.warn('⚠️ AuthService.getCurrentUser - Failed to create profile from metadata:', createError);
           }
         } catch (createError) {
-          console.warn('Profile creation exception:', createError);
+          console.warn('⚠️ AuthService.getCurrentUser - Profile creation exception:', createError);
         }
       }
 
       // Approach 4: Use fallback profile if all else fails
       if (!profile) {
-        console.log('Using fallback profile...');
+        console.log('🔧 AuthService.getCurrentUser - Using fallback profile...');
         profile = {
           id: user.id,
           full_name: user.user_metadata?.full_name || 
@@ -286,11 +348,13 @@ export class AuthService {
           created_at: user.created_at,
           updated_at: user.updated_at || user.created_at
         };
+        console.log('🔧 AuthService.getCurrentUser - Fallback profile:', profile);
       }
 
+      console.log('✅ AuthService.getCurrentUser - Success! Returning user and profile');
       return { user, profile, error: null };
     } catch (error) {
-      console.error('Get current user error:', error);
+      console.error('❌ AuthService.getCurrentUser - Error:', error);
       return { user: null, profile: null, error };
     }
   }

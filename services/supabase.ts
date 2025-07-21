@@ -3,7 +3,29 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = 'https://yrokteacdihxfcrpgotz.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyb2t0ZWFjZGloeGZjcnBnb3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4NDk5NTksImV4cCI6MjA2ODQyNTk1OX0.hahF2k3TeBmvVXHN5LXf_8zOcchpIL8F7cMKOM48wGw';
 
+// Validate configuration
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase configuration missing!');
+  throw new Error('Supabase URL and Anon Key are required');
+}
+
+console.log('🔧 Initializing Supabase client...');
+console.log('🔧 Supabase URL:', supabaseUrl);
+console.log('🔧 Supabase Key (first 20 chars):', supabaseAnonKey.substring(0, 20) + '...');
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Test connection on initialization
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    console.error('❌ Supabase connection test failed:', error);
+  } else {
+    console.log('✅ Supabase connection test successful');
+    console.log('🔐 Current session:', data.session ? 'Active' : 'None');
+  }
+}).catch((error) => {
+  console.error('❌ Supabase connection test error:', error);
+});
 
 // Types based on your Supabase schema
 export interface User {
