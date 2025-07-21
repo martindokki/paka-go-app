@@ -118,7 +118,9 @@ export const useAuthStore = create<AuthState>()(
             console.log(`👤 Profile fetch result:`, { 
               hasProfile: !!result.profile, 
               hasError: !!result.error,
-              errorMessage: result.error?.message || result.error
+              errorMessage: result.error && typeof result.error === 'object' && 'message' in result.error 
+                ? (result.error as any).message 
+                : result.error
             });
             
             if (result.profile && !result.error) {
@@ -231,7 +233,9 @@ export const useAuthStore = create<AuthState>()(
           console.log('👤 Profile fetch result:', { 
             hasProfile: !!profile, 
             hasError: !!profileError,
-            errorMessage: profileError?.message || profileError
+            errorMessage: profileError && typeof profileError === 'object' && 'message' in profileError 
+              ? (profileError as any).message 
+              : profileError
           });
           
           if (profileError || !profile) {
