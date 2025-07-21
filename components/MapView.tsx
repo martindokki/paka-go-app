@@ -68,7 +68,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Get user's current location
   useEffect(() => {
@@ -258,73 +258,31 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
     </TouchableOpacity>
   );
 
-  // Native Map Component - only rendered on native platforms
-  const renderNativeMap = () => {
-    if (Platform.OS === 'web') {
-      return null;
-    }
-
-    // Use require with try-catch to avoid bundling issues
-    try {
-      const MapView = require('react-native-maps').default;
-      const { Marker, Polyline, UrlTile } = require('react-native-maps');
-
-      return (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            ...NAIROBI_LOCATION,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          showsUserLocation={true}
-          showsMyLocationButton={false}
-          showsCompass={true}
-          showsScale={true}
-        >
-          <UrlTile
-            urlTemplate={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`}
-            maximumZ={19}
-            flipY={false}
-          />
-
-          {currentLocation && (
-            <Marker
-              coordinate={currentLocation}
-              title="Your Location"
-              description="You are here"
-              pinColor={colors.primary}
-            />
-          )}
-
-          {destination && (
-            <Marker
-              coordinate={destination}
-              title="Destination"
-              description="Selected location"
-              pinColor={colors.accent}
-            />
-          )}
-
-          {routeCoordinates.length > 0 && (
-            <Polyline
-              coordinates={routeCoordinates}
-              strokeColor={colors.primary}
-              strokeWidth={4}
-              lineDashPattern={[1]}
-            />
-          )}
-        </MapView>
-      );
-    } catch (error) {
-      console.warn('react-native-maps not available:', error);
-      return (
-        <View style={styles.mapPlaceholder}>
-          <MapPin size={48} color={colors.primary} />
-          <Text style={styles.mapPlaceholderText}>Map not available</Text>
-        </View>
-      );
-    }
+  // Web Map Fallback
+  const renderWebFallback = () => {
+    return (
+      <View style={styles.webFallback}>
+        <MapPin size={48} color={colors.primary} />
+        <Text style={styles.webFallbackTitle}>Map View</Text>
+        <Text style={styles.webFallbackText}>
+          Interactive map with location search and routing is available on mobile devices.
+        </Text>
+        {currentLocation && (
+          <View style={styles.locationInfo}>
+            <Text style={styles.locationInfoText}>
+              Current Location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
+            </Text>
+          </View>
+        )}
+        {destination && (
+          <View style={styles.locationInfo}>
+            <Text style={styles.locationInfoText}>
+              Destination: {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
   };
 
   return (
@@ -367,32 +325,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         </View>
       )}
 
-      {/* Map or Web Fallback */}
-      {Platform.OS === 'web' ? (
-        <View style={styles.webFallback}>
-          <MapPin size={48} color={colors.primary} />
-          <Text style={styles.webFallbackTitle}>Map View</Text>
-          <Text style={styles.webFallbackText}>
-            Interactive map with location search and routing is available on mobile devices.
-          </Text>
-          {currentLocation && (
-            <View style={styles.locationInfo}>
-              <Text style={styles.locationInfoText}>
-                Current Location: {currentLocation.latitude.toFixed(4)}, {currentLocation.longitude.toFixed(4)}
-              </Text>
-            </View>
-          )}
-          {destination && (
-            <View style={styles.locationInfo}>
-              <Text style={styles.locationInfoText}>
-                Destination: {destination.latitude.toFixed(4)}, {destination.longitude.toFixed(4)}
-              </Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        renderNativeMap()
-      )}
+      {/* Web Map Fallback */}
+      {renderWebFallback()}
 
       {/* Loading Indicators */}
       {(isLoadingLocation || isLoadingRoute) && (
@@ -514,18 +448,7 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  mapPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.backgroundSecondary,
-    gap: 16,
-  },
-  mapPlaceholderText: {
-    fontSize: 16,
-    color: colors.textMuted,
-    fontWeight: '500' as const,
-  },
+
   loadingOverlay: {
     position: 'absolute',
     top: 0,
