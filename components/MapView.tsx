@@ -55,25 +55,6 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   initialLocation,
   height = 400,
 }) => {
-  // For web, use the native component if available, otherwise fallback
-  if (Platform.OS !== 'web') {
-    // Try to load the native component
-    try {
-      const { MapViewComponent: NativeMapView } = require('./MapView.native');
-      return (
-        <NativeMapView
-          onLocationSelect={onLocationSelect}
-          showSearch={showSearch}
-          showRoute={showRoute}
-          initialLocation={initialLocation}
-          height={height}
-        />
-      );
-    } catch (error) {
-      console.warn('Native MapView not available, using web fallback');
-    }
-  }
-
   return (
     <WebMapViewComponent
       onLocationSelect={onLocationSelect}
