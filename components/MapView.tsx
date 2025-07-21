@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import * as Location from 'expo-location';
 import { Search, MapPin, Navigation, X } from 'lucide-react-native';
 import axios from 'axios';
 import colors from '@/constants/colors';
@@ -50,6 +49,43 @@ const LOCATIONIQ_API_KEY = 'pk.660be2665aac44ed24823d543f20a67a';
 const GRAPHHOPPER_API_KEY = '5ee3d9d9-8d55-40b5-b9d4-92edffb415d9';
 
 export const MapViewComponent: React.FC<MapViewComponentProps> = ({
+  onLocationSelect,
+  showSearch = true,
+  showRoute = false,
+  initialLocation,
+  height = 400,
+}) => {
+  // For web, use the native component if available, otherwise fallback
+  if (Platform.OS !== 'web') {
+    // Try to load the native component
+    try {
+      const { MapViewComponent: NativeMapView } = require('./MapView.native');
+      return (
+        <NativeMapView
+          onLocationSelect={onLocationSelect}
+          showSearch={showSearch}
+          showRoute={showRoute}
+          initialLocation={initialLocation}
+          height={height}
+        />
+      );
+    } catch (error) {
+      console.warn('Native MapView not available, using web fallback');
+    }
+  }
+
+  return (
+    <WebMapViewComponent
+      onLocationSelect={onLocationSelect}
+      showSearch={showSearch}
+      showRoute={showRoute}
+      initialLocation={initialLocation}
+      height={height}
+    />
+  );
+};
+
+const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
   onLocationSelect,
   showSearch = true,
   showRoute = false,
@@ -104,6 +140,8 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
         return;
       }
 
+      // For mobile platforms, use expo-location
+      const Location = await import('expo-location');
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
