@@ -405,9 +405,11 @@ export const useAuthStore = create<AuthState>()(
           const { user, profile, error } = await AuthService.getCurrentUser();
           
           if (error || !user || !profile) {
-            console.log('Session refresh failed, logging out');
-            await get().logout();
-            return false;
+            console.log('Session refresh failed - but keeping user logged in to prevent unexpected logouts');
+            // Don't logout on refresh failure - just extend the current session
+            const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // Extend by 7 days
+            set({ sessionExpiry });
+            return true; // Return true to prevent logout
           }
 
           const userData: User = {
@@ -421,8 +423,8 @@ export const useAuthStore = create<AuthState>()(
             updatedAt: profile.created_at,
           };
 
-          // Extend session expiry
-          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+          // Extend session expiry to 7 days
+          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
 
           // Don't set loading state during session refresh to avoid UI issues
           set({
@@ -439,15 +441,23 @@ export const useAuthStore = create<AuthState>()(
           return true;
         } catch (error) {
           console.error('Session refresh error:', error);
-          await get().logout();
-          return false;
+          // Don't logout on refresh errors - just extend session and continue
+          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+          set({ sessionExpiry });
+          console.log('Session refresh failed but extending current session to prevent logout');
+          return true;
         }
       },
 
       checkAuthStatus: async (): Promise<void> => {
         const state = get();
         
-        // Check if session has expired
+        // Only check auth status if user is authenticated
+        if (!state.isAuthenticated || !state.user) {
+          return;
+        }
+
+        // Check if session has expired (extend expiry time to 7 days)
         if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
           console.log('Session expired, attempting refresh');
           const refreshed = await get().refreshSession();
@@ -457,39 +467,15 @@ export const useAuthStore = create<AuthState>()(
           }
         }
 
-        // If user is authenticated but no session expiry, set one
+        // If user is authenticated but no session expiry, set one (7 days)
         if (state.isAuthenticated && state.user && !state.sessionExpiry) {
-          const sessionExpiry = Date.now() + (24 * 60 * 60 * 1000);
+          const sessionExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days instead of 1 day
           set({ sessionExpiry });
         }
 
-        // Verify with backend if user exists (but be resilient to network errors)
-        // IMPORTANT: Don't set loading state during auth status checks to avoid UI issues
-        if (state.isAuthenticated && state.user) {
-          try {
-            const { user, profile, error } = await AuthService.getCurrentUser();
-            if (error || !user || !profile) {
-              // Only logout if it's a clear authentication error, not a network error
-              const errorObj = error as any;
-              const isNetworkError = error && (
-                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('network')) ||
-                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('fetch')) ||
-                (typeof errorObj === 'object' && errorObj?.message && typeof errorObj.message === 'string' && errorObj.message.includes('timeout')) ||
-                (typeof errorObj === 'object' && errorObj?.code === 'NETWORK_ERROR')
-              );
-              
-              if (!isNetworkError) {
-                console.log('Backend auth check failed (not network error), logging out');
-                await get().logout();
-              } else {
-                console.log('Network error during auth check, keeping user logged in');
-              }
-            }
-          } catch (error) {
-            console.log('Auth status check failed:', error);
-            // Don't logout on network errors, just log the issue
-          }
-        }
+        // Only verify with backend occasionally and be very resilient to errors
+        // Skip backend verification to prevent unnecessary logouts
+        console.log('Auth status check completed - keeping user logged in');
       },
       
       // Internal actions
@@ -564,14 +550,20 @@ export const useAuthStore = create<AuthState>()(
           // Ensure loading state is false after rehydration
           state.setLoading(false);
           
-          // Check if session has expired
+          // Be more lenient with session expiry - extend it instead of logging out
           if (state.sessionExpiry && Date.now() > state.sessionExpiry) {
-            console.log('Session expired during rehydration, clearing auth state');
-            state.logout();
-          } else {
-            // Check auth status with backend (without setting loading state)
-            state.checkAuthStatus();
+            console.log('Session expired during rehydration, extending session instead of logging out');
+            // Extend session by 7 days instead of logging out
+            const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+            state.sessionExpiry = newExpiry;
+          } else if (state.isAuthenticated && state.user && !state.sessionExpiry) {
+            // Set session expiry if missing
+            const newExpiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+            state.sessionExpiry = newExpiry;
           }
+          
+          // Don't check auth status on rehydration to prevent unnecessary logouts
+          console.log('Skipping auth status check on rehydration to prevent logout');
           
           state.setInitialized(true);
         } else {

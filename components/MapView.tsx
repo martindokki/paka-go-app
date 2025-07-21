@@ -55,6 +55,7 @@ export const MapViewComponent: React.FC<MapViewComponentProps> = ({
   initialLocation,
   height = 400,
 }) => {
+  // Always use web fallback to avoid react-native-maps bundling issues
   return (
     <WebMapViewComponent
       onLocationSelect={onLocationSelect}

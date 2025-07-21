@@ -62,3 +62,14 @@ export const showConfirm = (title: string, message: string, onConfirm: () => voi
 
 export const isWeb = Platform.OS === 'web';
 export const isMobile = Platform.OS !== 'web';
+
+// Web-safe map component resolver to prevent bundling issues
+export const getMapComponent = () => {
+  if (Platform.OS === 'web') {
+    // Return a simple View for web to avoid react-native-maps bundling issues
+    return require('react-native').View;
+  } else {
+    // For mobile, we would return the actual MapView, but for now use fallback
+    return require('react-native').View;
+  }
+};

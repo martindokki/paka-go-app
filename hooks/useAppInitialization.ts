@@ -11,18 +11,20 @@ export const useAppInitialization = () => {
       try {
         console.log('App initialization started');
         
-        // Set up auth state listener
+        // Set up auth state listener - but be less aggressive
         const { data: { subscription } } = AuthService.onAuthStateChange(async (event, session) => {
           console.log('Auth state changed:', event, session?.user?.id);
           
-          if (event === 'SIGNED_OUT' || !session) {
-            console.log('User signed out, clearing auth state');
+          // Only handle explicit sign out events
+          if (event === 'SIGNED_OUT') {
+            console.log('User explicitly signed out, clearing auth state');
             await logout();
-          } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            console.log('User signed in or token refreshed, checking auth status');
-            // Don't trigger loading states during automatic auth checks
+          } else if (event === 'SIGNED_IN') {
+            console.log('User signed in, checking auth status');
+            // Only check auth status on explicit sign in, not token refresh
             await checkAuthStatus();
           }
+          // Ignore TOKEN_REFRESHED events to prevent unnecessary auth checks
         });
 
         // Wait for auth store to be ready

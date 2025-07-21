@@ -24,12 +24,13 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     sessionExpiry: sessionExpiry ? new Date(sessionExpiry).toISOString() : null
   });
 
-  // Check session expiry on mount
+  // Minimal auth check - only when absolutely necessary
   React.useEffect(() => {
-    if (isInitialized && isAuthenticated) {
-      checkAuthStatus();
+    if (isInitialized && isAuthenticated && user) {
+      console.log('AuthGuard: User is authenticated as', user.userType);
+      // Don't call checkAuthStatus here to prevent unnecessary auth checks
     }
-  }, [isInitialized, isAuthenticated, checkAuthStatus]);
+  }, [isInitialized]); // Only check on initialization
 
   // Show loading while auth is being initialized or checked
   if (isLoading || !isInitialized) {

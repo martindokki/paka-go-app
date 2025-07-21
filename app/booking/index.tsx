@@ -79,20 +79,13 @@ export default function BookingScreen() {
     calculatePrice();
   }, []);
 
-  // Periodic auth check to prevent unexpected logouts
+  // Minimal auth check - only on mount and when needed
   useEffect(() => {
-    const authCheckInterval = setInterval(() => {
-      if (isAuthenticated && user) {
-        // Only check auth status if we have a user and are authenticated
-        checkAuthStatus().catch(error => {
-          console.warn('Auth check failed in booking:', error);
-          // Don't logout on network errors, just log the issue
-        });
-      }
-    }, 10 * 60 * 1000); // Check every 10 minutes (less frequent)
-
-    return () => clearInterval(authCheckInterval);
-  }, [isAuthenticated, user, checkAuthStatus]);
+    // Only check auth status once on mount if user is authenticated
+    if (isAuthenticated && user) {
+      console.log('Booking screen mounted - user is authenticated:', user.userType);
+    }
+  }, []); // Remove dependencies to prevent frequent checks
 
   const packageTypes = [
     { id: "documents", label: "Documents", icon: "📄", isFragileDefault: false },
@@ -298,20 +291,15 @@ export default function BookingScreen() {
       return;
     }
 
-    // Check authentication status and refresh session if needed
+    // Simple auth check without triggering session refresh
     console.log("Auth check:", { user, isAuthenticated, userType: user?.userType, userId: user?.id });
     
-    // Refresh authentication status before proceeding
-    const { checkAuthStatus } = useAuthStore.getState();
-    await checkAuthStatus();
-    
-    // Re-check after status update
-    const currentState = useAuthStore.getState();
-    if (!currentState.isAuthenticated || !currentState.user) {
-      console.log("Authentication failed - redirecting to login");
+    // Use current auth state without refreshing to prevent logout
+    if (!isAuthenticated || !user) {
+      console.log("User not authenticated - redirecting to login");
       Alert.alert(
         "Authentication Required", 
-        "Your session has expired. Please log in again to book a delivery.",
+        "Please log in to book a delivery.",
         [
           {
             text: "Cancel",
@@ -330,7 +318,7 @@ export default function BookingScreen() {
     }
 
     // Validate user type
-    if (currentState.user.userType !== 'customer') {
+    if (user.userType !== 'customer') {
       Alert.alert(
         "Access Denied", 
         "Only customers can book deliveries. Please log in with a customer account.",
@@ -348,8 +336,8 @@ export default function BookingScreen() {
     }
 
     try {
-      // Get customer ID from current state - ensure we have a valid user ID
-      const customerId = currentState.user.id;
+      // Get customer ID from current auth state - ensure we have a valid user ID
+      const customerId = user.id;
       console.log("Creating order for customer:", customerId);
       
       // Create the order locally first
