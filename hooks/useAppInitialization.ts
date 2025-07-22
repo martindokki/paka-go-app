@@ -18,7 +18,7 @@ export const useAppInitialization = () => {
           // Only handle explicit sign out events - ignore all other events to prevent logout
           if (event === 'SIGNED_OUT') {
             console.log('User explicitly signed out, clearing auth state');
-            await logout();
+            await logout(false); // Don't show loading for automatic logout
           }
           // Ignore all other events including SIGNED_IN, TOKEN_REFRESHED to prevent issues
         });
