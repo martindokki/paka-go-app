@@ -11,18 +11,24 @@ export const useAppInitialization = () => {
       try {
         console.log('App initialization started');
         
-        // Set up auth state listener - only handle explicit sign out
+        // Set up auth state listener - be very conservative to prevent logout
         const { data: { subscription } } = AuthService.onAuthStateChange(async (event, session) => {
           console.log('Auth state changed:', event, session?.user?.id);
           
           // Only handle explicit sign out events - ignore all other events to prevent logout
-          if (event === 'SIGNED_OUT') {
+          if (event === 'SIGNED_OUT' && !session) {
             console.log('User explicitly signed out, clearing auth state');
             await logout(false); // Don't show loading for automatic logout
           } else {
             console.log('Ignoring auth state change event to prevent logout:', event);
+            // Extend session on any auth event to prevent logout
+            const authStore = useAuthStore.getState();
+            if (authStore.isAuthenticated) {
+              const newExpiry = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30 days
+              authStore.sessionExpiry = newExpiry;
+              console.log('Extended session expiry to prevent logout');
+            }
           }
-          // Ignore all other events including SIGNED_IN, TOKEN_REFRESHED to prevent issues
         });
 
         // Wait for auth store to be ready

@@ -294,7 +294,7 @@ export default function BookingScreen() {
     }
 
     // Simple auth check without triggering session refresh
-    console.log("Auth check:", { user: !!user, isAuthenticated, userType: user?.userType, userId: user?.id });
+    console.log("Booking auth check:", { user: !!user, isAuthenticated, userType: user?.userType, userId: user?.id });
     
     // Use current auth state without refreshing to prevent logout
     if (!isAuthenticated || !user) {

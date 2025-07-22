@@ -139,7 +139,7 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
               }
             },
             (error) => {
-              console.error('Web geolocation error:', error.message || error);
+              console.error('Web geolocation error:', error instanceof Error ? error.message : String(error));
               // Use fallback location instead of showing error
               setCurrentLocation(NAIROBI_LOCATION);
               setIsLoadingLocation(false);

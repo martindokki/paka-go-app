@@ -57,15 +57,22 @@ export default function OrdersScreen() {
   const { getOrdersByClient, fetchOrdersByClient } = useOrdersStore();
   
   useEffect(() => {
+    // Only fetch orders if user exists, don't trigger auth checks
     if (user?.id) {
-      fetchOrdersByClient(user.id);
+      console.log('Orders screen: Fetching orders for user', user.id);
+      fetchOrdersByClient(user.id).catch(error => {
+        console.error('Failed to fetch orders:', error);
+        // Don't throw error to prevent auth issues
+      });
     }
+    
+    // Start animation
     Animated.timing(animatedValue, {
       toValue: 1,
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, [user?.id, fetchOrdersByClient]);
+  }, []); // Remove dependencies to prevent frequent re-runs
 
   // Get orders from local store
   const allOrders = user ? getOrdersByClient(user.id) : [];
@@ -116,10 +123,14 @@ export default function OrdersScreen() {
     setRefreshing(true);
     try {
       if (user?.id) {
+        console.log('Refreshing orders for user:', user.id);
         await fetchOrdersByClient(user.id);
+      } else {
+        console.log('No user ID available for refresh');
       }
     } catch (error) {
       console.error('Failed to refresh orders:', error);
+      // Don't throw error to prevent auth issues
     } finally {
       setRefreshing(false);
     }
