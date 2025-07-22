@@ -166,7 +166,6 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
 
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced, // Use balanced for better performance
-        timeout: 10000,
       });
 
       if (location && location.coords && 
@@ -185,7 +184,7 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
         setCurrentLocation(NAIROBI_LOCATION);
       }
     } catch (error) {
-      console.error('Error getting current location:', error?.message || error);
+      console.error('Error getting current location:', error instanceof Error ? error.message : String(error));
       // Always use fallback location instead of showing error to user
       setCurrentLocation(NAIROBI_LOCATION);
     } finally {
