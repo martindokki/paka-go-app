@@ -13,7 +13,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
   children, 
   requiredUserType 
 }) => {
-  const { isAuthenticated, user, isLoading, isInitialized, checkAuthStatus, sessionExpiry } = useAuthStore();
+  const { isAuthenticated, user, isLoading, isInitialized, sessionExpiry } = useAuthStore();
 
   console.log("AuthGuard check:", { 
     isAuthenticated, 

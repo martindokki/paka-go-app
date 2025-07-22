@@ -424,6 +424,7 @@ export const useAuthStore = create<AuthState>()(
         
         // Only check auth status if user is authenticated
         if (!state.isAuthenticated || !state.user) {
+          console.log('No authenticated user, skipping auth status check');
           return;
         }
 

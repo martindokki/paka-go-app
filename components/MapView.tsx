@@ -101,25 +101,54 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
       setIsLoadingLocation(true);
       
       if (Platform.OS === 'web') {
-        // Use web geolocation API
+        // Use web geolocation API with better error handling
         if ('geolocation' in navigator) {
+          const options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
+          };
+          
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              const coords = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              };
-              setCurrentLocation(coords);
-              setIsLoadingLocation(false);
+              try {
+                // Validate position data before using
+                if (position && position.coords && 
+                    typeof position.coords.latitude === 'number' && 
+                    typeof position.coords.longitude === 'number' &&
+                    !isNaN(position.coords.latitude) && 
+                    !isNaN(position.coords.longitude)) {
+                  
+                  const coords = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                  };
+                  
+                  console.log('Web location obtained:', coords);
+                  setCurrentLocation(coords);
+                } else {
+                  console.error('Invalid position data received:', position);
+                  // Use fallback location (Nairobi)
+                  setCurrentLocation(NAIROBI_LOCATION);
+                }
+              } catch (parseError) {
+                console.error('Error parsing location data:', parseError);
+                setCurrentLocation(NAIROBI_LOCATION);
+              } finally {
+                setIsLoadingLocation(false);
+              }
             },
             (error) => {
-              console.error('Web geolocation error:', error);
-              Alert.alert('Error', 'Failed to get your current location');
+              console.error('Web geolocation error:', error.message || error);
+              // Use fallback location instead of showing error
+              setCurrentLocation(NAIROBI_LOCATION);
               setIsLoadingLocation(false);
-            }
+            },
+            options
           );
         } else {
-          Alert.alert('Error', 'Geolocation is not supported by this browser');
+          console.warn('Geolocation not supported, using fallback location');
+          setCurrentLocation(NAIROBI_LOCATION);
           setIsLoadingLocation(false);
         }
         return;
@@ -129,26 +158,36 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
       const Location = await import('expo-location');
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Location permission is required to show your current location on the map.'
-        );
+        console.warn('Location permission denied, using fallback location');
+        setCurrentLocation(NAIROBI_LOCATION);
+        setIsLoadingLocation(false);
         return;
       }
 
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Balanced, // Use balanced for better performance
+        timeout: 10000,
       });
 
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-
-      setCurrentLocation(coords);
+      if (location && location.coords && 
+          typeof location.coords.latitude === 'number' && 
+          typeof location.coords.longitude === 'number') {
+        
+        const coords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        
+        console.log('Mobile location obtained:', coords);
+        setCurrentLocation(coords);
+      } else {
+        console.error('Invalid location data from expo-location');
+        setCurrentLocation(NAIROBI_LOCATION);
+      }
     } catch (error) {
-      console.error('Error getting current location:', error);
-      Alert.alert('Error', 'Failed to get your current location');
+      console.error('Error getting current location:', error?.message || error);
+      // Always use fallback location instead of showing error to user
+      setCurrentLocation(NAIROBI_LOCATION);
     } finally {
       setIsLoadingLocation(false);
     }
@@ -203,26 +242,44 @@ const WebMapViewComponent: React.FC<MapViewComponentProps> = ({
 
   // Select a location from search results
   const selectLocation = (result: LocationSearchResult) => {
-    const coords = {
-      latitude: parseFloat(result.lat),
-      longitude: parseFloat(result.lon),
-    };
+    try {
+      // Safely parse coordinates with validation
+      const lat = parseFloat(result.lat);
+      const lon = parseFloat(result.lon);
+      
+      // Validate parsed coordinates
+      if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        console.error('Invalid coordinates in search result:', { lat: result.lat, lon: result.lon });
+        Alert.alert('Error', 'Invalid location coordinates');
+        return;
+      }
+      
+      const coords = {
+        latitude: lat,
+        longitude: lon,
+      };
 
-    setDestination(coords);
-    setSearchQuery(result.display_name);
-    setShowSearchResults(false);
+      console.log('Location selected:', coords, result.display_name);
+      
+      setDestination(coords);
+      setSearchQuery(result.display_name);
+      setShowSearchResults(false);
 
-    // Call the callback if provided
-    if (onLocationSelect) {
-      onLocationSelect({
-        ...coords,
-        address: result.display_name,
-      });
-    }
+      // Call the callback if provided
+      if (onLocationSelect) {
+        onLocationSelect({
+          ...coords,
+          address: result.display_name,
+        });
+      }
 
-    // Draw route if current location is available
-    if (currentLocation && showRoute) {
-      drawRoute(currentLocation, coords);
+      // Draw route if current location is available
+      if (currentLocation && showRoute) {
+        drawRoute(currentLocation, coords);
+      }
+    } catch (error) {
+      console.error('Error selecting location:', error);
+      Alert.alert('Error', 'Failed to select location');
     }
   };
 

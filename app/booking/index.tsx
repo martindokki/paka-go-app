@@ -81,9 +81,11 @@ export default function BookingScreen() {
 
   // Skip auth checks in booking screen to prevent logout
   useEffect(() => {
-    // Only log authentication status, don't check
+    // Only log authentication status, don't check or refresh session
     if (isAuthenticated && user) {
       console.log('Booking screen mounted - user is authenticated:', user.userType);
+    } else {
+      console.log('Booking screen mounted - user not authenticated');
     }
   }, []); // No auth checks to prevent logout
 
@@ -292,7 +294,7 @@ export default function BookingScreen() {
     }
 
     // Simple auth check without triggering session refresh
-    console.log("Auth check:", { user, isAuthenticated, userType: user?.userType, userId: user?.id });
+    console.log("Auth check:", { user: !!user, isAuthenticated, userType: user?.userType, userId: user?.id });
     
     // Use current auth state without refreshing to prevent logout
     if (!isAuthenticated || !user) {

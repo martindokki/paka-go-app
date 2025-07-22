@@ -438,16 +438,20 @@ export class AuthService {
 
   static async refreshSession() {
     try {
+      console.log('Attempting to refresh session...');
       const { data, error } = await supabase.auth.refreshSession();
       
       if (error) {
         console.error('Session refresh error:', error);
-        throw error;
+        // Don't throw error to prevent logout
+        return { session: null, error };
       }
 
+      console.log('Session refreshed successfully');
       return { session: data.session, error: null };
     } catch (error) {
       console.error('Session refresh exception:', error);
+      // Don't throw error to prevent logout
       return { session: null, error };
     }
   }
